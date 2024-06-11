@@ -33,7 +33,7 @@ public class Shot {
     }
 
     private void drawBullet(Graphics g) {
-        Image img = new ImageIcon("src\\Image\\bullet.png").getImage();
+        Image img = new ImageIcon("DSA_Project\\DSA_Project\\TankShooter\\src\\Image\\bullet.png").getImage();
         g.drawImage(img, (int) posX, (int) posY, null);
     }
 
