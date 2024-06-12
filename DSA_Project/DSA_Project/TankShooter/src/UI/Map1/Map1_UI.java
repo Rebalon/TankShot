@@ -1,7 +1,6 @@
 package UI.Map1;
 
 import java.awt.Cursor;
-import java.awt.Dimension;
 import java.awt.Graphics;
 import java.awt.Image;
 import java.awt.Point;
@@ -21,8 +20,8 @@ import Mechanic.UserTank;
 import UI.Direction;
 
 public class Map1_UI extends JFrame implements Runnable {
-    private final int boxWeight = 20;
-    private final int boxHeight = 20;
+    private final int boxWeight = 40;
+    private final int boxHeight = 40;
     private final int gridWeight = 70;
     private final int gridHeight = 37;
     private Point userTank;
@@ -42,8 +41,8 @@ public class Map1_UI extends JFrame implements Runnable {
     private void initial() {
         this.setName("TankShooter");
         this.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-        this.setPreferredSize(new Dimension(gridWeight * boxWeight, gridHeight * boxHeight));
-        this.userTank = new Point(5, 5);
+        this.setExtendedState(JFrame.MAXIMIZED_BOTH);
+        this.userTank = new Point(20, 30);
         this.userTank1 = new UserTank(userTank, direction);
         this.addKeyListener(new KeyAdapter() {
             @Override
@@ -107,12 +106,124 @@ public class Map1_UI extends JFrame implements Runnable {
 
     private void drawMap(Graphics g) {
         // Drawing map for battle
-        Image img = new ImageIcon("DSA_Project\\DSA_Project\\TankShooter\\src\\Image\\WoodenBoxHalf.png")
+        Image wooden = new ImageIcon("DSA_Project\\DSA_Project\\TankShooter\\src\\Image\\WoodenBoxFullHealth.png")
                 .getImage();
-        int initialX = 10;
-        for (int i = 0; i < 10; i++) {
-            g.drawImage(img, initialX + (i * 40), 30, null);
+        Image stone = new ImageIcon("DSA_Project\\DSA_Project\\TankShooter\\src\\Image\\StoneBrick.png")
+                .getImage();
+        Image background = new ImageIcon("DSA_Project\\DSA_Project\\TankShooter\\src\\Image\\background.png")
+                .getImage();
+        Image water = new ImageIcon("DSA_Project\\DSA_Project\\TankShooter\\src\\Image\\water.png")
+                .getImage();
+        Image steelblock = new ImageIcon("DSA_Project\\DSA_Project\\TankShooter\\src\\Image\\steelBlock.png")
+                .getImage();
+        g.drawImage(background, 10, 100, null);
+        Image Protect = new ImageIcon("DSA_Project\\DSA_Project\\TankShooter\\src\\Image\\heart.png")
+                .getImage();
+
+        /*
+         * g.drawImage(stone, 10, 735, null);
+         * g.drawImage(stone, 1270, 735, null);
+         * g.drawImage(stone, 630, 735, null);
+         */
+        g.drawImage(Protect, 630, 735, null);
+
+        g.drawImage(stone, 550, 735, null);
+        g.drawImage(stone, 550, 695, null);
+        g.drawImage(stone, 550, 655, null);
+
+        g.drawImage(stone, 710, 735, null);
+        g.drawImage(stone, 710, 695, null);
+        g.drawImage(stone, 710, 655, null);
+
+        g.drawImage(stone, 630, 655, null);
+        g.drawImage(stone, 590, 655, null);
+        g.drawImage(stone, 670, 655, null);
+
+        /*
+         * g.drawImage(wooden, 10, 100, null);
+         * g.drawImage(wooden, 1270, 100, null);
+         * g.drawImage(wooden, 630, 735, null);
+         */
+
+        g.drawImage(water, 10, 220, null);
+        g.drawImage(water, 50, 220, null);
+        g.drawImage(water, 90, 220, null);
+        g.drawImage(water, 130, 220, null);
+        g.drawImage(water, 170, 220, null);
+        g.drawImage(water, 170, 180, null);
+        g.drawImage(water, 170, 140, null);
+
+        g.drawImage(water, 10, 615, null);
+        g.drawImage(water, 50, 615, null);
+        g.drawImage(water, 90, 615, null);
+        g.drawImage(water, 130, 615, null);
+        g.drawImage(water, 170, 615, null);
+        g.drawImage(water, 170, 655, null);
+        g.drawImage(water, 170, 695, null);
+
+        g.drawImage(water, 1270, 220, null);
+        g.drawImage(water, 1230, 220, null);
+        g.drawImage(water, 1190, 220, null);
+        g.drawImage(water, 1150, 220, null);
+        g.drawImage(water, 1110, 220, null);
+        g.drawImage(water, 1110, 180, null);
+        g.drawImage(water, 1110, 140, null);
+
+        g.drawImage(water, 1270, 615, null);
+        g.drawImage(water, 1230, 615, null);
+        g.drawImage(water, 1190, 615, null);
+        g.drawImage(water, 1150, 615, null);
+        g.drawImage(water, 1110, 615, null);
+        g.drawImage(water, 1110, 655, null);
+        g.drawImage(water, 1110, 695, null);
+        for (int i = 0; i < 7; i++) {
+            g.drawImage(water, 510 + (i * 40), 220, null);
         }
+        for (int i = 0; i < 7; i++) {
+            g.drawImage(steelblock, 20 + (i * 200), 380, null);
+            g.drawImage(steelblock, 20 + (i * 200), 420, null);
+            g.drawImage(steelblock, 60 + (i * 200), 380, null);
+            g.drawImage(steelblock, 60 + (i * 200), 420, null);
+        }
+
+        for (int i = 0; i < 7; i++) {
+            g.drawImage(water, 510 + (i * 40), 575, null);
+        }
+
+        for (int i = 0; i < 7; i++) {
+            g.drawImage(wooden, 510 + (i * 40), 535, null);
+        }
+
+        for (int i = 0; i < 5; i++) {
+            g.drawImage(wooden, 10 + (i * 40), 575, null);
+        }
+
+        for (int i = 0; i < 5; i++) {
+            g.drawImage(wooden, 1110 + (i * 40), 575, null);
+        }
+
+        for (int i = 0; i < 5; i++) {
+            g.drawImage(wooden, 1110 + (i * 40), 260, null);
+        }
+
+        for (int i = 0; i < 5; i++) {
+            g.drawImage(wooden, 10 + (i * 40), 260, null);
+        }
+
+        for (int i = 0; i < 2; i++) {
+            g.drawImage(wooden, 100 + (i * 200), 380, null);
+            g.drawImage(wooden, 100 + (i * 200), 420, null);
+            g.drawImage(wooden, 140 + (i * 200), 380, null);
+            g.drawImage(wooden, 140 + (i * 200), 420, null);
+        }
+
+        for (int i = 0; i < 2; i++) {
+            g.drawImage(wooden, 900 + (i * 200), 380, null);
+            g.drawImage(wooden, 900 + (i * 200), 420, null);
+            g.drawImage(wooden, 940 + (i * 200), 380, null);
+            g.drawImage(wooden, 940 + (i * 200), 420, null);
+        }
+
     }
 
     private void drawUserTank(Graphics g) {
@@ -146,26 +257,28 @@ public class Map1_UI extends JFrame implements Runnable {
     }
 
     private Point calTankShotPos(Point tankPosition) {
-        tankPosition.x *= boxWeight;
-        tankPosition.y *= boxHeight;
+        tankPosition.x *= 20;
+        tankPosition.y *= 20;
         if (drawInitialTank == 0) {
-            tankPosition.x += 50;
-            tankPosition.y += 20;
+            tankPosition.x += 35;
+            tankPosition.y += 5;
         }
         switch (currentDirection) {
             case Direction.EAST:
-                tankPosition.x += 50;
-                tankPosition.y += 20;
+                tankPosition.x += 35;
+                tankPosition.y += 5;
                 break;
             case Direction.WEST:
-                tankPosition.y += 20;
+                tankPosition.y += 10;
+                tankPosition.x -= 20;
                 break;
             case Direction.SOUTH:
-                tankPosition.x += 20;
+                tankPosition.x += 15;
                 tankPosition.y += 40;
                 break;
             case Direction.NORTH:
-                tankPosition.x += 20;
+                tankPosition.x += 10;
+                tankPosition.y -= 20;
                 break;
         }
         return tankPosition;
