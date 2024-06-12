@@ -107,7 +107,8 @@ public class Map1_UI extends JFrame implements Runnable {
 
     private void drawMap(Graphics g) {
         // Drawing map for battle
-        Image img = new ImageIcon("DSA_Project\\DSA_Project\\TankShooter\\src\\Image\\WoodenBox.png").getImage();
+        Image img = new ImageIcon("DSA_Project\\DSA_Project\\TankShooter\\src\\Image\\WoodenBoxHalf.png")
+                .getImage();
         int initialX = 10;
         for (int i = 0; i < 10; i++) {
             g.drawImage(img, initialX + (i * 40), 30, null);
