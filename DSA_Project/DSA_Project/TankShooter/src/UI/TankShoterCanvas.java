@@ -45,7 +45,7 @@ public class TankShoterCanvas extends JFrame implements Runnable {
         this.setPreferredSize(new Dimension(gridWeight * boxWeight, gridHeight * boxHeight));
         this.tank = new LinkedList<>();
         this.item = new Point(10, 10);
-        this.tank.add(new Point(5, 5));
+        this.tank.add(new Point(10, 100));
 
         this.addKeyListener(new KeyAdapter() {
             @Override
@@ -180,28 +180,28 @@ public class TankShoterCanvas extends JFrame implements Runnable {
                 case Direction.EAST:
                     Image img = new ImageIcon("DSA_Project\\DSA_Project\\TankShooter\\src\\Image\\tankRight.png")
                             .getImage();
-                    g.drawImage(img, p.x * TankWeight, p.y * TankHeight, null);
+                    g.drawImage(img, p.x, p.y, null);
                     Currentdirection = Direction.EAST;
                     drawTank++;
                     break;
                 case Direction.WEST:
                     Image img3 = new ImageIcon("DSA_Project\\DSA_Project\\TankShooter\\src\\Image\\tankLeft.png")
                             .getImage();
-                    g.drawImage(img3, p.x * TankWeight, p.y * TankHeight, null);
+                    g.drawImage(img3, p.x, p.y, null);
                     Currentdirection = Direction.WEST;
                     drawTank++;
                     break;
                 case Direction.SOUTH:
                     Image img1 = new ImageIcon("DSA_Project\\DSA_Project\\TankShooter\\src\\Image\\tankDown.png")
                             .getImage();
-                    g.drawImage(img1, p.x * TankWeight, p.y * TankHeight, null);
+                    g.drawImage(img1, p.x, p.y, null);
                     Currentdirection = Direction.SOUTH;
                     drawTank++;
                     break;
                 case Direction.NORTH:
                     Image img2 = new ImageIcon("DSA_Project\\DSA_Project\\TankShooter\\src\\Image\\tankUp.png")
                             .getImage();
-                    g.drawImage(img2, p.x * TankWeight, p.y * TankHeight, null);
+                    g.drawImage(img2, p.x, p.y, null);
                     Currentdirection = Direction.NORTH;
                     drawTank++;
                     break;
@@ -210,25 +210,25 @@ public class TankShoterCanvas extends JFrame implements Runnable {
                         case Direction.EAST:
                             Image imag = new ImageIcon(
                                     "DSA_Project\\DSA_Project\\TankShooter\\src\\Image\\tankRight.png").getImage();
-                            g.drawImage(imag, p.x * TankWeight, p.y * TankHeight, null);
+                            g.drawImage(imag, p.x, p.y, null);
                             Currentdirection = Direction.EAST;
                             break;
                         case Direction.WEST:
                             Image imag3 = new ImageIcon(
                                     "DSA_Project\\DSA_Project\\TankShooter\\src\\Image\\tankLeft.png").getImage();
-                            g.drawImage(imag3, p.x * TankWeight, p.y * TankHeight, null);
+                            g.drawImage(imag3, p.x, p.y, null);
                             Currentdirection = Direction.WEST;
                             break;
                         case Direction.SOUTH:
                             Image imag1 = new ImageIcon(
                                     "DSA_Project\\DSA_Project\\TankShooter\\src\\Image\\tankDown.png").getImage();
-                            g.drawImage(imag1, p.x * TankWeight, p.y * TankHeight, null);
+                            g.drawImage(imag1, p.x, p.y, null);
                             Currentdirection = Direction.SOUTH;
                             break;
                         case Direction.NORTH:
                             Image imag2 = new ImageIcon("DSA_Project\\DSA_Project\\TankShooter\\src\\Image\\tankUp.png")
                                     .getImage();
-                            g.drawImage(imag2, p.x * TankWeight, p.y * TankHeight, null);
+                            g.drawImage(imag2, p.x, p.y, null);
                             Currentdirection = Direction.NORTH;
                             break;
                     }

@@ -20,13 +20,10 @@ import Mechanic.UserTank;
 import UI.Direction;
 
 public class Map1_UI extends JFrame implements Runnable {
-    private final int boxWeight = 40;
-    private final int boxHeight = 40;
-    private final int gridWeight = 70;
-    private final int gridHeight = 37;
     private Point userTank;
     private LinkedList<Shot> shots = new LinkedList<>();
-    private LinkedList<Shot> Obstacle = new LinkedList<>();
+    private LinkedList<Point> Obstacle = new LinkedList<>();
+    private LinkedList<Point> canDamage = new LinkedList<>();
     private int direction = Direction.NO_DIRECTION;
     private int currentDirection = Direction.NO_DIRECTION;
     private UserTank userTank1;
@@ -42,7 +39,7 @@ public class Map1_UI extends JFrame implements Runnable {
         this.setName("TankShooter");
         this.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         this.setExtendedState(JFrame.MAXIMIZED_BOTH);
-        this.userTank = new Point(20, 30);
+        this.userTank = new Point(10, 100);
         this.userTank1 = new UserTank(userTank, direction);
         this.addKeyListener(new KeyAdapter() {
             @Override
@@ -82,10 +79,10 @@ public class Map1_UI extends JFrame implements Runnable {
 
         this.addMouseListener(new MouseAdapter() {
             @Override
-            public void mouseReleased(MouseEvent e) {
+            public void mouseClicked(MouseEvent e) {
                 if (canFire()) {
                     mousePoint = e.getPoint();
-                    Point tankPos = new Point(userTank);
+                    Point tankPos = new Point(userTank1.getPosition());
                     tankPos = calTankShotPos(tankPos);
                     Shot s = new Shot(mousePoint, tankPos);
                     shots.add(s);
@@ -96,7 +93,10 @@ public class Map1_UI extends JFrame implements Runnable {
     }
 
     private void draw(Graphics g) {
+
         drawMap(g);
+
+        drawDamageObject(g);
         drawUserTank(g);
         if (!shots.isEmpty()) {
             drawShots(g);
@@ -106,17 +106,127 @@ public class Map1_UI extends JFrame implements Runnable {
 
     private void drawMap(Graphics g) {
         // Drawing map for battle
+
+        /*
+         * Image background = new ImageIcon(
+         * "DSA_Project\\DSA_Project\\TankShooter\\src\\Image\\background.png")
+         * .getImage();
+         * Image water = new
+         * ImageIcon("DSA_Project\\DSA_Project\\TankShooter\\src\\Image\\water.png")
+         * .getImage();
+         * Image steelblock = new ImageIcon(
+         * "DSA_Project\\DSA_Project\\TankShooter\\src\\Image\\steelBlock.png")
+         * .getImage();
+         * g.drawImage(background, 10, 100, null);
+         * 
+         * g.drawImage(water, 10, 220, null);
+         * g.drawImage(water, 50, 220, null);
+         * g.drawImage(water, 90, 220, null);
+         * g.drawImage(water, 130, 220, null);
+         * g.drawImage(water, 170, 220, null);
+         * g.drawImage(water, 170, 180, null);
+         * g.drawImage(water, 170, 140, null);
+         */
+
+        this.Obstacle.add(new Point(10, 220));
+        this.Obstacle.add(new Point(50, 220));
+        this.Obstacle.add(new Point(90, 220));
+        this.Obstacle.add(new Point(130, 220));
+        this.Obstacle.add(new Point(170, 220));
+        this.Obstacle.add(new Point(170, 180));
+        this.Obstacle.add(new Point(170, 140));
+
+        /*
+         * g.drawImage(water, 10, 620, null);
+         * g.drawImage(water, 50, 620, null);
+         * g.drawImage(water, 90, 620, null);
+         * g.drawImage(water, 130, 620, null);
+         * g.drawImage(water, 170, 620, null);
+         * g.drawImage(water, 170, 660, null);
+         * g.drawImage(water, 170, 700, null);
+         */
+
+        this.Obstacle.add(new Point(10, 620));
+        this.Obstacle.add(new Point(50, 620));
+        this.Obstacle.add(new Point(90, 620));
+        this.Obstacle.add(new Point(130, 620));
+        this.Obstacle.add(new Point(170, 620));
+        this.Obstacle.add(new Point(170, 660));
+        this.Obstacle.add(new Point(170, 700));
+        /*
+         * g.drawImage(water, 1130, 220, null);
+         * g.drawImage(water, 1170, 220, null);
+         * g.drawImage(water, 1210, 220, null);
+         * g.drawImage(water, 1250, 220, null);
+         * g.drawImage(water, 1290, 220, null);
+         * g.drawImage(water, 1130, 180, null);
+         * g.drawImage(water, 1130, 140, null);
+         */
+
+        this.Obstacle.add(new Point(1130, 220));
+        this.Obstacle.add(new Point(1170, 220));
+        this.Obstacle.add(new Point(1210, 220));
+        this.Obstacle.add(new Point(1250, 220));
+        this.Obstacle.add(new Point(1290, 220));
+        this.Obstacle.add(new Point(1130, 180));
+        this.Obstacle.add(new Point(1130, 140));
+
+        /*
+         * g.drawImage(water, 1130, 620, null);
+         * g.drawImage(water, 1170, 620, null);
+         * g.drawImage(water, 1210, 620, null);
+         * g.drawImage(water, 1250, 620, null);
+         * g.drawImage(water, 1290, 620, null);
+         * g.drawImage(water, 1130, 660, null);
+         * g.drawImage(water, 1130, 700, null);
+         */
+
+        this.Obstacle.add(new Point(1130, 620));
+        this.Obstacle.add(new Point(1170, 620));
+        this.Obstacle.add(new Point(1210, 620));
+        this.Obstacle.add(new Point(1250, 620));
+        this.Obstacle.add(new Point(1290, 620));
+        this.Obstacle.add(new Point(1130, 660));
+        this.Obstacle.add(new Point(1130, 700));
+
+        for (int i = 0; i < 7; i++) {
+            /* g.drawImage(water, 490 + (i * 40), 220, null); */
+            this.Obstacle.add(new Point(490 + (i * 40), 220));
+        }
+        for (int i = 0; i < 7; i++) {
+            /*
+             * g.drawImage(steelblock, 10 + (i * 200), 380, null);
+             * g.drawImage(steelblock, 10 + (i * 200), 420, null);
+             * g.drawImage(steelblock, 50 + (i * 200), 380, null);
+             * g.drawImage(steelblock, 50 + (i * 200), 420, null);
+             */
+            this.Obstacle.add(new Point(10 + (i * 200), 380));
+            this.Obstacle.add(new Point(10 + (i * 200), 420));
+            this.Obstacle.add(new Point(50 + (i * 200), 380));
+            this.Obstacle.add(new Point(50 + (i * 200), 420));
+        }
+
+        for (int i = 0; i < 7; i++) {
+            /* g.drawImage(water, 490 + (i * 40), 580, null); */
+            this.Obstacle.add(new Point(490 + (i * 40), 580));
+        }
+    }
+
+    private void check(Graphics g) {
+        for (Point p : Obstacle) {
+            g.drawRect(p.x, p.y, 40, 40);
+        }
+    }
+
+    private void drawDamageObject(Graphics g) {
+        // Drawing map for battle
+        Image background = new ImageIcon("DSA_Project\\DSA_Project\\TankShooter\\src\\Image\\background.png")
+                .getImage();
+        g.drawImage(background, 10, 100, null);
         Image wooden = new ImageIcon("DSA_Project\\DSA_Project\\TankShooter\\src\\Image\\WoodenBoxFullHealth.png")
                 .getImage();
         Image stone = new ImageIcon("DSA_Project\\DSA_Project\\TankShooter\\src\\Image\\StoneBrick.png")
                 .getImage();
-        Image background = new ImageIcon("DSA_Project\\DSA_Project\\TankShooter\\src\\Image\\background.png")
-                .getImage();
-        Image water = new ImageIcon("DSA_Project\\DSA_Project\\TankShooter\\src\\Image\\water.png")
-                .getImage();
-        Image steelblock = new ImageIcon("DSA_Project\\DSA_Project\\TankShooter\\src\\Image\\steelBlock.png")
-                .getImage();
-        g.drawImage(background, 10, 100, null);
         Image Protect = new ImageIcon("DSA_Project\\DSA_Project\\TankShooter\\src\\Image\\heart.png")
                 .getImage();
 
@@ -126,102 +236,76 @@ public class Map1_UI extends JFrame implements Runnable {
          * g.drawImage(stone, 630, 735, null);
          */
         g.drawImage(Protect, 630, 735, null);
-
+        this.canDamage.add(new Point(630, 735));
         g.drawImage(stone, 550, 735, null);
         g.drawImage(stone, 550, 695, null);
         g.drawImage(stone, 550, 655, null);
+
+        this.canDamage.add(new Point(550, 735));
+        this.canDamage.add(new Point(550, 695));
+        this.canDamage.add(new Point(550, 655));
 
         g.drawImage(stone, 710, 735, null);
         g.drawImage(stone, 710, 695, null);
         g.drawImage(stone, 710, 655, null);
 
+        this.canDamage.add(new Point(710, 735));
+        this.canDamage.add(new Point(710, 695));
+        this.canDamage.add(new Point(710, 655));
+
         g.drawImage(stone, 630, 655, null);
         g.drawImage(stone, 590, 655, null);
         g.drawImage(stone, 670, 655, null);
 
-        /*
-         * g.drawImage(wooden, 10, 100, null);
-         * g.drawImage(wooden, 1270, 100, null);
-         * g.drawImage(wooden, 630, 735, null);
-         */
-
-        g.drawImage(water, 10, 220, null);
-        g.drawImage(water, 50, 220, null);
-        g.drawImage(water, 90, 220, null);
-        g.drawImage(water, 130, 220, null);
-        g.drawImage(water, 170, 220, null);
-        g.drawImage(water, 170, 180, null);
-        g.drawImage(water, 170, 140, null);
-
-        g.drawImage(water, 10, 615, null);
-        g.drawImage(water, 50, 615, null);
-        g.drawImage(water, 90, 615, null);
-        g.drawImage(water, 130, 615, null);
-        g.drawImage(water, 170, 615, null);
-        g.drawImage(water, 170, 655, null);
-        g.drawImage(water, 170, 695, null);
-
-        g.drawImage(water, 1270, 220, null);
-        g.drawImage(water, 1230, 220, null);
-        g.drawImage(water, 1190, 220, null);
-        g.drawImage(water, 1150, 220, null);
-        g.drawImage(water, 1110, 220, null);
-        g.drawImage(water, 1110, 180, null);
-        g.drawImage(water, 1110, 140, null);
-
-        g.drawImage(water, 1270, 615, null);
-        g.drawImage(water, 1230, 615, null);
-        g.drawImage(water, 1190, 615, null);
-        g.drawImage(water, 1150, 615, null);
-        g.drawImage(water, 1110, 615, null);
-        g.drawImage(water, 1110, 655, null);
-        g.drawImage(water, 1110, 695, null);
-        for (int i = 0; i < 7; i++) {
-            g.drawImage(water, 510 + (i * 40), 220, null);
-        }
-        for (int i = 0; i < 7; i++) {
-            g.drawImage(steelblock, 20 + (i * 200), 380, null);
-            g.drawImage(steelblock, 20 + (i * 200), 420, null);
-            g.drawImage(steelblock, 60 + (i * 200), 380, null);
-            g.drawImage(steelblock, 60 + (i * 200), 420, null);
-        }
+        this.canDamage.add(new Point(630, 655));
+        this.canDamage.add(new Point(590, 655));
+        this.canDamage.add(new Point(670, 655));
 
         for (int i = 0; i < 7; i++) {
-            g.drawImage(water, 510 + (i * 40), 575, null);
-        }
-
-        for (int i = 0; i < 7; i++) {
-            g.drawImage(wooden, 510 + (i * 40), 535, null);
+            g.drawImage(wooden, 490 + (i * 40), 535, null);
+            this.canDamage.add(new Point(490 + (i * 40), 535));
         }
 
         for (int i = 0; i < 5; i++) {
             g.drawImage(wooden, 10 + (i * 40), 575, null);
+            this.canDamage.add(new Point(10 + (i * 40), 575));
         }
 
         for (int i = 0; i < 5; i++) {
             g.drawImage(wooden, 1110 + (i * 40), 575, null);
+            this.canDamage.add(new Point(1110 + (i * 40), 575));
         }
 
         for (int i = 0; i < 5; i++) {
             g.drawImage(wooden, 1110 + (i * 40), 260, null);
+            this.canDamage.add(new Point(1110 + (i * 40), 260));
         }
 
         for (int i = 0; i < 5; i++) {
             g.drawImage(wooden, 10 + (i * 40), 260, null);
+            this.canDamage.add(new Point(10 + (i * 40), 260));
         }
 
         for (int i = 0; i < 2; i++) {
-            g.drawImage(wooden, 100 + (i * 200), 380, null);
-            g.drawImage(wooden, 100 + (i * 200), 420, null);
-            g.drawImage(wooden, 140 + (i * 200), 380, null);
-            g.drawImage(wooden, 140 + (i * 200), 420, null);
+            g.drawImage(wooden, 90 + (i * 200), 380, null);
+            g.drawImage(wooden, 90 + (i * 200), 420, null);
+            g.drawImage(wooden, 130 + (i * 200), 380, null);
+            g.drawImage(wooden, 130 + (i * 200), 420, null);
+            this.canDamage.add(new Point(90 + (i * 200), 380));
+            this.canDamage.add(new Point(90 + (i * 200), 420));
+            this.canDamage.add(new Point(130 + (i * 200), 380));
+            this.canDamage.add(new Point(130 + (i * 200), 420));
         }
 
         for (int i = 0; i < 2; i++) {
-            g.drawImage(wooden, 900 + (i * 200), 380, null);
-            g.drawImage(wooden, 900 + (i * 200), 420, null);
-            g.drawImage(wooden, 940 + (i * 200), 380, null);
-            g.drawImage(wooden, 940 + (i * 200), 420, null);
+            g.drawImage(wooden, 890 + (i * 200), 380, null);
+            g.drawImage(wooden, 890 + (i * 200), 420, null);
+            g.drawImage(wooden, 930 + (i * 200), 380, null);
+            g.drawImage(wooden, 930 + (i * 200), 420, null);
+            this.canDamage.add(new Point(890 + (i * 200), 380));
+            this.canDamage.add(new Point(890 + (i * 200), 420));
+            this.canDamage.add(new Point(930 + (i * 200), 380));
+            this.canDamage.add(new Point(930 + (i * 200), 420));
         }
 
     }
@@ -231,7 +315,7 @@ public class Map1_UI extends JFrame implements Runnable {
         userTank1.draw(g);
         if (drawInitialTank == 0) {
             Image img = new ImageIcon("DSA_Project\\DSA_Project\\TankShooter\\src\\Image\\tankRight.png").getImage();
-            g.drawImage(img, userTank.x * 20, userTank.y * 20, null);
+            g.drawImage(img, userTank.x, userTank.y, null);
         }
     }
 
@@ -249,16 +333,19 @@ public class Map1_UI extends JFrame implements Runnable {
     }
 
     private void userTankMove() {
+        userTank1.setDirection(currentDirection);
+        Point previous = new Point(userTank1.getPosition());
         userTank1.move();
-        if (userTank1.getPosition().x < 0 || userTank1.getPosition().x >= gridWeight
-                || userTank1.getPosition().y < 0 || userTank1.getPosition().y >= gridHeight) {
-            direction = Direction.NO_DIRECTION;
+        Point pos = new Point(userTank1.getPosition());
+        for (Point p : Obstacle) {
+            if (pos.x == p.x && pos.y == p.y) {
+                userTank1.setPosition(previous);
+                break;
+            }
         }
     }
 
     private Point calTankShotPos(Point tankPosition) {
-        tankPosition.x *= 20;
-        tankPosition.y *= 20;
         if (drawInitialTank == 0) {
             tankPosition.x += 35;
             tankPosition.y += 5;
@@ -301,6 +388,7 @@ public class Map1_UI extends JFrame implements Runnable {
                 drawInitialTank++;
                 currentDirection = direction;
                 userTankMove();
+                repaint();
             }
             repaint();
             try {

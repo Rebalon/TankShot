@@ -10,8 +10,12 @@ import UI.Direction;
 
 public class UserTank {
     private Point position;
-    private final static int tankWidth = 20;
-    private final static int tankHeight = 20;
+
+    public void setPosition(Point pos) {
+
+        this.position = pos;
+    }
+
     private int direction;
 
     public UserTank(Point inputPos, int d) {
@@ -44,23 +48,23 @@ public class UserTank {
                 break;
         }
         if (img != null) {
-            g.drawImage(img, position.x * tankWidth, position.y * tankHeight, null);
+            g.drawImage(img, position.x, position.y, null);
         }
     }
 
     public void move() {
         switch (direction) {
             case Direction.EAST:
-                position.translate(1, 0);
+                position.translate(40, 0);
                 break;
             case Direction.WEST:
-                position.translate(-1, 0);
+                position.translate(-40, 0);
                 break;
             case Direction.SOUTH:
-                position.translate(0, 1);
+                position.translate(0, 40);
                 break;
             case Direction.NORTH:
-                position.translate(0, -1);
+                position.translate(0, -40);
                 break;
         }
     }
