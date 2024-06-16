@@ -9,7 +9,6 @@ import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.KeyAdapter;
 import java.awt.event.KeyEvent;
-import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 import java.awt.event.MouseMotionAdapter;
 import java.util.Iterator;
@@ -20,56 +19,31 @@ import javax.swing.JFrame;
 import javax.swing.JLabel;
 import javax.swing.Timer;
 
-import Mechanic.Shot;
-import Mechanic.UserTank;
-import Mechanic.WoodenBox;
+import Mechanic.Move.Shot;
+import Mechanic.Move.UserTank;
+import Mechanic.UnmoveObject.BrickBlock;
+import Mechanic.UnmoveObject.HeartGoal;
+import Mechanic.UnmoveObject.SteelBlock;
+import Mechanic.UnmoveObject.Unmove;
+import Mechanic.UnmoveObject.Water;
+import Mechanic.UnmoveObject.WoodenBox;
+import Mechanic.UnmoveObject.invisibleObstacle;
 import UI.Direction;
 
 public class Map1_UI extends JFrame implements Runnable {
     private Point userTank;
-    private LinkedList<Point> Obstacle = new LinkedList<>();
-    private LinkedList<Point> canDamage = new LinkedList<>();
     private int direction = Direction.NO_DIRECTION;
-    private int currentDirection = Direction.NO_DIRECTION;
+    private int currentDirection = Direction.EAST;
     private UserTank userTank1;
     private Point mousePoint;
     private int drawInitialTank = 0;
     private JLabel jlabel1 = new JLabel();
-    private JLabel jlabel2 = new JLabel();
-    private JLabel jlabel3 = new JLabel();
-    private JLabel jlabel4 = new JLabel();
-    private JLabel jlabel5 = new JLabel();
-    private JLabel jlabel6 = new JLabel();
-    private JLabel jlabel7 = new JLabel();
-    private JLabel jlabel8 = new JLabel();
-    private JLabel jlabel9 = new JLabel();
-    private JLabel jlabel10 = new JLabel();
-    private JLabel jlabel11 = new JLabel();
-    private JLabel jlabel12 = new JLabel();
-    private JLabel jlabel13 = new JLabel();
-    private JLabel jlabel14 = new JLabel();
-    private JLabel jlabel15 = new JLabel();
-    private JLabel jlabel16 = new JLabel();
-    private JLabel jlabel17 = new JLabel();
-    private JLabel jlabel18 = new JLabel();
-    private JLabel jlabel19 = new JLabel();
-    private JLabel jlabel20 = new JLabel();
-    private JLabel jlabel21 = new JLabel();
-    private JLabel jlabel22 = new JLabel();
-    private JLabel jlabel23 = new JLabel();
-    private JLabel jlabel24 = new JLabel();
-    private JLabel jlabel25 = new JLabel();
-    private JLabel jlabel26 = new JLabel();
-    private JLabel jlabel27 = new JLabel();
-    private JLabel jlabel28 = new JLabel();
-    private JLabel jlabel29 = new JLabel();
-    private JLabel jlabel30 = new JLabel();
-    private LinkedList<WoodenBox> Wooden = new LinkedList<>();
+    private LinkedList<Unmove> damageBlock = new LinkedList<>();
     private LinkedList<Shot> shots = new LinkedList<>();
-    private LinkedList<JLabel> Shots = new LinkedList<>();
     private int currentBullet = 0;
     private int MaxBulletCount = 12;
     private Timer reloadTimer;
+    private Timer gameTimer;
 
     public Map1_UI() {
         initial();
@@ -79,11 +53,8 @@ public class Map1_UI extends JFrame implements Runnable {
         this.setName("TankShooter");
         this.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         this.setLayout(null);
-        this.userTank = new Point(0, 70);
-        this.userTank1 = new UserTank(userTank, direction, jlabel2);
         drawMap();
         drawDamageObject();
-
         this.addKeyListener(new KeyAdapter() {
             @Override
             public void keyPressed(KeyEvent e) {
@@ -100,6 +71,19 @@ public class Map1_UI extends JFrame implements Runnable {
                     case KeyEvent.VK_D:
                         direction = Direction.EAST;
                         break;
+                    case KeyEvent.VK_SPACE:
+                        if (canFire()) {
+                            Point tankPos = new Point(userTank1.getPos());
+                            Shot shot = new Shot(tankPos);
+                            shot.setDirection(currentDirection);
+                            shots.add(shot);
+                            getContentPane().add(shot.draw());
+                            // Ensure the bullet appears on top
+                            setComponentZOrder(shot.draw(), 0);
+                            currentBullet++;
+                        } else {
+                            reloadBullet();
+                        }
                 }
             }
         });
@@ -120,281 +104,288 @@ public class Map1_UI extends JFrame implements Runnable {
         this.pack();
         this.setVisible(true);
         this.setExtendedState(JFrame.MAXIMIZED_BOTH);
-        this.addMouseListener(new MouseAdapter() {
+        gameTimer = new Timer(16, new ActionListener() { // ~60 FPS
             @Override
-            public void mouseClicked(MouseEvent e) {
-                if (canFire()) {
-                    mousePoint = e.getPoint();
-                    Point tankPos = new Point(userTank1.getPosition());
-                    tankPos = calTankShotPos(tankPos);
-                    Shot s = new Shot(mousePoint, tankPos, Shots.get(currentBullet));
-                    Shots.get(currentBullet).setVisible(true);
-                    shots.add(s);
-                    currentBullet++;
-                } else {
-                    reloadBullet();
-                }
+            public void actionPerformed(ActionEvent e) {
+                updateGame();
             }
         });
+        gameTimer.start();
+        /*
+         * this.addMouseListener(new MouseAdapter() {
+         * 
+         * @Override
+         * public void mouseClicked(MouseEvent e) {
+         * 
+         * }
+         * });
+         */
     }
 
     private void draw(Graphics g) {
         drawUserTank();
         if (!shots.isEmpty()) {
-            drawShots();
+
         }
         direction = Direction.NO_DIRECTION;
     }
 
     private void drawMap() {
         // Drawing map for battle
-
-        this.Obstacle.add(new Point(0, 190));
-        this.Obstacle.add(new Point(40, 190));
-        this.Obstacle.add(new Point(80, 190));
-        this.Obstacle.add(new Point(120, 190));
-        this.Obstacle.add(new Point(160, 190));
-        this.Obstacle.add(new Point(160, 150));
-        this.Obstacle.add(new Point(160, 110));
-
-        this.Obstacle.add(new Point(0, 590));
-        this.Obstacle.add(new Point(40, 590));
-        this.Obstacle.add(new Point(80, 590));
-        this.Obstacle.add(new Point(120, 590));
-        this.Obstacle.add(new Point(160, 590));
-        this.Obstacle.add(new Point(160, 630));
-        this.Obstacle.add(new Point(160, 670));
-
-        this.Obstacle.add(new Point(1120, 190));
-        this.Obstacle.add(new Point(1160, 190));
-        this.Obstacle.add(new Point(1200, 190));
-        this.Obstacle.add(new Point(1240, 190));
-        this.Obstacle.add(new Point(1280, 190));
-        this.Obstacle.add(new Point(1120, 150));
-        this.Obstacle.add(new Point(1120, 110));
-
-        this.Obstacle.add(new Point(1120, 590));
-        this.Obstacle.add(new Point(1160, 590));
-        this.Obstacle.add(new Point(1200, 590));
-        this.Obstacle.add(new Point(1240, 590));
-        this.Obstacle.add(new Point(1280, 590));
-        this.Obstacle.add(new Point(1120, 630));
-        this.Obstacle.add(new Point(1120, 670));
+        for (int i = 0; i < 33; i++) {
+            Point invisiblePoint = new Point(i * 40, 30);
+            invisibleObstacle in = new invisibleObstacle(invisiblePoint);
+            this.damageBlock.add(in);
+            this.add(in.drawObject());
+        }
+        for (int i = 0; i < 33; i++) {
+            Point invisiblePoint = new Point(i * 40, 750);
+            invisibleObstacle in = new invisibleObstacle(invisiblePoint);
+            this.damageBlock.add(in);
+            this.add(in.drawObject());
+        }
+        for (int i = 0; i < 17; i++) {
+            Point invisiblePoint = new Point(-40, 70 + i * 40);
+            invisibleObstacle in = new invisibleObstacle(invisiblePoint);
+            this.damageBlock.add(in);
+            this.add(in.drawObject());
+        }
+        for (int i = 0; i < 17; i++) {
+            Point invisiblePoint = new Point(1320, 70 + i * 40);
+            invisibleObstacle in = new invisibleObstacle(invisiblePoint);
+            this.damageBlock.add(in);
+            this.add(in.drawObject());
+        }
+        for (int i = 0; i < 5; i++) {
+            Point waterPoint = new Point(i * 40, 190);
+            Water wat = new Water(waterPoint);
+            this.damageBlock.add(wat);
+            this.add(wat.drawObject());
+        }
+        for (int i = 0; i < 2; i++) {
+            Point waterPoint = new Point(160, 150 - (i * 40));
+            Water wat = new Water(waterPoint);
+            this.damageBlock.add(wat);
+            this.add(wat.drawObject());
+        }
+        for (int i = 0; i < 5; i++) {
+            Point waterPoint = new Point(i * 40, 590);
+            Water wat = new Water(waterPoint);
+            this.damageBlock.add(wat);
+            this.add(wat.drawObject());
+        }
+        for (int i = 0; i < 2; i++) {
+            Point waterPoint = new Point(160, 630 + (i * 40));
+            Water wat = new Water(waterPoint);
+            this.damageBlock.add(wat);
+            this.add(wat.drawObject());
+        }
+        for (int i = 0; i < 5; i++) {
+            Point waterPoint = new Point(1120 + i * 40, 190);
+            Water wat = new Water(waterPoint);
+            this.damageBlock.add(wat);
+            this.add(wat.drawObject());
+        }
+        for (int i = 0; i < 2; i++) {
+            Point waterPoint = new Point(1120, 150 - (i * 40));
+            Water wat = new Water(waterPoint);
+            this.damageBlock.add(wat);
+            this.add(wat.drawObject());
+        }
+        for (int i = 0; i < 5; i++) {
+            Point waterPoint = new Point(1120 + i * 40, 590);
+            Water wat = new Water(waterPoint);
+            this.damageBlock.add(wat);
+            this.add(wat.drawObject());
+        }
+        for (int i = 0; i < 2; i++) {
+            Point waterPoint = new Point(1120, 630 + (i * 40));
+            Water wat = new Water(waterPoint);
+            this.damageBlock.add(wat);
+            this.add(wat.drawObject());
+        }
 
         for (int i = 0; i < 7; i++) {
-            this.Obstacle.add(new Point(480 + (i * 40), 190));
+            Point waterPoint = new Point(480 + (i * 40), 190);
+            Water wat = new Water(waterPoint);
+            this.damageBlock.add(wat);
+            this.add(wat.drawObject());
         }
         for (int i = 0; i < 7; i++) {
-            this.Obstacle.add(new Point(0 + (i * 200), 350));
-            this.Obstacle.add(new Point(0 + (i * 200), 390));
-            this.Obstacle.add(new Point(40 + (i * 200), 350));
-            this.Obstacle.add(new Point(40 + (i * 200), 390));
+            Point Steel = new Point(0 + (i * 200), 350);
+            Point Steel1 = new Point(0 + (i * 200), 390);
+            Point Steel2 = new Point(40 + (i * 200), 350);
+            Point Steel3 = new Point(40 + (i * 200), 390);
+            SteelBlock ste = new SteelBlock(Steel);
+            SteelBlock ste1 = new SteelBlock(Steel1);
+            SteelBlock ste2 = new SteelBlock(Steel2);
+            SteelBlock ste3 = new SteelBlock(Steel3);
+            this.damageBlock.add(ste);
+            this.damageBlock.add(ste1);
+            this.damageBlock.add(ste2);
+            this.damageBlock.add(ste3);
+            this.add(ste.drawObject());
+            this.add(ste1.drawObject());
+            this.add(ste2.drawObject());
+            this.add(ste3.drawObject());
         }
 
         for (int i = 0; i < 7; i++) {
-            this.Obstacle.add(new Point(480 + (i * 40), 550));
+            Point waterPoint = new Point(480 + (i * 40), 550);
+            Water wat = new Water(waterPoint);
+            this.damageBlock.add(wat);
+            this.add(wat.drawObject());
         }
     }
 
     private void drawDamageObject() {
-        initialShot();
-        if (drawInitialTank == 0) {
-            jlabel2.setIcon(new ImageIcon(
-                    getClass().getResource("/Image/tankRight.png")));
-            jlabel2.setBounds(0, 70, 40, 40);
-            getContentPane().add(jlabel2);
-        }
+        this.userTank = new Point(0, 70);
+        this.userTank1 = new UserTank(userTank);
+        this.add(userTank1.draw());
         // set linklist for damage object
+        for (int i = 0; i < 3; i++) {
+            Point BrickBlockPoint = new Point(560 + i * 40, 630);
+            BrickBlock brk = new BrickBlock(BrickBlockPoint);
+
+            damageBlock.add(brk);
+            this.add(brk.drawObject());
+        }
+        for (int i = 0; i < 3; i++) {
+            Point BrickBlockPoint = new Point(520, 630 + (i * 40));
+            BrickBlock brk = new BrickBlock(BrickBlockPoint);
+
+            damageBlock.add(brk);
+            this.add(brk.drawObject());
+        }
+        for (int i = 0; i < 3; i++) {
+            Point BrickBlockPoint = new Point(680, 630 + (i * 40));
+            BrickBlock brk = new BrickBlock(BrickBlockPoint);
+
+            damageBlock.add(brk);
+            this.add(brk.drawObject());
+        }
+
+        Point Heart = new Point(600, 710);
+        HeartGoal heart = new HeartGoal(Heart);
+
+        damageBlock.add(heart);
+        this.add(heart.drawObject());
+
         for (int i = 0; i < 5; i++) {
-            JLabel woddenbox = new JLabel(new ImageIcon(getClass().getResource("/Image/WoodenBoxFullHealth.png")));
             Point woddenboxPoint = new Point(i * 40, 230);
-            woddenbox.setBounds(woddenboxPoint.x, woddenboxPoint.y, 40, 40);
-            woddenbox.setVisible(true);
-            WoodenBox wb = new WoodenBox(woddenboxPoint, woddenbox);
+            WoodenBox wb = new WoodenBox(woddenboxPoint);
             // Wooden class no need jlabel as pass is a referrence
-            Wooden.add(wb);
-            this.add(woddenbox);
+            damageBlock.add(wb);
+            this.add(wb.drawObject());
         }
         for (int i = 0; i < 5; i++) {
-            JLabel woddenbox = new JLabel(new ImageIcon(getClass().getResource("/Image/WoodenBoxFullHealth.png")));
             Point woddenboxPoint = new Point(i * 40, 550);
-            woddenbox.setBounds(woddenboxPoint.x, woddenboxPoint.y, 40, 40);
-            woddenbox.setVisible(true);
-            WoodenBox wb = new WoodenBox(woddenboxPoint, woddenbox);
+            WoodenBox wb = new WoodenBox(woddenboxPoint);
             // Wooden class no need jlabel as pass is a referrence
-            Wooden.add(wb);
-
-            this.add(woddenbox);
+            damageBlock.add(wb);
+            this.add(wb.drawObject());
         }
         for (int i = 0; i < 5; i++) {
-            JLabel woddenbox = new JLabel(new ImageIcon(getClass().getResource("/Image/WoodenBoxFullHealth.png")));
             Point woddenboxPoint = new Point(1120 + i * 40, 230);
-            woddenbox.setBounds(woddenboxPoint.x, woddenboxPoint.y, 40, 40);
-            woddenbox.setVisible(true);
-            WoodenBox wb = new WoodenBox(woddenboxPoint, woddenbox);
+            WoodenBox wb = new WoodenBox(woddenboxPoint);
             // Wooden class no need jlabel as pass is a referrence
-            Wooden.add(wb);
-
-            this.add(woddenbox);
+            damageBlock.add(wb);
+            this.add(wb.drawObject());
         }
         for (int i = 0; i < 5; i++) {
-            JLabel woddenbox = new JLabel(new ImageIcon(getClass().getResource("/Image/WoodenBoxFullHealth.png")));
             Point woddenboxPoint = new Point(1120 + i * 40, 550);
-            woddenbox.setBounds(woddenboxPoint.x, woddenboxPoint.y, 40, 40);
-            woddenbox.setVisible(true);
-            WoodenBox wb = new WoodenBox(woddenboxPoint, woddenbox);
+            WoodenBox wb = new WoodenBox(woddenboxPoint);
             // Wooden class no need jlabel as pass is a referrence
-            Wooden.add(wb);
-
-            this.add(woddenbox);
+            damageBlock.add(wb);
+            this.add(wb.drawObject());
         }
         for (int i = 0; i < 7; i++) {
-            JLabel woddenbox = new JLabel(new ImageIcon(getClass().getResource("/Image/WoodenBoxFullHealth.png")));
             Point woddenboxPoint = new Point(480 + (i * 40), 510);
-            woddenbox.setBounds(woddenboxPoint.x, woddenboxPoint.y, 40, 40);
-            woddenbox.setVisible(true);
-            WoodenBox wb = new WoodenBox(woddenboxPoint, woddenbox);
+            WoodenBox wb = new WoodenBox(woddenboxPoint);
             // Wooden class no need jlabel as pass is a referrence
-            Wooden.add(wb);
-
-            this.add(woddenbox);
+            damageBlock.add(wb);
+            this.add(wb.drawObject());
         }
         for (int i = 0; i < 2; i++) {
-            JLabel woddenbox = new JLabel(new ImageIcon(getClass().getResource("/Image/WoodenBoxFullHealth.png")));
-            JLabel woddenbox1 = new JLabel(new ImageIcon(getClass().getResource("/Image/WoodenBoxFullHealth.png")));
-            JLabel woddenbox2 = new JLabel(new ImageIcon(getClass().getResource("/Image/WoodenBoxFullHealth.png")));
-            JLabel woddenbox3 = new JLabel(new ImageIcon(getClass().getResource("/Image/WoodenBoxFullHealth.png")));
             Point woddenboxPoint = new Point(80 + (i * 200), 350);
             Point woddenboxPoint1 = new Point(80 + (i * 200), 390);
             Point woddenboxPoint2 = new Point(120 + (i * 200), 350);
             Point woddenboxPoint3 = new Point(120 + (i * 200), 390);
-            woddenbox.setBounds(woddenboxPoint.x, woddenboxPoint.y, 40, 40);
-            woddenbox1.setBounds(woddenboxPoint1.x, woddenboxPoint1.y, 40, 40);
-            woddenbox2.setBounds(woddenboxPoint2.x, woddenboxPoint2.y, 40, 40);
-            woddenbox3.setBounds(woddenboxPoint3.x, woddenboxPoint3.y, 40, 40);
-            woddenbox.setVisible(true);
-            woddenbox1.setVisible(true);
-            woddenbox2.setVisible(true);
-            woddenbox3.setVisible(true);
-            WoodenBox wb = new WoodenBox(woddenboxPoint, woddenbox);
-            WoodenBox wb1 = new WoodenBox(woddenboxPoint1, woddenbox1);
-            WoodenBox wb2 = new WoodenBox(woddenboxPoint2, woddenbox2);
-            WoodenBox wb3 = new WoodenBox(woddenboxPoint3, woddenbox3);
+            WoodenBox wb = new WoodenBox(woddenboxPoint);
+            WoodenBox wb1 = new WoodenBox(woddenboxPoint1);
+            WoodenBox wb2 = new WoodenBox(woddenboxPoint2);
+            WoodenBox wb3 = new WoodenBox(woddenboxPoint3);
             // Wooden class no need jlabel as pass is a referrence
-            Wooden.add(wb);
-            Wooden.add(wb1);
-            Wooden.add(wb2);
-            Wooden.add(wb3);
-            this.add(woddenbox);
-            this.add(woddenbox1);
-            this.add(woddenbox2);
-            this.add(woddenbox3);
+            damageBlock.add(wb);
+            damageBlock.add(wb1);
+            damageBlock.add(wb2);
+            damageBlock.add(wb3);
+            this.add(wb.drawObject());
+            this.add(wb1.drawObject());
+            this.add(wb2.drawObject());
+            this.add(wb3.drawObject());
         }
         for (int i = 0; i < 2; i++) {
-            JLabel woddenbox = new JLabel(new ImageIcon(getClass().getResource("/Image/WoodenBoxFullHealth.png")));
-            JLabel woddenbox1 = new JLabel(new ImageIcon(getClass().getResource("/Image/WoodenBoxFullHealth.png")));
-            JLabel woddenbox2 = new JLabel(new ImageIcon(getClass().getResource("/Image/WoodenBoxFullHealth.png")));
-            JLabel woddenbox3 = new JLabel(new ImageIcon(getClass().getResource("/Image/WoodenBoxFullHealth.png")));
             Point woddenboxPoint = new Point(880 + (i * 200), 350);
             Point woddenboxPoint1 = new Point(880 + (i * 200), 390);
             Point woddenboxPoint2 = new Point(920 + (i * 200), 350);
             Point woddenboxPoint3 = new Point(920 + (i * 200), 390);
-            woddenbox.setBounds(woddenboxPoint.x, woddenboxPoint.y, 40, 40);
-            woddenbox1.setBounds(woddenboxPoint1.x, woddenboxPoint1.y, 40, 40);
-            woddenbox2.setBounds(woddenboxPoint2.x, woddenboxPoint2.y, 40, 40);
-            woddenbox3.setBounds(woddenboxPoint3.x, woddenboxPoint3.y, 40, 40);
-            woddenbox.setVisible(true);
-            woddenbox1.setVisible(true);
-            woddenbox2.setVisible(true);
-            woddenbox3.setVisible(true);
-            WoodenBox wb = new WoodenBox(woddenboxPoint, woddenbox);
-            WoodenBox wb1 = new WoodenBox(woddenboxPoint1, woddenbox1);
-            WoodenBox wb2 = new WoodenBox(woddenboxPoint2, woddenbox2);
-            WoodenBox wb3 = new WoodenBox(woddenboxPoint3, woddenbox3);
+            WoodenBox wb = new WoodenBox(woddenboxPoint);
+            WoodenBox wb1 = new WoodenBox(woddenboxPoint1);
+            WoodenBox wb2 = new WoodenBox(woddenboxPoint2);
+            WoodenBox wb3 = new WoodenBox(woddenboxPoint3);
             // Wooden class no need jlabel as pass is a referrence
-            Wooden.add(wb);
-            Wooden.add(wb1);
-            Wooden.add(wb2);
-            Wooden.add(wb3);
-            this.add(woddenbox);
-            this.add(woddenbox1);
-            this.add(woddenbox2);
-            this.add(woddenbox3);
+            damageBlock.add(wb);
+            damageBlock.add(wb1);
+            damageBlock.add(wb2);
+            damageBlock.add(wb3);
+            this.add(wb.drawObject());
+            this.add(wb1.drawObject());
+            this.add(wb2.drawObject());
+            this.add(wb3.drawObject());
         }
         jlabel1.setIcon(new ImageIcon(
                 getClass().getResource("/Image/background.png")));
-        jlabel1.setBounds(0, 70, 1305, 678);
+        jlabel1.setBounds(0, 70, 1320, 750);
         jlabel1.setVisible(true);
         getContentPane().add(jlabel1);
     }
 
     private void drawUserTank() {
         userTank1.setDirection(currentDirection);
-        userTank1.draw();
     }
 
-    private void initialShot() {
-        // Create a pool of JLabels for bullets
-        for (int i = 0; i < MaxBulletCount; i++) {
-            JLabel bullet = new JLabel(new ImageIcon(getClass().getResource("/Image/bullet.png")));
-            bullet.setSize(40, 40);
-            bullet.setVisible(false);
-            bullet.setLocation(-50, -50);
-            Shots.add(bullet);
-            add(bullet);
-        }
-    }
-
-    private void drawShots() {
+    private void updateGame() {
+        // Update all bullets
         Iterator<Shot> iterator = shots.iterator();
         while (iterator.hasNext()) {
             Shot shot = iterator.next();
             shot.move();
-            shot.draw();
-            if (shot.isBulletAtTarget()) {
+            shot.setObstacle(damageBlock);
+            if (shot.getisDamage()) {
+                this.remove(shot.getBullet());
                 iterator.remove();
             }
+            shot.draw();
         }
+        // Update all obstacle
+        Iterator<Unmove> iterator2 = damageBlock.iterator();
+        while (iterator2.hasNext()) {
+            Unmove unm = iterator2.next();
+            if (unm.isDestroy()) {
+                this.remove(unm.getJLabel());
+                iterator2.remove();
+            }
+        }
+        repaint();
     }
 
     private void userTankMove() {
         userTank1.setDirection(currentDirection);
-        Point previous = new Point(userTank1.getPosition());
+        Point previous = new Point(userTank1.getPos());
         userTank1.move();
-        Point pos = new Point(userTank1.getPosition());
-        userTank1.isCollision(Obstacle, previous, pos);
-        for (WoodenBox p : Wooden) {
-            if (pos.x == p.getPos().x && pos.y == p.getPos().y) {
-                userTank1.setPosition(previous);
-                break;
-            }
-        }
-    }
-
-    private Point calTankShotPos(Point tankPosition) {
-        if (drawInitialTank == 0) {
-            tankPosition.x += 35;
-            tankPosition.y += 5;
-        }
-        switch (currentDirection) {
-            case Direction.EAST:
-                tankPosition.x += 35;
-                tankPosition.y += 5;
-                break;
-            case Direction.WEST:
-                tankPosition.y += 10;
-                tankPosition.x -= 20;
-                break;
-            case Direction.SOUTH:
-                tankPosition.x += 15;
-                tankPosition.y += 40;
-                break;
-            case Direction.NORTH:
-                tankPosition.x += 10;
-                tankPosition.y -= 20;
-                break;
-        }
-        return tankPosition;
+        Point pos = new Point(userTank1.getPos());
+        userTank1.isCollision(damageBlock, previous, pos);
     }
 
     private boolean canFire() {
@@ -409,11 +400,6 @@ public class Map1_UI extends JFrame implements Runnable {
         reloadTimer = new Timer(3000, new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
-                // Reset bullet states
-                for (JLabel bullet : Shots) {
-                    bullet.setVisible(false); // Hide the bullet
-                    bullet.setLocation(-50, -50); // Move the bullet off-screen
-                }
                 currentBullet = 0; // Reset bullet count
                 reloadTimer.stop(); // Stop the timer after reloading
             }
@@ -422,13 +408,12 @@ public class Map1_UI extends JFrame implements Runnable {
         reloadTimer.setRepeats(false);
         reloadTimer.start();
 
-        System.out.println("Reloading started, will take 5 seconds...");
+        System.out.println("Reloading started, will take 3 seconds...");
     }
 
     @Override
     public void paint(Graphics g) {
         super.paint(g);
-        draw(g);
     }
 
     @Override
@@ -438,9 +423,15 @@ public class Map1_UI extends JFrame implements Runnable {
                 drawInitialTank++;
                 currentDirection = direction;
                 userTankMove();
+                revalidate();
                 repaint();
+                direction = Direction.NO_DIRECTION;
             }
-            repaint();
+            /*
+             * if (!shots.isEmpty()) {
+             * isCollision();
+             * }
+             */
             try {
                 Thread.sleep(100);
             } catch (InterruptedException e) {
