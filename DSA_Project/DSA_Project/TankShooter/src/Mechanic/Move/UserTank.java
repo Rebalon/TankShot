@@ -6,6 +6,9 @@ import java.util.LinkedList;
 import javax.swing.ImageIcon;
 import javax.swing.JLabel;
 
+import Mechanic.UnmoveObject.BulletIncrease;
+import Mechanic.UnmoveObject.Clock;
+import Mechanic.UnmoveObject.HeartUp;
 import Mechanic.UnmoveObject.Unmove;
 import UI.Direction;
 
@@ -16,6 +19,9 @@ public class UserTank extends Move {
     private int direction = Direction.EAST;
     private int Health = 1;
     private boolean isDestroy = false;
+    private int currentNumOfBullet = 1;
+    private final int Max_NumBullet = 3;
+    private final int Max_Health = 5;
 
     public UserTank(Point inputPos) {
         this.position = inputPos;
@@ -74,9 +80,22 @@ public class UserTank extends Move {
     public void isCollision(LinkedList<Unmove> obstacle, Point previous, Point newPos, LinkedList<Move> tank) {
         for (Unmove p : obstacle) {
             if (newPos.x == p.getPos().x && newPos.y == p.getPos().y) {
-                this.setPosition(previous);
-                draw();
-                break;
+                if (p instanceof HeartUp) {
+                    this.Health++;
+                    p.isDamage();
+                    break;
+                } else if (p instanceof BulletIncrease) {
+                    this.currentNumOfBullet++;
+                    p.isDamage();
+                    break;
+                } else if (p instanceof Clock) {
+                    p.isDamage();
+                    break;
+                } else {
+                    this.setPosition(previous);
+                    draw();
+                    break;
+                }
             }
         }
         for (Move p : tank) {
@@ -110,5 +129,17 @@ public class UserTank extends Move {
     @Override
     public JLabel getImage() {
         return TankImage;
+    }
+
+    public int getCurrentNumOfBullet() {
+        return currentNumOfBullet;
+    }
+
+    public boolean isAtMaxHealth() {
+        return Health >= Max_Health;
+    }
+
+    public boolean isMaxBullet() {
+        return currentNumOfBullet >= Max_NumBullet;
     }
 }

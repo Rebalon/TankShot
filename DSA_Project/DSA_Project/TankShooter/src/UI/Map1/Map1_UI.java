@@ -27,7 +27,10 @@ import Mechanic.Move.Move;
 import Mechanic.Move.Shot;
 import Mechanic.Move.UserTank;
 import Mechanic.UnmoveObject.BrickBlock;
+import Mechanic.UnmoveObject.BulletIncrease;
+import Mechanic.UnmoveObject.Clock;
 import Mechanic.UnmoveObject.HeartGoal;
+import Mechanic.UnmoveObject.HeartUp;
 import Mechanic.UnmoveObject.SteelBlock;
 import Mechanic.UnmoveObject.Unmove;
 import Mechanic.UnmoveObject.Water;
@@ -53,7 +56,11 @@ public class Map1_UI extends JFrame implements Runnable {
     private Timer reloadTimer;
     private Timer EnemyShotTimer;
     private Timer EnemymoveTimer;
+    private Timer Item;
     private int currentEnemy = 0;
+    private boolean timeDropSup = false;
+    private boolean isLoading = false;
+    private int gachaPercentage = 10;
 
     public Map1_UI() {
         initial();
@@ -82,18 +89,79 @@ public class Map1_UI extends JFrame implements Runnable {
                         direction = Direction.EAST;
                         break;
                     case KeyEvent.VK_SPACE:
-                        if (canFire()) {
-                            Point tankPos = new Point(userTank1.getPos());
-                            Shot shot = new Shot(tankPos);
-                            shot.setDirection(currentDirection);
-                            shots.add(shot);
-                            getContentPane().add(shot.draw());
-                            // Ensure the bullet appears on top
-                            setComponentZOrder(shot.draw(), 0);
-                            currentBullet++;
+                        if (!isLoading) {
+                            if (canFire()) {
+                                if (userTank1.getCurrentNumOfBullet() == 1) {
+                                    Point tankPos = new Point(userTank1.getPos());
+                                    Shot shot = new Shot(tankPos);
+                                    shot.setDirection(currentDirection);
+                                    shots.add(shot);
+                                    getContentPane().add(shot.draw());
+                                    // Ensure the bullet appears on top
+                                    setComponentZOrder(shot.draw(), 0);
+                                    currentBullet++;
+                                } else if (userTank1.getCurrentNumOfBullet() == 2) {// No increse in number of bullet
+                                    Point tankPos = new Point(userTank1.getPos());
+                                    Shot shot = new Shot(tankPos);
+                                    shot.setDirection(currentDirection);
+                                    shots.add(shot);
+                                    getContentPane().add(shot.draw());
+                                    // Ensure the bullet appears on top
+                                    setComponentZOrder(shot.draw(), 0);
+                                    currentBullet++;
+
+                                    Timer timer = new Timer(100, x -> {
+                                        Point tankPos1 = new Point(userTank1.getPos());
+                                        Shot shot1 = new Shot(tankPos1);
+                                        shot1.setDirection(currentDirection);
+                                        shots.add(shot1);
+                                        getContentPane().add(shot1.draw());
+                                        // Ensure the bullet appears on top
+                                        setComponentZOrder(shot1.draw(), 0);
+                                    });
+                                    timer.setRepeats(false);
+                                    timer.start();
+                                } else if (userTank1.getCurrentNumOfBullet() == 3) {
+                                    Point tankPos = new Point(userTank1.getPos());
+                                    Shot shot = new Shot(tankPos);
+                                    shot.setDirection(currentDirection);
+                                    shots.add(shot);
+                                    getContentPane().add(shot.draw());
+                                    // Ensure the bullet appears on top
+                                    setComponentZOrder(shot.draw(), 0);
+                                    currentBullet++;
+
+                                    Timer timer = new Timer(100, x -> {
+                                        Point tankPos1 = new Point(userTank1.getPos());
+                                        Shot shot1 = new Shot(tankPos1);
+                                        shot1.setDirection(currentDirection);
+                                        shots.add(shot1);
+                                        getContentPane().add(shot1.draw());
+                                        // Ensure the bullet appears on top
+                                        setComponentZOrder(shot1.draw(), 0);
+                                    });
+                                    timer.setRepeats(false);
+                                    timer.start();
+                                    Timer timer1 = new Timer(200, x -> {
+                                        Point tankPos2 = new Point(userTank1.getPos());
+                                        Shot shot2 = new Shot(tankPos2);
+                                        shot2.setDirection(currentDirection);
+                                        shots.add(shot2);
+                                        getContentPane().add(shot2.draw());
+                                        // Ensure the bullet appears on top
+                                        setComponentZOrder(shot2.draw(), 0);
+                                    });
+                                    timer1.setRepeats(false);
+                                    timer1.start();
+                                }
+
+                            } else {
+                                reloadBullet();
+                            }
                         } else {
-                            reloadBullet();
+                            System.out.println("Reloading started, will take 3 seconds...");
                         }
+
                 }
             }
         });
@@ -233,11 +301,23 @@ public class Map1_UI extends JFrame implements Runnable {
             }
         });
         EnemyShotTimer.start();
+
+        Item = new Timer(1000, new ActionListener() { // ~60 FPS
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                Point pos = new Point(600, 390);
+                getContentPane().add(DropItem(pos), 2);
+            }
+        });
+        Item.setRepeats(false);
+        /* Item.start(); */
     }
 
-    private void draw(Graphics g) {
-        Enemyspawn();
-    }
+    /*
+     * private void draw(Graphics g) {
+     * Enemyspawn();
+     * }
+     */
 
     private void drawMap() {
         // Drawing map for battle
@@ -472,6 +552,13 @@ public class Map1_UI extends JFrame implements Runnable {
 
     private void updateGame() {
         // Update all bullets
+        if (direction != Direction.NO_DIRECTION) {
+            currentDirection = direction;
+            userTankMove();
+            revalidate();
+            repaint();
+            direction = Direction.NO_DIRECTION;
+        }
         Iterator<Shot> iterator = shots.iterator();
         while (iterator.hasNext()) {
             Shot shot = iterator.next();
@@ -495,15 +582,36 @@ public class Map1_UI extends JFrame implements Runnable {
             shot.draw();
         }
         // Update all obstacle
+        LinkedList<Unmove> newItems = new LinkedList<>();
         Iterator<Unmove> iterator2 = damageBlock.iterator();
         while (iterator2.hasNext()) {
             Unmove unm = iterator2.next();
             if (unm.isDestroy()) {
+                if (unm instanceof WoodenBox) {
+                    Random random = new Random();
+                    int canGetItem = random.nextInt(101) + 1;
+                    if (canGetItem <= gachaPercentage) {
+                        Point pos = new Point(unm.getPos());
+                        Unmove item = gachaItem(pos);
+                        newItems.add(item);
+                        this.add(item.drawObject(), 2);
+                        gachaPercentage = 10;
+                    } else {
+                        gachaPercentage += 10;
+                    }
+                }
+                if ((unm instanceof Clock || unm instanceof BulletIncrease || unm instanceof HeartUp)
+                        && unm.getPos().equals(new Point(600, 390))) {
+                    if (unm instanceof Clock) {
+                        stopEnemyMove();
+                    }
+                    timeDropSup = false;
+                }
                 this.remove(unm.getJLabel());
                 iterator2.remove();
             }
         }
-
+        damageBlock.addAll(newItems);
         Iterator<Move> iterator3 = EnemyTank.iterator();
         while (iterator3.hasNext()) {
             Move move = iterator3.next();
@@ -515,10 +623,104 @@ public class Map1_UI extends JFrame implements Runnable {
         }
 
         // one for user tank later
-        if (currentEnemy <= 3) {
+        if (currentEnemy <= -1) {
             this.add(Enemyspawn(), 1);
         }
+        if (!timeDropSup) {
+            timeDropSup = true;
+            Item.start();
+        }
 
+    }
+
+    private void stopEnemyMove() {
+        // Stop the enemy movement immediately
+        if (EnemymoveTimer != null && EnemymoveTimer.isRunning()) {
+            EnemymoveTimer.stop();
+        }
+
+        // Create a new Timer to wait for 5 seconds before restarting the enemy movement
+        Timer delayTimer = new Timer(5000, event -> {
+            // Start the enemy movement after 5 seconds
+            if (EnemymoveTimer != null) {
+                EnemymoveTimer.start();
+            }
+        });
+
+        // Make sure the timer fires only once
+        delayTimer.setRepeats(false);
+
+        // Start the delay timer
+        delayTimer.start();
+    }
+
+    private JLabel DropItem(Point position) {
+        Unmove item = null;
+        if (!userTank1.isAtMaxHealth() && !userTank1.isMaxBullet()) {
+            Random random = new Random();
+            int randomItem = random.nextInt(101) + 1;
+            if (randomItem > 40) {
+                item = new Clock(position);
+            } else if (randomItem > 20) {
+                item = new BulletIncrease(position);
+            } else {
+                item = new HeartUp(position);
+            }
+        } else if (!userTank1.isAtMaxHealth()) {
+            Random random = new Random();
+            int randomItem = random.nextInt(101) + 1;
+            if (randomItem > 20) {
+                item = new Clock(position);
+            } else if (randomItem > 0) {
+                item = new HeartUp(position);
+            }
+        } else if (!userTank1.isMaxBullet()) {
+            Random random = new Random();
+            int randomItem = random.nextInt(101) + 1;
+            if (randomItem > 20) {
+                item = new Clock(position);
+            } else if (randomItem > 0) {
+                item = new BulletIncrease(position);
+            }
+        } else {
+            item = new Clock(position);
+        }
+        damageBlock.add(item);
+        return item.drawObject();
+    }
+
+    private Unmove gachaItem(Point position) {
+        Unmove item = null;
+        if (!userTank1.isAtMaxHealth() && !userTank1.isMaxBullet()) {
+            Random random = new Random();
+            int randomItem = random.nextInt(101) + 1;
+            if (randomItem > 40) {
+                item = new Clock(position);
+            } else if (randomItem > 20) {
+                item = new BulletIncrease(position);
+            } else {
+                item = new HeartUp(position);
+            }
+        } else if (!userTank1.isAtMaxHealth()) {
+            Random random = new Random();
+            int randomItem = random.nextInt(101) + 1;
+            if (randomItem > 20) {
+                item = new Clock(position);
+            } else if (randomItem > 0) {
+                item = new HeartUp(position);
+            }
+        } else if (!userTank1.isMaxBullet()) {
+            Random random = new Random();
+            int randomItem = random.nextInt(101) + 1;
+            if (randomItem > 20) {
+                item = new Clock(position);
+            } else if (randomItem > 0) {
+                item = new BulletIncrease(position);
+            }
+        } else {
+            item = new Clock(position);
+        }
+        return item;
     }
 
     private void userTankMove() {
@@ -537,19 +739,18 @@ public class Map1_UI extends JFrame implements Runnable {
         if (reloadTimer != null && reloadTimer.isRunning()) {
             reloadTimer.stop();
         }
-
+        isLoading = true;
         reloadTimer = new Timer(3000, new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
                 currentBullet = 0; // Reset bullet count
-                reloadTimer.stop(); // Stop the timer after reloading
+                isLoading = false;
+                reloadTimer.stop();
             }
         });
 
         reloadTimer.setRepeats(false);
         reloadTimer.start();
-
-        System.out.println("Reloading started, will take 3 seconds...");
     }
 
     private JLabel Enemyspawn() {
@@ -624,14 +825,6 @@ public class Map1_UI extends JFrame implements Runnable {
     @Override
     public void run() {
         while (true) {
-            if (direction != Direction.NO_DIRECTION) {
-                currentDirection = direction;
-                userTankMove();
-                revalidate();
-                repaint();
-                direction = Direction.NO_DIRECTION;
-            }
-
             try {
                 Thread.sleep(100);
             } catch (InterruptedException e) {

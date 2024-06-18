@@ -8,6 +8,9 @@ import javax.swing.ImageIcon;
 import javax.swing.JLabel;
 import javax.swing.Timer;
 
+import Mechanic.UnmoveObject.BulletIncrease;
+import Mechanic.UnmoveObject.Clock;
+import Mechanic.UnmoveObject.HeartUp;
 import Mechanic.UnmoveObject.Unmove;
 import Mechanic.UnmoveObject.Water;
 import UI.Direction;
@@ -100,10 +103,10 @@ public class Shot extends Move {
         Iterator<Unmove> iterator = obstacle.iterator();
         while (iterator.hasNext()) {
             Unmove object = iterator.next();
-            if (object instanceof Water) {
+            if (object instanceof Water || object instanceof Clock || object instanceof HeartUp
+                    || object instanceof BulletIncrease) {
                 continue;
-            }
-            if (nextPos.x == object.getPos().x && nextPos.y == object.getPos().y) {
+            } else if (nextPos.x == object.getPos().x && nextPos.y == object.getPos().y) {
                 isDamage = true;
                 object.isDamage();
                 break;
