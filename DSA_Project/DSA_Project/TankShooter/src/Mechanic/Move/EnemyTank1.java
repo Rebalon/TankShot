@@ -2,6 +2,7 @@ package Mechanic.Move;
 
 import java.awt.Point;
 import java.util.LinkedList;
+import java.util.Random;
 
 import javax.swing.ImageIcon;
 import javax.swing.JLabel;
@@ -9,50 +10,39 @@ import javax.swing.JLabel;
 import Mechanic.UnmoveObject.Unmove;
 import UI.Direction;
 
-public class UserTank extends Move {
+public class EnemyTank1 extends Move {
     private Point position;
-    private JLabel TankImage = new JLabel();
-
-    private int direction = Direction.EAST;
-    private int Health = 1;
+    private JLabel tankImage;
+    private int health = 1;
+    private int isitself = 0;
     private boolean isDestroy = false;
 
-    public UserTank(Point inputPos) {
+    public EnemyTank1(Point inputPos) {
         this.position = inputPos;
+        this.tankImage = new JLabel();
+        draw(); // Initial draw call to set up the JLabel
     }
 
-    public void setDirection(int d) {
-        this.direction = d;
-    }
-
+    @Override
     public JLabel draw() {
-        /* Image img = null; */
-        if (Health > 0) {
-            switch (direction) {
-                case Direction.EAST:
-                    TankImage.setIcon(new ImageIcon(getClass().getResource("/Image/tankRight.png")));
-                    break;
-                case Direction.WEST:
-                    TankImage.setIcon(new ImageIcon(getClass().getResource("/Image/tankLeft.png")));
-                    break;
-                case Direction.SOUTH:
-                    TankImage.setIcon(new ImageIcon(getClass().getResource("/Image/tankDown.png")));
-                    break;
-                case Direction.NORTH:
-                    TankImage.setIcon(new ImageIcon(getClass().getResource("/Image/tankUp.png")));
-                    break;
-            }
-            TankImage.setBounds(position.x, position.y, 40, 40);
-            TankImage.setVisible(true);
+        if (health == 1) {
+            tankImage.setIcon(new ImageIcon(getClass().getResource("/Image/enemyTank_1.png")));
+            tankImage.setBounds(position.x, position.y, 40, 40);
+            tankImage.setVisible(true);
         } else {
+            tankImage.setIcon(null);
+            tankImage.setBounds(position.x, position.y, 40, 40);
+            tankImage.setVisible(false);
             this.isDestroy = true;
-            TankImage.setVisible(false);
         }
-        return TankImage;
+        return tankImage;
     }
 
+    @Override
     public void move() {
-        switch (direction) {
+        Random random = new Random();
+        int randomNumber = random.nextInt(4);
+        switch (randomNumber) {
             case Direction.EAST:
                 position.translate(40, 0);
                 break;
@@ -66,7 +56,6 @@ public class UserTank extends Move {
                 position.translate(0, -40);
                 break;
         }
-        /* System.out.println(position); */
         draw();
     }
 
@@ -80,16 +69,26 @@ public class UserTank extends Move {
             }
         }
         for (Move p : tank) {
+            if (p.getPos().equals(this.getPos()) && isitself == 0) {
+                isitself++;
+                continue;
+            }
             if (newPos.x == p.getPos().x && newPos.y == p.getPos().y) {
                 this.setPosition(previous);
                 draw();
                 break;
             }
         }
+        isitself = 0;
     }
 
     public void setPosition(Point pos) {
         this.position = pos;
+    }
+
+    public void isDamage() {
+        health--;
+        draw();
     }
 
     @Override
@@ -97,9 +96,20 @@ public class UserTank extends Move {
         return this.position;
     }
 
-    public void isDamage() {
-        Health--;
-        draw();
+    public Point getPosition() {
+        return position;
+    }
+
+    public JLabel getTankImage() {
+        return tankImage;
+    }
+
+    public int getHealth() {
+        return health;
+    }
+
+    public int getIsitself() {
+        return isitself;
     }
 
     @Override
@@ -109,6 +119,6 @@ public class UserTank extends Move {
 
     @Override
     public JLabel getImage() {
-        return TankImage;
+        return tankImage;
     }
 }

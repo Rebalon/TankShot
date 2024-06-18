@@ -14,12 +14,14 @@ import UI.Direction;
 
 public class Shot extends Move {
     private Point pos;
-    private static final int SPEED = 10;
+    private int SPEED = 10;
+
     private JLabel Bullet;
     private int direction = Direction.NO_DIRECTION;
     private Timer moveTimer;
     private boolean isDamage = false;
     private LinkedList<Unmove> Obstacle = new LinkedList<>();
+    private int isitself = 0;
 
     public Shot(Point position) {
         this.pos = position;
@@ -85,7 +87,16 @@ public class Shot extends Move {
         }
     }
 
-    public boolean isBulletAtTarget(LinkedList<Unmove> obstacle, Point nextPos) {
+    public boolean isBulletAtTarget(LinkedList<Unmove> obstacle, Point nextPos, LinkedList<Move> tank) {
+        Iterator<Move> iterator1 = tank.iterator();
+        while (iterator1.hasNext()) {
+            Move object = iterator1.next();
+            if (nextPos.x == object.getPos().x && nextPos.y == object.getPos().y) {
+                isDamage = true;
+                object.isDamage();
+                break;
+            }
+        }
         Iterator<Unmove> iterator = obstacle.iterator();
         while (iterator.hasNext()) {
             Unmove object = iterator.next();
@@ -110,14 +121,15 @@ public class Shot extends Move {
         this.direction = direction;
     }
 
-    public void setObstacle(LinkedList<Unmove> obstacle) {
+    public void setObstacle(LinkedList<Unmove> obstacle, LinkedList<Move> tank) {
         Obstacle = obstacle;
-        if (isBulletAtTarget(obstacle, pos)) {
+        if (isBulletAtTarget(obstacle, pos, tank)) {
             Bullet.setVisible(false);
         }
     }
 
-    public JLabel getBullet() {
+    @Override
+    public JLabel getImage() {
         return Bullet;
     }
 
@@ -125,4 +137,22 @@ public class Shot extends Move {
         return isDamage;
     }
 
+    @Override
+    public void isCollision(LinkedList<Unmove> obstacle, Point previous, Point newPos, LinkedList<Move> tank) {
+        return;
+    }
+
+    @Override
+    public void isDamage() {
+        return;
+    }
+
+    @Override
+    public boolean isDestroy() {
+        return false;
+    }
+
+    public void setSPEED(int sPEED) {
+        SPEED = sPEED;
+    }
 }

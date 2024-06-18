@@ -13,12 +13,17 @@ import java.awt.event.MouseEvent;
 import java.awt.event.MouseMotionAdapter;
 import java.util.Iterator;
 import java.util.LinkedList;
+import java.util.Random;
 
 import javax.swing.ImageIcon;
 import javax.swing.JFrame;
 import javax.swing.JLabel;
 import javax.swing.Timer;
 
+import Mechanic.Move.EnemyTank1;
+import Mechanic.Move.EnemyTank2;
+import Mechanic.Move.EnemyTank3;
+import Mechanic.Move.Move;
 import Mechanic.Move.Shot;
 import Mechanic.Move.UserTank;
 import Mechanic.UnmoveObject.BrickBlock;
@@ -36,14 +41,19 @@ public class Map1_UI extends JFrame implements Runnable {
     private int currentDirection = Direction.EAST;
     private UserTank userTank1;
     private Point mousePoint;
-    private int drawInitialTank = 0;
     private JLabel jlabel1 = new JLabel();
     private LinkedList<Unmove> damageBlock = new LinkedList<>();
+    private LinkedList<Move> EnemyTank = new LinkedList<>();
+    private LinkedList<Move> ControlTank = new LinkedList<>();
     private LinkedList<Shot> shots = new LinkedList<>();
+    private LinkedList<Shot> EnemyShot = new LinkedList<>();
     private int currentBullet = 0;
     private int MaxBulletCount = 12;
+    private Timer Update;
     private Timer reloadTimer;
-    private Timer gameTimer;
+    private Timer EnemyShotTimer;
+    private Timer EnemymoveTimer;
+    private int currentEnemy = 0;
 
     public Map1_UI() {
         initial();
@@ -104,30 +114,129 @@ public class Map1_UI extends JFrame implements Runnable {
         this.pack();
         this.setVisible(true);
         this.setExtendedState(JFrame.MAXIMIZED_BOTH);
-        gameTimer = new Timer(16, new ActionListener() { // ~60 FPS
+        Update = new Timer(12, new ActionListener() { // ~60 FPS
             @Override
             public void actionPerformed(ActionEvent e) {
                 updateGame();
+                getContentPane().repaint();
             }
         });
-        gameTimer.start();
-        /*
-         * this.addMouseListener(new MouseAdapter() {
-         * 
-         * @Override
-         * public void mouseClicked(MouseEvent e) {
-         * 
-         * }
-         * });
-         */
+        Update.start();
+        EnemymoveTimer = new Timer(1000, new ActionListener() { // ~60 FPS
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                for (Move move : EnemyTank) {
+                    Point previous = new Point(move.getPos());
+                    move.move();
+                    Point pos = new Point(move.getPos());
+                    move.isCollision(damageBlock, previous, pos, EnemyTank);
+                    revalidate();
+                    repaint();
+                }
+            }
+        });
+
+        EnemymoveTimer.start();
+
+        EnemyShotTimer = new Timer(1500, new ActionListener() { // ~60 FPS
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                for (Move move : EnemyTank) {
+                    if (move instanceof EnemyTank1) {
+                        Point tankPos = new Point(move.getPos());
+                        Shot shot = new Shot(tankPos);
+                        Random random = new Random();
+                        int randomDirect = random.nextInt(4) + 1;
+                        shot.setDirection(randomDirect);
+                        EnemyShot.add(shot);
+                        getContentPane().add(shot.draw());
+                        // Ensure the bullet appears on top
+                        setComponentZOrder(shot.draw(), 0);
+                    } else if (move instanceof EnemyTank2) {
+                        Point tankPos = new Point(move.getPos());
+                        Shot shot = new Shot(tankPos);
+                        Random random = new Random();
+                        int randomDirect = random.nextInt(4) + 1;
+                        shot.setDirection(randomDirect);
+                        EnemyShot.add(shot);
+                        getContentPane().add(shot.draw());
+
+                        // Ensure the bullet appears on top
+                        setComponentZOrder(shot.draw(), 0);
+
+                        // Create a Timer to delay the addition of shot1 by 1 second
+                        Timer timer = new Timer(100, x -> {
+                            Point tankPos1 = new Point(move.getPos());
+                            Shot shot1 = new Shot(tankPos1);
+                            shot1.setDirection(randomDirect);
+                            EnemyShot.add(shot1);
+                            getContentPane().add(shot1.draw());
+
+                            // Ensure the bullet appears on top
+                            setComponentZOrder(shot1.draw(), 0);
+                        });
+
+                        // Ensure the timer only runs once
+                        timer.setRepeats(false);
+                        timer.start();
+                    } else if (move instanceof EnemyTank3) {
+                        Point tankPos = new Point(move.getPos());
+                        Shot shot = new Shot(tankPos);
+                        Random random = new Random();
+                        int randomDirect = random.nextInt(4) + 1;
+                        shot.setDirection(randomDirect);
+                        EnemyShot.add(shot);
+                        getContentPane().add(shot.draw());
+
+                        // Ensure the bullet appears on top
+                        setComponentZOrder(shot.draw(), 0);
+
+                        // Create a Timer to delay the addition of shot1 by 1 second
+                        Timer timer = new Timer(100, x -> {
+                            Point tankPos1 = new Point(move.getPos());
+                            Shot shot1 = new Shot(tankPos1);
+                            shot1.setDirection(randomDirect);
+                            EnemyShot.add(shot1);
+                            getContentPane().add(shot1.draw());
+
+                            // Ensure the bullet appears on top
+                            setComponentZOrder(shot1.draw(), 0);
+                        });
+                        timer.setRepeats(false);
+                        timer.start();
+                        Timer timer1 = new Timer(200, x -> {
+                            Point tankPos2 = new Point(move.getPos());
+                            Shot shot2 = new Shot(tankPos2);
+                            shot2.setDirection(randomDirect);
+                            EnemyShot.add(shot2);
+                            getContentPane().add(shot2.draw());
+
+                            // Ensure the bullet appears on top
+                            setComponentZOrder(shot2.draw(), 0);
+                        });
+                        timer1.setRepeats(false);
+                        timer1.start();
+                        Timer timer2 = new Timer(300, x -> {
+                            Point tankPos3 = new Point(move.getPos());
+                            Shot shot3 = new Shot(tankPos3);
+                            shot3.setDirection(randomDirect);
+                            EnemyShot.add(shot3);
+                            getContentPane().add(shot3.draw());
+
+                            // Ensure the bullet appears on top
+                            setComponentZOrder(shot3.draw(), 0);
+                        });
+                        timer2.setRepeats(false);
+                        timer2.start();
+                    }
+                }
+            }
+        });
+        EnemyShotTimer.start();
     }
 
     private void draw(Graphics g) {
-        drawUserTank();
-        if (!shots.isEmpty()) {
-
-        }
-        direction = Direction.NO_DIRECTION;
+        Enemyspawn();
     }
 
     private void drawMap() {
@@ -212,6 +321,9 @@ public class Map1_UI extends JFrame implements Runnable {
             this.add(wat.drawObject());
         }
         for (int i = 0; i < 7; i++) {
+            if (i == 2 || i == 3 || i == 4) {
+                continue;
+            }
             Point Steel = new Point(0 + (i * 200), 350);
             Point Steel1 = new Point(0 + (i * 200), 390);
             Point Steel2 = new Point(40 + (i * 200), 350);
@@ -241,6 +353,7 @@ public class Map1_UI extends JFrame implements Runnable {
     private void drawDamageObject() {
         this.userTank = new Point(0, 70);
         this.userTank1 = new UserTank(userTank);
+        ControlTank.add(userTank1);
         this.add(userTank1.draw());
         // set linklist for damage object
         for (int i = 0; i < 3; i++) {
@@ -344,11 +457,13 @@ public class Map1_UI extends JFrame implements Runnable {
             this.add(wb2.drawObject());
             this.add(wb3.drawObject());
         }
+
         jlabel1.setIcon(new ImageIcon(
                 getClass().getResource("/Image/background.png")));
         jlabel1.setBounds(0, 70, 1320, 750);
         jlabel1.setVisible(true);
         getContentPane().add(jlabel1);
+
     }
 
     private void drawUserTank() {
@@ -361,10 +476,21 @@ public class Map1_UI extends JFrame implements Runnable {
         while (iterator.hasNext()) {
             Shot shot = iterator.next();
             shot.move();
-            shot.setObstacle(damageBlock);
+            shot.setObstacle(damageBlock, EnemyTank);
             if (shot.getisDamage()) {
-                this.remove(shot.getBullet());
+                this.remove(shot.getImage());
                 iterator.remove();
+            }
+            shot.draw();
+        }
+        Iterator<Shot> iterator1 = EnemyShot.iterator();
+        while (iterator1.hasNext()) {
+            Shot shot = iterator1.next();
+            shot.move();
+            shot.setObstacle(damageBlock, ControlTank);
+            if (shot.getisDamage()) {
+                this.remove(shot.getImage());
+                iterator1.remove();
             }
             shot.draw();
         }
@@ -377,7 +503,22 @@ public class Map1_UI extends JFrame implements Runnable {
                 iterator2.remove();
             }
         }
-        repaint();
+
+        Iterator<Move> iterator3 = EnemyTank.iterator();
+        while (iterator3.hasNext()) {
+            Move move = iterator3.next();
+            if (move.isDestroy()) {
+                this.remove(move.getImage());
+                iterator3.remove();
+                currentEnemy--;
+            }
+        }
+
+        // one for user tank later
+        if (currentEnemy <= 3) {
+            this.add(Enemyspawn(), 1);
+        }
+
     }
 
     private void userTankMove() {
@@ -385,7 +526,7 @@ public class Map1_UI extends JFrame implements Runnable {
         Point previous = new Point(userTank1.getPos());
         userTank1.move();
         Point pos = new Point(userTank1.getPos());
-        userTank1.isCollision(damageBlock, previous, pos);
+        userTank1.isCollision(damageBlock, previous, pos, EnemyTank);
     }
 
     private boolean canFire() {
@@ -411,6 +552,70 @@ public class Map1_UI extends JFrame implements Runnable {
         System.out.println("Reloading started, will take 3 seconds...");
     }
 
+    private JLabel Enemyspawn() {
+        Random random = new Random();
+        int randomEnemy = random.nextInt(2) + 1;
+        Point randomPoint = new Point();
+        boolean spawnable = false;
+        int randomSpawnPoint = random.nextInt(3) + 1;
+        // Try to find a spawnable point
+        while (!spawnable) {
+            if (randomSpawnPoint == 1) {
+                int randomPosX = random.nextInt(2);
+                int randomPosY = random.nextInt(2);
+                randomPoint.setLocation(200 + randomPosX * 40, 110 + randomPosY * 40);
+                spawnable = true; // Assume it's spawnable until we find otherwise
+
+                for (Move move : EnemyTank) {
+                    if (move.getPos().equals(randomPoint)) {
+                        spawnable = false; // Not spawnable if position is already occupied
+                        break;
+                    }
+                }
+            } else if (randomSpawnPoint == 3) {
+                int randomPosX = random.nextInt(6);
+                int randomPosY = random.nextInt(2);
+                randomPoint.setLocation(480 + randomPosX * 40, 110 + randomPosY * 40);
+                spawnable = true; // Assume it's spawnable until we find otherwise
+
+                for (Move move : EnemyTank) {
+                    if (move.getPos().equals(randomPoint)) {
+                        spawnable = false; // Not spawnable if position is already occupied
+                        break;
+                    }
+                }
+            } else {
+                int randomPosX = random.nextInt(2);
+                int randomPosY = random.nextInt(2);
+                randomPoint.setLocation(1000 + randomPosX * 40, 110 + randomPosY * 40);
+                spawnable = true; // Assume it's spawnable until we find otherwise
+
+                for (Move move : EnemyTank) {
+                    if (move.getPos().equals(randomPoint)) {
+                        spawnable = false; // Not spawnable if position is already occupied
+                        break;
+                    }
+                }
+            }
+
+        }
+        Move enemy = null;
+        switch (randomEnemy) {
+            case 1:
+                enemy = new EnemyTank1(randomPoint);
+                break;
+            case 2:
+                enemy = new EnemyTank2(randomPoint);
+                break;
+            case 3:
+                enemy = new EnemyTank3(randomPoint);
+                break;
+        }
+        currentEnemy++;
+        EnemyTank.add(enemy);
+        return enemy.draw();
+    }
+
     @Override
     public void paint(Graphics g) {
         super.paint(g);
@@ -420,18 +625,13 @@ public class Map1_UI extends JFrame implements Runnable {
     public void run() {
         while (true) {
             if (direction != Direction.NO_DIRECTION) {
-                drawInitialTank++;
                 currentDirection = direction;
                 userTankMove();
                 revalidate();
                 repaint();
                 direction = Direction.NO_DIRECTION;
             }
-            /*
-             * if (!shots.isEmpty()) {
-             * isCollision();
-             * }
-             */
+
             try {
                 Thread.sleep(100);
             } catch (InterruptedException e) {
