@@ -18,10 +18,11 @@ public class UserTank extends Move {
 
     private int direction = Direction.EAST;
     private int Health = 1;
+
     private boolean isDestroy = false;
     private int currentNumOfBullet = 1;
     private final int Max_NumBullet = 3;
-    private final int Max_Health = 5;
+    private final int Max_Health = 3;
 
     public UserTank(Point inputPos) {
         this.position = inputPos;
@@ -141,5 +142,13 @@ public class UserTank extends Move {
 
     public boolean isMaxBullet() {
         return currentNumOfBullet >= Max_NumBullet;
+    }
+
+    public int getHealth() {
+        return Health;
+    }
+
+    public void setHealth(int h) {
+        this.Health = h;
     }
 }
