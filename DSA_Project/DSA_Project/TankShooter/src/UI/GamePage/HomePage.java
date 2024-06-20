@@ -63,8 +63,9 @@ public class HomePage extends JFrame implements Runnable {
             }
         });
         Guild.setVisible(true);
-        Guild.setBounds(500, 200, 300, 50);
+        Guild.setBounds(400, 400, 500, 50);
         this.add(Guild);
+
         this.setName("HomePage");
         this.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         this.setLayout(null);
@@ -106,13 +107,13 @@ public class HomePage extends JFrame implements Runnable {
 
         String content = "Name  Score  Play Time\n" +
                 "Defence\n" +
-                "Hung     0   0h00m00s\n" +
-                "Nam      0   0h00m00s\n" +
-                "Tuan     0   0h00m00s\n" +
+                "Hung     0   0:00:00\n" +
+                "Nam      0   0:00:00\n" +
+                "Tuan     0   0:00:00\n" +
                 "Survival\n" +
-                "Khai     0   0h00m00s\n" +
-                "Nam      0   0h00m00s\n" +
-                "Tuan     0   0h00m00s\n";
+                "Khai     0   0:00:00\n" +
+                "Nam      0   0:00:00\n" +
+                "Tuan     0   0:00:00\n";
         // Create the file and write content to it
         boolean isFileCreated = createAndWriteFileUsingNIO(filePath, fileName, content);
         if (isFileCreated) {
@@ -129,7 +130,7 @@ public class HomePage extends JFrame implements Runnable {
                 "Tuan     0   0:00:00\n" +
                 "Survival\n" +
                 "Hung     0   0:00:00\n" +
-                "Nam      0   0:00m00\n" +
+                "Nam      0   0:00:00\n" +
                 "Tuan     0   0:00:00\n";
         // Create the file and write content to it
         boolean isFileCreated1 = createAndWriteFileUsingNIO(filePath1, fileName1, content1);
@@ -173,7 +174,7 @@ public class HomePage extends JFrame implements Runnable {
     }
 
     public static void main(String[] args) {
-        HomePage home = new HomePage(true);
+        HomePage home = new HomePage(false);
         new Thread(home).start();
     }
 }

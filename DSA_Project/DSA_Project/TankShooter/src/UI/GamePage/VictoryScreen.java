@@ -30,7 +30,9 @@ public class VictoryScreen extends JFrame implements Runnable {
         background.setBounds(0, 0, 1320, 820);
         background.setVisible(true);
         this.add(background);
-
+        this.setName("Victory");
+        this.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+        this.setLayout(null);
         this.setFocusable(true);
         this.pack();
         this.setVisible(true);
