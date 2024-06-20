@@ -6,6 +6,7 @@ import java.util.LinkedList;
 import javax.swing.ImageIcon;
 import javax.swing.JLabel;
 
+import Mechanic.UnmoveObject.BrickRegenerate;
 import Mechanic.UnmoveObject.BulletIncrease;
 import Mechanic.UnmoveObject.Clock;
 import Mechanic.UnmoveObject.HeartUp;
@@ -78,7 +79,8 @@ public class UserTank extends Move {
     }
 
     @Override
-    public void isCollision(LinkedList<Unmove> obstacle, Point previous, Point newPos, LinkedList<Move> tank) {
+    public void isCollision(LinkedList<Unmove> obstacle, Point previous, Point newPos, LinkedList<Move> tank,
+            LinkedList<Point> boss) {
         for (Unmove p : obstacle) {
             if (newPos.x == p.getPos().x && newPos.y == p.getPos().y) {
                 if (p instanceof HeartUp) {
@@ -90,6 +92,9 @@ public class UserTank extends Move {
                     p.isDamage();
                     break;
                 } else if (p instanceof Clock) {
+                    p.isDamage();
+                    break;
+                } else if (p instanceof BrickRegenerate) {
                     p.isDamage();
                     break;
                 } else {

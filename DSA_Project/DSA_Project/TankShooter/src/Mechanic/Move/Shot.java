@@ -8,6 +8,7 @@ import javax.swing.ImageIcon;
 import javax.swing.JLabel;
 import javax.swing.Timer;
 
+import Mechanic.UnmoveObject.BrickRegenerate;
 import Mechanic.UnmoveObject.BulletIncrease;
 import Mechanic.UnmoveObject.Clock;
 import Mechanic.UnmoveObject.HeartUp;
@@ -90,7 +91,19 @@ public class Shot extends Move {
         }
     }
 
-    public boolean isBulletAtTarget(LinkedList<Unmove> obstacle, Point nextPos, LinkedList<Move> tank) {
+    public boolean isBulletAtTarget(LinkedList<Unmove> obstacle, Point nextPos, LinkedList<Move> tank,
+            LinkedList<Point> boss, Boss currentBoss) {
+        if (boss != null && currentBoss != null) {
+            Iterator<Point> iterator = boss.iterator();
+            while (iterator.hasNext()) {
+                Point object = iterator.next();
+                if (nextPos.equals(object)) {
+                    isDamage = true;
+                    currentBoss.isDamage();
+                    break;
+                }
+            }
+        }
         Iterator<Move> iterator1 = tank.iterator();
         while (iterator1.hasNext()) {
             Move object = iterator1.next();
@@ -104,9 +117,12 @@ public class Shot extends Move {
         while (iterator.hasNext()) {
             Unmove object = iterator.next();
             if (object instanceof Water || object instanceof Clock || object instanceof HeartUp
-                    || object instanceof BulletIncrease) {
+                    || object instanceof BulletIncrease || object instanceof BrickRegenerate) {
                 continue;
             } else if (nextPos.x == object.getPos().x && nextPos.y == object.getPos().y) {
+                if (object.isDestroy()) {
+                    continue;
+                }
                 isDamage = true;
                 object.isDamage();
                 break;
@@ -124,9 +140,10 @@ public class Shot extends Move {
         this.direction = direction;
     }
 
-    public void setObstacle(LinkedList<Unmove> obstacle, LinkedList<Move> tank) {
+    public void setObstacle(LinkedList<Unmove> obstacle, LinkedList<Move> tank, LinkedList<Point> boss,
+            Boss currentBoss) {
         Obstacle = obstacle;
-        if (isBulletAtTarget(obstacle, pos, tank)) {
+        if (isBulletAtTarget(obstacle, pos, tank, boss, currentBoss)) {
             Bullet.setVisible(false);
         }
     }
@@ -141,7 +158,8 @@ public class Shot extends Move {
     }
 
     @Override
-    public void isCollision(LinkedList<Unmove> obstacle, Point previous, Point newPos, LinkedList<Move> tank) {
+    public void isCollision(LinkedList<Unmove> obstacle, Point previous, Point newPos, LinkedList<Move> tank,
+            LinkedList<Point> boss) {
         return;
     }
 

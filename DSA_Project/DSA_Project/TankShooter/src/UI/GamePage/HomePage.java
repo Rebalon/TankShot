@@ -18,6 +18,7 @@ public class HomePage extends JFrame implements Runnable {
     private JButton newGame = new JButton();
     private JButton LeaderBoard = new JButton();
     private boolean needtocreateFile = true;
+    private JButton Guild = new JButton();
 
     public HomePage(boolean needtocreatefile) {
         this.needtocreateFile = needtocreatefile;
@@ -54,6 +55,16 @@ public class HomePage extends JFrame implements Runnable {
         LeaderBoard.setBounds(400, 300, 500, 50);
         this.add(LeaderBoard);
 
+        Guild.setFont(new java.awt.Font("Times New Roman", 1, 50)); // NOI18N
+        Guild.setText("How to play???");
+        Guild.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                btnGuildActionPerformed(evt);
+            }
+        });
+        Guild.setVisible(true);
+        Guild.setBounds(500, 200, 300, 50);
+        this.add(Guild);
         this.setName("HomePage");
         this.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         this.setLayout(null);
@@ -80,6 +91,12 @@ public class HomePage extends JFrame implements Runnable {
         this.dispose();
         LeaderBoard LB = new LeaderBoard();
         new Thread(LB).start();
+    }
+
+    private void btnGuildActionPerformed(ActionEvent evt) {
+        this.dispose();
+        Guild g = new Guild();
+        new Thread(g).start();
     }
 
     private void initialLeaderBoardFile() {

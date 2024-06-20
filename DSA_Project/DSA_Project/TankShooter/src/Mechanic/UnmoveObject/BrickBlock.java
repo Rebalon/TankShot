@@ -7,7 +7,7 @@ import javax.swing.JLabel;
 
 public class BrickBlock extends Unmove {
     private Point pos;
-    private int Health = 6;
+    private int Health = 10;
     private JLabel BrickBlock;
     private boolean isDestroy = false;
 
@@ -18,9 +18,12 @@ public class BrickBlock extends Unmove {
 
     @Override
     public JLabel drawObject() {
-        if (Health > 3) {
+
+        if (Health > 5) {
+            this.isDestroy = false;
             BrickBlock.setIcon(new ImageIcon(getClass().getResource("/Image/StoneBrick.png")));
         } else if (Health > 0) {
+            this.isDestroy = false;
             BrickBlock.setIcon(new ImageIcon(getClass().getResource("/Image/halfStone.png")));
         } else {
             BrickBlock.setIcon(null);
@@ -60,6 +63,23 @@ public class BrickBlock extends Unmove {
     @Override
     public JLabel getJLabel() {
         return BrickBlock;
+    }
+
+    public void setPos(Point pos) {
+        this.pos = pos;
+    }
+
+    public void setHealth(int health) {
+        BrickBlock.setVisible(true);
+        Health = health;
+    }
+
+    public void setBrickBlock(JLabel brickBlock) {
+        BrickBlock = brickBlock;
+    }
+
+    public void setDestroy(boolean isDestroy) {
+        this.isDestroy = isDestroy;
     }
 
 }

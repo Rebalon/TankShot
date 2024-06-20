@@ -9,7 +9,10 @@ import javax.swing.JFrame;
 import javax.swing.JLabel;
 import javax.swing.JOptionPane;
 
-import UI.Map1.Map1_Defence;
+import UI.Map.Map1_Defence;
+import UI.Map.Map1_Survival;
+import UI.Map.Map2_Defence;
+import UI.Map.Map2_Survival;
 
 public class ChooseMap extends JFrame implements Runnable {
     private JLabel background = new JLabel();
@@ -23,6 +26,8 @@ public class ChooseMap extends JFrame implements Runnable {
     private JComboBox<String> ChooseMode = new JComboBox<>();
     private String choosenMode;
     private boolean isChooseNull = true;
+    private boolean isChooseMap1 = false;
+    private boolean isChooseMap2 = false;
 
     public ChooseMap() {
         initial();
@@ -59,7 +64,7 @@ public class ChooseMap extends JFrame implements Runnable {
         this.add(ChooseThis);
 
         Map2.setFont(new java.awt.Font("Times New Roman", 1, 50)); // NOI18N
-        Map2.setIcon(new ImageIcon(getClass().getResource("/Image/Map1_mini.png")));
+        Map2.setIcon(new ImageIcon(getClass().getResource("/Image/Map2_mini.png")));
         Map2.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
                 btnMap2ActionPerformed(evt);
@@ -107,6 +112,8 @@ public class ChooseMap extends JFrame implements Runnable {
     }
 
     private void btnMap1ActionPerformed(ActionEvent evt) {
+        isChooseMap2 = false;
+        isChooseMap1 = true;
         this.remove(Map2_Display);
         Map1_Display.setIcon(new ImageIcon(getClass().getResource("/Image/Map1_display.png")));
         Map1_Display.setBounds(450, 150, 800, 400);
@@ -118,8 +125,10 @@ public class ChooseMap extends JFrame implements Runnable {
     }
 
     private void btnMap2ActionPerformed(ActionEvent evt) {
+        isChooseMap2 = true;
+        isChooseMap1 = false;
         this.remove(Map1_Display);
-        Map2_Display.setIcon(new ImageIcon(getClass().getResource("/Image/Map1_display.png")));
+        Map2_Display.setIcon(new ImageIcon(getClass().getResource("/Image/Map2_display.png")));
         Map2_Display.setBounds(450, 150, 800, 400);
         Map2_Display.setVisible(true);
         this.add(Map2_Display, 0);
@@ -152,11 +161,27 @@ public class ChooseMap extends JFrame implements Runnable {
             if (response == JOptionPane.YES_OPTION) {
                 System.out.println("User chose 'Yes'. Proceed with map selection.");
                 if (choosenMode.equals("Defence")) {
-                    this.dispose();
-                    Map1_Defence map1 = new Map1_Defence();
-                    new Thread(map1).start();
+                    if (isChooseMap1) {
+                        this.dispose();
+                        Map1_Defence map1 = new Map1_Defence();
+                        new Thread(map1).start();
+                    }
+                    if (isChooseMap2) {
+                        this.dispose();
+                        Map2_Defence map2 = new Map2_Defence();
+                        new Thread(map2).start();
+                    }
                 } else {
-
+                    if (isChooseMap1) {
+                        this.dispose();
+                        Map1_Survival map1 = new Map1_Survival();
+                        new Thread(map1).start();
+                    }
+                    if (isChooseMap2) {
+                        this.dispose();
+                        Map2_Survival map2 = new Map2_Survival();
+                        new Thread(map2).start();
+                    }
                 }
             } else if (response == JOptionPane.NO_OPTION) {
                 System.out.println("User chose 'No'. Cancel the map selection.");

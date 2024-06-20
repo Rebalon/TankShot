@@ -62,7 +62,15 @@ public class EnemyTank2 extends Move {
     }
 
     @Override
-    public void isCollision(LinkedList<Unmove> obstacle, Point previous, Point newPos, LinkedList<Move> tank) {
+    public void isCollision(LinkedList<Unmove> obstacle, Point previous, Point newPos, LinkedList<Move> tank,
+            LinkedList<Point> boss) {
+        for (Point p : boss) {
+            if (newPos.equals(p)) {
+                this.setPosition(previous);
+                draw();
+                break;
+            }
+        }
         for (Unmove p : obstacle) {
             if (newPos.x == p.getPos().x && newPos.y == p.getPos().y) {
                 this.setPosition(previous);

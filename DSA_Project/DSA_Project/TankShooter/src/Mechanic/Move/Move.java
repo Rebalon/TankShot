@@ -14,7 +14,8 @@ public abstract class Move {
 
     public abstract Point getPos();
 
-    public abstract void isCollision(LinkedList<Unmove> obstacle, Point previous, Point newPos, LinkedList<Move> tank);
+    public abstract void isCollision(LinkedList<Unmove> obstacle, Point previous, Point newPos, LinkedList<Move> tank,
+            LinkedList<Point> boss);
 
     public abstract void isDamage();
 

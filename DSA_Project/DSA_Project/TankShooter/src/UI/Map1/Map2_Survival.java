@@ -27,6 +27,7 @@ import javax.swing.JLabel;
 import javax.swing.JOptionPane;
 import javax.swing.Timer;
 
+import Mechanic.Move.Boss;
 import Mechanic.Move.EnemyTank1;
 import Mechanic.Move.EnemyTank2;
 import Mechanic.Move.EnemyTank3;
@@ -34,9 +35,9 @@ import Mechanic.Move.Move;
 import Mechanic.Move.Shot;
 import Mechanic.Move.UserTank;
 import Mechanic.UnmoveObject.BrickBlock;
+import Mechanic.UnmoveObject.BrickRegenerate;
 import Mechanic.UnmoveObject.BulletIncrease;
 import Mechanic.UnmoveObject.Clock;
-import Mechanic.UnmoveObject.HeartGoal;
 import Mechanic.UnmoveObject.HeartUp;
 import Mechanic.UnmoveObject.SteelBlock;
 import Mechanic.UnmoveObject.Unmove;
@@ -45,9 +46,13 @@ import Mechanic.UnmoveObject.WoodenBox;
 import Mechanic.UnmoveObject.invisibleObstacle;
 import UI.Direction;
 import UI.GamePage.HomePage;
+import UI.GamePage.VictoryScreen;
 
-public class Map1_Defence extends JFrame implements Runnable {
+public class Map2_Survival extends JFrame implements Runnable {
     private LinkedList<Point> Boss = new LinkedList<>();
+    /* private LinkedList<Move> boss = new LinkedList<>(); */
+    // Use normal way as only one boss
+    private Boss bossT;
     private JLabel HeartIcon = new JLabel();
     private JLabel HeartDisplay = new JLabel();
     private JLabel bulletIcon = new JLabel();
@@ -58,14 +63,14 @@ public class Map1_Defence extends JFrame implements Runnable {
     private Instant startTime;
     private Timer runTimeTimer;
     private JLabel Score = new JLabel("Score: 0");
-    private JLabel EnemyTank1Icon = new JLabel();
+    private JLabel EnemyTank3Icon = new JLabel();
     private JLabel EnemyTank2Icon = new JLabel();
-    private JLabel EnemyTank1Killed = new JLabel();
+    private JLabel EnemyTank3Killed = new JLabel();
     private JLabel EnemyTank2Killed = new JLabel();
     private JLabel UserTankImage = new JLabel();
     private JLabel UserTankLife = new JLabel();
     private JButton back = new JButton();
-    private int numOfEnemy1Kill = 0;
+    private int numOfEnemy3Kill = 0;
     private int numOfEnemy2Kill = 0;
     private int numberOfLife = 3;
     private Point userTank;
@@ -95,8 +100,9 @@ public class Map1_Defence extends JFrame implements Runnable {
     private boolean isPause = false;
     private int pausetime = 0;
     private String formattedTime;
+    private int time;
 
-    public Map1_Defence() {
+    public Map2_Survival() {
         initial();
     }
 
@@ -153,17 +159,17 @@ public class Map1_Defence extends JFrame implements Runnable {
         Score.setBounds(800, 0, 200, 40);
         this.add(Score);
 
-        EnemyTank1Icon.setFont(new java.awt.Font("Times New Roman", 1, 80));
-        EnemyTank1Icon.setIcon(new ImageIcon(getClass().getResource("/Image/enemyTank_1.png")));
-        EnemyTank1Icon.setVisible(true);
-        EnemyTank1Icon.setBounds(1000, 0, 40, 40);
-        this.add(EnemyTank1Icon);
+        EnemyTank3Icon.setFont(new java.awt.Font("Times New Roman", 1, 80));
+        EnemyTank3Icon.setIcon(new ImageIcon(getClass().getResource("/Image/enemyTank_3.png")));
+        EnemyTank3Icon.setVisible(true);
+        EnemyTank3Icon.setBounds(1000, 0, 40, 40);
+        this.add(EnemyTank3Icon);
 
-        EnemyTank1Killed.setFont(new java.awt.Font("Times New Roman", 1, 40));
-        EnemyTank1Killed.setText(String.valueOf(numOfEnemy1Kill));
-        EnemyTank1Killed.setVisible(true);
-        EnemyTank1Killed.setBounds(1010, 40, 40, 40);
-        this.add(EnemyTank1Killed);
+        EnemyTank3Killed.setFont(new java.awt.Font("Times New Roman", 1, 40));
+        EnemyTank3Killed.setText(String.valueOf(numOfEnemy3Kill));
+        EnemyTank3Killed.setVisible(true);
+        EnemyTank3Killed.setBounds(1010, 40, 40, 40);
+        this.add(EnemyTank3Killed);
 
         EnemyTank2Icon.setFont(new java.awt.Font("Times New Roman", 1, 80));
         EnemyTank2Icon.setIcon(new ImageIcon(getClass().getResource("/Image/enemyTank_2.png")));
@@ -366,17 +372,7 @@ public class Map1_Defence extends JFrame implements Runnable {
             public void actionPerformed(ActionEvent e) {
                 if (!isPause) {
                     for (Move move : EnemyTank) {
-                        if (move instanceof EnemyTank1) {
-                            Point tankPos = new Point(move.getPos());
-                            Shot shot = new Shot(tankPos);
-                            Random random = new Random();
-                            int randomDirect = random.nextInt(4) + 1;
-                            shot.setDirection(randomDirect);
-                            EnemyShot.add(shot);
-                            getContentPane().add(shot.draw());
-                            // Ensure the bullet appears on top
-                            setComponentZOrder(shot.draw(), 0);
-                        } else if (move instanceof EnemyTank2) {
+                        if (move instanceof EnemyTank2) {
                             Point tankPos = new Point(move.getPos());
                             Shot shot = new Shot(tankPos);
                             Random random = new Random();
@@ -459,17 +455,71 @@ public class Map1_Defence extends JFrame implements Runnable {
         });
         EnemyShotTimer.start();
 
-        Item = new Timer(5000, new ActionListener() { // ~60 FPS
+        EnemyShotTimer = new Timer(4000, new ActionListener() { // ~60 FPS
             @Override
             public void actionPerformed(ActionEvent e) {
                 if (!isPause) {
-                    Point pos = new Point(600, 390);
+                    for (int i = 0; i < 8; i++) {
+                        int i1 = i;
+                        Shot shot = new Shot(new Point(480 + i1 * 40, 270));
+                        shot.setDirection(2);
+                        EnemyShot.add(shot);
+                        getContentPane().add(shot.draw());
+
+                        // Ensure the bullet appears on top
+                        setComponentZOrder(shot.draw(), 0);
+
+                        // Create a Timer to delay the addition of shot1 by 1 second
+                        Timer timer = new Timer(100, x -> {
+                            Shot shot1 = new Shot(new Point(480 + i1 * 40, 270));
+                            shot1.setDirection(2);
+                            EnemyShot.add(shot1);
+                            getContentPane().add(shot1.draw());
+
+                            // Ensure the bullet appears on top
+                            setComponentZOrder(shot1.draw(), 0);
+                        });
+                        timer.setRepeats(false);
+                        timer.start();
+                        Timer timer1 = new Timer(200, x -> {
+                            Shot shot2 = new Shot(new Point(480 + i1 * 40, 270));
+                            shot2.setDirection(2);
+                            EnemyShot.add(shot2);
+                            getContentPane().add(shot2.draw());
+
+                            // Ensure the bullet appears on top
+                            setComponentZOrder(shot2.draw(), 0);
+                        });
+                        timer1.setRepeats(false);
+                        timer1.start();
+                        Timer timer2 = new Timer(300, x -> {
+                            Shot shot3 = new Shot(new Point(480 + i1 * 40, 270));
+                            shot3.setDirection(2);
+                            EnemyShot.add(shot3);
+                            getContentPane().add(shot3.draw());
+
+                            // Ensure the bullet appears on top
+                            setComponentZOrder(shot3.draw(), 0);
+                        });
+                        timer2.setRepeats(false);
+                        timer2.start();
+                    }
+                }
+            }
+
+        });
+        EnemyShotTimer.start();
+
+        Item = new Timer(3500, new ActionListener() { // ~60 FPS
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                if (!isPause) {
+                    Point pos = new Point(600, 550);
                     getContentPane().add(DropItem(pos), 2);
                 }
             }
         });
         Item.setRepeats(false);
-        /* Item.start(); */
     }
 
     private void initializeTimer() {
@@ -507,12 +557,19 @@ public class Map1_Defence extends JFrame implements Runnable {
 
         // Update the JLabel text
         runTimeDisplay.setText("Playtime: " + formattedTime);
+        time = ((Integer.valueOf(formattedTime.charAt(0)) - 48) * 10 + Integer.valueOf(formattedTime.charAt(1)) - 48)
+                * 60 * 60
+                +
+                ((Integer.valueOf(formattedTime.charAt(3)) - 48) * 10 + Integer.valueOf(formattedTime.charAt(4)) - 48)
+                        * 60
+                + (Integer.valueOf(formattedTime.charAt(6)) - 48) * 10
+                + Integer.valueOf(formattedTime.charAt(7)) - 48;
     }
 
     private void drawMap() {
         // Drawing map for battle
         for (int i = 0; i < 7; i++) {
-            if (i == 2 || i == 3 || i == 4) {
+            if (i == 3) {
                 continue;
             }
             Point Steel = new Point(0 + (i * 200), 350);
@@ -538,6 +595,7 @@ public class Map1_Defence extends JFrame implements Runnable {
             this.damageBlock.add(in);
             this.add(in.drawObject());
         }
+
         for (int i = 0; i < 33; i++) {
             Point invisiblePoint = new Point(i * 40, 750);
             invisibleObstacle in = new invisibleObstacle(invisiblePoint);
@@ -556,64 +614,8 @@ public class Map1_Defence extends JFrame implements Runnable {
             this.damageBlock.add(in);
             this.add(in.drawObject());
         }
-        for (int i = 0; i < 5; i++) {
-            Point waterPoint = new Point(i * 40, 190);
-            Water wat = new Water(waterPoint);
-            this.damageBlock.add(wat);
-            this.add(wat.drawObject());
-        }
-        for (int i = 0; i < 2; i++) {
-            Point waterPoint = new Point(160, 150 - (i * 40));
-            Water wat = new Water(waterPoint);
-            this.damageBlock.add(wat);
-            this.add(wat.drawObject());
-        }
-        for (int i = 0; i < 5; i++) {
-            Point waterPoint = new Point(i * 40, 590);
-            Water wat = new Water(waterPoint);
-            this.damageBlock.add(wat);
-            this.add(wat.drawObject());
-        }
-        for (int i = 0; i < 2; i++) {
-            Point waterPoint = new Point(160, 630 + (i * 40));
-            Water wat = new Water(waterPoint);
-            this.damageBlock.add(wat);
-            this.add(wat.drawObject());
-        }
-        for (int i = 0; i < 5; i++) {
-            Point waterPoint = new Point(1120 + i * 40, 190);
-            Water wat = new Water(waterPoint);
-            this.damageBlock.add(wat);
-            this.add(wat.drawObject());
-        }
-        for (int i = 0; i < 2; i++) {
-            Point waterPoint = new Point(1120, 150 - (i * 40));
-            Water wat = new Water(waterPoint);
-            this.damageBlock.add(wat);
-            this.add(wat.drawObject());
-        }
-        for (int i = 0; i < 5; i++) {
-            Point waterPoint = new Point(1120 + i * 40, 590);
-            Water wat = new Water(waterPoint);
-            this.damageBlock.add(wat);
-            this.add(wat.drawObject());
-        }
-        for (int i = 0; i < 2; i++) {
-            Point waterPoint = new Point(1120, 630 + (i * 40));
-            Water wat = new Water(waterPoint);
-            this.damageBlock.add(wat);
-            this.add(wat.drawObject());
-        }
-
-        for (int i = 0; i < 7; i++) {
-            Point waterPoint = new Point(480 + (i * 40), 190);
-            Water wat = new Water(waterPoint);
-            this.damageBlock.add(wat);
-            this.add(wat.drawObject());
-        }
-
-        for (int i = 0; i < 7; i++) {
-            Point waterPoint = new Point(480 + (i * 40), 550);
+        for (int i = 0; i < 33; i++) {
+            Point waterPoint = new Point(i * 40, 310);
             Water wat = new Water(waterPoint);
             this.damageBlock.add(wat);
             this.add(wat.drawObject());
@@ -625,6 +627,15 @@ public class Map1_Defence extends JFrame implements Runnable {
         this.userTank1 = new UserTank(userTank);
         ControlTank.add(userTank1);
         this.add(userTank1.draw());
+
+        Point bossTank = new Point(360, 70);
+        this.bossT = new Boss(bossTank);
+        for (int h = 0; h < 7; h++) {
+            for (int i = 0; i < 16; i++) {
+                Boss.add(new Point(360 + i * 40, 70 + h * 40));
+            }
+        }
+        this.add(bossT.draw());
 
         // set linklist for damage object
         for (int i = 0; i < 3; i++) {
@@ -649,18 +660,6 @@ public class Map1_Defence extends JFrame implements Runnable {
             this.add(brk.drawObject());
         }
 
-        Point Heart = new Point(600, 710);
-        HeartGoal heart = new HeartGoal(Heart);
-        damageBlock.add(heart);
-        this.add(heart.drawObject());
-
-        for (int i = 0; i < 5; i++) {
-            Point woddenboxPoint = new Point(i * 40, 230);
-            WoodenBox wb = new WoodenBox(woddenboxPoint);
-            // Wooden class no need jlabel as pass is a referrence
-            damageBlock.add(wb);
-            this.add(wb.drawObject());
-        }
         for (int i = 0; i < 5; i++) {
             Point woddenboxPoint = new Point(i * 40, 550);
             WoodenBox wb = new WoodenBox(woddenboxPoint);
@@ -668,13 +667,7 @@ public class Map1_Defence extends JFrame implements Runnable {
             damageBlock.add(wb);
             this.add(wb.drawObject());
         }
-        for (int i = 0; i < 5; i++) {
-            Point woddenboxPoint = new Point(1120 + i * 40, 230);
-            WoodenBox wb = new WoodenBox(woddenboxPoint);
-            // Wooden class no need jlabel as pass is a referrence
-            damageBlock.add(wb);
-            this.add(wb.drawObject());
-        }
+
         for (int i = 0; i < 5; i++) {
             Point woddenboxPoint = new Point(1120 + i * 40, 550);
             WoodenBox wb = new WoodenBox(woddenboxPoint);
@@ -683,11 +676,18 @@ public class Map1_Defence extends JFrame implements Runnable {
             this.add(wb.drawObject());
         }
         for (int i = 0; i < 7; i++) {
-            Point woddenboxPoint = new Point(480 + (i * 40), 510);
-            WoodenBox wb = new WoodenBox(woddenboxPoint);
-            // Wooden class no need jlabel as pass is a referrence
-            damageBlock.add(wb);
-            this.add(wb.drawObject());
+            Point BrickBlockPoint = new Point(480 + (i * 40), 510);
+            BrickBlock brk = new BrickBlock(BrickBlockPoint);
+
+            damageBlock.add(brk);
+            this.add(brk.drawObject());
+        }
+        for (int i = 0; i < 7; i++) {
+            Point BrickBlockPoint = new Point(480 + (i * 40), 470);
+            BrickBlock brk = new BrickBlock(BrickBlockPoint);
+
+            damageBlock.add(brk);
+            this.add(brk.drawObject());
         }
         for (int i = 0; i < 2; i++) {
             Point woddenboxPoint = new Point(80 + (i * 200), 350);
@@ -743,10 +743,41 @@ public class Map1_Defence extends JFrame implements Runnable {
      */
 
     private void updateGame() {
-        if (numOfEnemy1Kill >= 5 && numOfEnemy2Kill >= 5) {
-            MovetoMap2();
+        if (bossT.isDestroy() && time <= 30) {
+            for (int h = 0; h < 7; h++) {
+                for (int i = 0; i < 16; i++) {
+                    Boss.remove(new Point(360 + i * 40, 70 + h * 40));
+                }
+            }
+            score += 30000;
+            score += 30000;
+            MovetoVicory();
+        } else if (bossT.isDestroy() && time <= 60) {
+            for (int h = 0; h < 7; h++) {
+                for (int i = 0; i < 16; i++) {
+                    Boss.remove(new Point(360 + i * 40, 70 + h * 40));
+                }
+            }
+            score += 30000;
+            score += 20000;
+            MovetoVicory();
+        } else if (bossT.isDestroy() && time <= 90) {
+            for (int h = 0; h < 7; h++) {
+                for (int i = 0; i < 16; i++) {
+                    Boss.remove(new Point(360 + i * 40, 70 + h * 40));
+                }
+            }
+            score += 30000;
+            score += 10000;
+            MovetoVicory();
+        } else if (time > 90) {
+            isPause = true;
+            JOptionPane.showMessageDialog(null, "Time up!!! You are defeated!!!");
+            JOptionPane.showMessageDialog(null, "Back to home page!!!");
+            this.dispose();
+            HomePage home = new HomePage(false);
+            new Thread(home).start();
         }
-        Iterator<Shot> iterator = shots.iterator();
         if (userTank1.getHealth() < 0) {
             userTank1.setHealth(0);
         }
@@ -756,7 +787,7 @@ public class Map1_Defence extends JFrame implements Runnable {
         }
         // Update all bullets
         UserTankLife.setText(String.valueOf(numberOfLife));
-        EnemyTank1Killed.setText(String.valueOf(numOfEnemy1Kill));
+        EnemyTank3Killed.setText(String.valueOf(numOfEnemy3Kill));
         EnemyTank2Killed.setText(String.valueOf(numOfEnemy2Kill));
         bulletPerShot.setText(String.valueOf(userTank1.getCurrentNumOfBullet()));
         HeartDisplay.setText(String.valueOf(userTank1.getHealth()));
@@ -772,6 +803,7 @@ public class Map1_Defence extends JFrame implements Runnable {
             this.remove(j);
             this.remove(f);
         }
+
         if (direction != Direction.NO_DIRECTION) {
             currentDirection = direction;
             userTankMove();
@@ -779,10 +811,11 @@ public class Map1_Defence extends JFrame implements Runnable {
             repaint();
             direction = Direction.NO_DIRECTION;
         }
+        Iterator<Shot> iterator = shots.iterator();
         while (iterator.hasNext()) {
             Shot shot = iterator.next();
             shot.move();
-            shot.setObstacle(damageBlock, EnemyTank, null, null);
+            shot.setObstacle(damageBlock, EnemyTank, Boss, bossT);
             if (shot.getisDamage()) {
                 this.remove(shot.getImage());
                 iterator.remove();
@@ -806,14 +839,6 @@ public class Map1_Defence extends JFrame implements Runnable {
         while (iterator2.hasNext()) {
             Unmove unm = iterator2.next();
             if (unm.isDestroy()) {
-                if (unm instanceof HeartGoal) {
-                    isPause = true;
-                    JOptionPane.showMessageDialog(null, "Protect point has been destroyed!!!");
-                    JOptionPane.showMessageDialog(null, "Back to home page!!!");
-                    this.dispose();
-                    HomePage home = new HomePage(false);
-                    new Thread(home).start();
-                }
                 if (unm instanceof WoodenBox) {
                     Random random = new Random();
                     int canGetItem = random.nextInt(101) + 1;
@@ -827,8 +852,12 @@ public class Map1_Defence extends JFrame implements Runnable {
                         gachaPercentage += 10;
                     }
                 }
-                if ((unm instanceof Clock || unm instanceof BulletIncrease || unm instanceof HeartUp)
-                        && unm.getPos().equals(new Point(600, 390))) {
+                if ((unm instanceof Clock || unm instanceof BulletIncrease || unm instanceof HeartUp
+                        || unm instanceof BrickRegenerate)
+                        && unm.getPos().equals(new Point(600, 550))) {
+                    if (unm instanceof BrickRegenerate) {
+                        Regenration();
+                    }
                     if (unm instanceof Clock) {
                         score += 100;
                         stopEnemyMove();
@@ -838,8 +867,12 @@ public class Map1_Defence extends JFrame implements Runnable {
                     }
                     timeDropSup = false;
                 }
-                if ((unm instanceof Clock || unm instanceof BulletIncrease || unm instanceof HeartUp)
-                        && !unm.getPos().equals(new Point(600, 390))) {
+                if ((unm instanceof Clock || unm instanceof BulletIncrease || unm instanceof HeartUp
+                        || unm instanceof BrickRegenerate)
+                        && !unm.getPos().equals(new Point(600, 550))) {
+                    if (unm instanceof BrickRegenerate) {
+                        Regenration();
+                    }
                     if (unm instanceof Clock) {
                         score += 100;
                         stopEnemyMove();
@@ -847,6 +880,9 @@ public class Map1_Defence extends JFrame implements Runnable {
                     if (unm instanceof BulletIncrease || unm instanceof HeartUp) {
                         score += 200;
                     }
+                }
+                if (unm instanceof BrickBlock) {
+                    continue;
                 }
                 this.remove(unm.getJLabel());
                 iterator2.remove();
@@ -857,9 +893,9 @@ public class Map1_Defence extends JFrame implements Runnable {
         while (iterator3.hasNext()) {
             Move move = iterator3.next();
             if (move.isDestroy()) {
-                if (move instanceof EnemyTank1) {
-                    numOfEnemy1Kill += 1;
-                    score += 300;
+                if (move instanceof EnemyTank3) {
+                    numOfEnemy3Kill += 1;
+                    score += 1000;
                 } else if (move instanceof EnemyTank2) {
                     numOfEnemy2Kill += 1;
                     score += 500;
@@ -879,6 +915,17 @@ public class Map1_Defence extends JFrame implements Runnable {
             Item.start();
         }
         this.revalidate();
+        this.repaint();
+    }
+
+    private void Regenration() {
+        Iterator<Unmove> iterator = damageBlock.iterator();
+        while (iterator.hasNext()) {
+            Unmove unm = iterator.next();
+            if (unm instanceof BrickBlock) {
+                ((BrickBlock) unm).setHealth(10);
+            }
+        }
         this.repaint();
     }
 
@@ -909,30 +956,43 @@ public class Map1_Defence extends JFrame implements Runnable {
             Random random = new Random();
             int randomItem = random.nextInt(101) + 1;
             if (randomItem > 40) {
-                item = new Clock(position);
+                item = new BrickRegenerate(position);
             } else if (randomItem > 20) {
                 item = new BulletIncrease(position);
-            } else {
+            } else if (randomItem > 10) {
                 item = new HeartUp(position);
+            } else {
+                item = new Clock(position);
             }
         } else if (!userTank1.isAtMaxHealth()) {
             Random random = new Random();
             int randomItem = random.nextInt(101) + 1;
-            if (randomItem > 20) {
-                item = new Clock(position);
-            } else if (randomItem > 0) {
+            if (randomItem > 40) {
+                item = new BrickRegenerate(position);
+            } else if (randomItem > 20) {
                 item = new HeartUp(position);
+            } else {
+                item = new Clock(position);
             }
         } else if (!userTank1.isMaxBullet()) {
             Random random = new Random();
             int randomItem = random.nextInt(101) + 1;
-            if (randomItem > 20) {
-                item = new Clock(position);
-            } else if (randomItem > 0) {
+            if (randomItem > 40) {
+                item = new BrickRegenerate(position);
+            } else if (randomItem > 20) {
                 item = new BulletIncrease(position);
+            } else {
+                item = new Clock(position);
             }
         } else {
-            item = new Clock(position);
+            Random random = new Random();
+            int randomItem = random.nextInt(101) + 1;
+            if (randomItem > 15) {
+                item = new BrickRegenerate(position);
+            } else {
+                item = new Clock(position);
+            }
+
         }
         damageBlock.add(item);
         return item.drawObject();
@@ -1004,7 +1064,7 @@ public class Map1_Defence extends JFrame implements Runnable {
 
     private JLabel Enemyspawn() {
         Random random = new Random();
-        int randomEnemy = random.nextInt(2) + 1;
+        int randomEnemy = random.nextInt(2) + 2;
         Point randomPoint = new Point();
         boolean spawnable = false;
         int randomSpawnPoint = random.nextInt(3) + 1;
@@ -1014,18 +1074,6 @@ public class Map1_Defence extends JFrame implements Runnable {
                 int randomPosX = random.nextInt(2);
                 int randomPosY = random.nextInt(2);
                 randomPoint.setLocation(200 + randomPosX * 40, 110 + randomPosY * 40);
-                spawnable = true; // Assume it's spawnable until we find otherwise
-
-                for (Move move : EnemyTank) {
-                    if (move.getPos().equals(randomPoint)) {
-                        spawnable = false; // Not spawnable if position is already occupied
-                        break;
-                    }
-                }
-            } else if (randomSpawnPoint == 3) {
-                int randomPosX = random.nextInt(6);
-                int randomPosY = random.nextInt(2);
-                randomPoint.setLocation(480 + randomPosX * 40, 110 + randomPosY * 40);
                 spawnable = true; // Assume it's spawnable until we find otherwise
 
                 for (Move move : EnemyTank) {
@@ -1153,26 +1201,26 @@ public class Map1_Defence extends JFrame implements Runnable {
     private String user3ScoreSur;
     private String user3PlayTimeSur;
 
-    private void MovetoMap2() {
+    private void MovetoVicory() {
         isPause = true;
-        JOptionPane.showMessageDialog(null, "You win first map");
-        readTextFromFile_Map1();
-        if (this.score >= Integer.parseInt(user1ScoreDef)) {
-            if (this.score > Integer.parseInt(user1ScoreDef)) {
+        JOptionPane.showMessageDialog(null, "You win!!! Congratulation!!!");
+        readTextFromFile_Map2();
+        if (this.score >= Integer.parseInt(user1ScoreSur)) {
+            if (this.score > Integer.parseInt(user1ScoreSur)) {
                 String name = JOptionPane.showInputDialog("Please enter your name: ");
-                user3NameDef = user2NameDef;
-                user2NameDef = user1NameDef;
-                user1NameDef = name;
+                user3NameSur = user2NameSur;
+                user2NameSur = user1NameSur;
+                user1NameSur = name;
 
-                user3ScoreDef = user2ScoreDef;
-                user2ScoreDef = user1ScoreDef;
-                user1ScoreDef = String.valueOf(score);
+                user3ScoreSur = user2ScoreSur;
+                user2ScoreSur = user1ScoreSur;
+                user1ScoreSur = String.valueOf(score);
 
-                user3PlayTimeDef = user2PlayTimeDef;
-                user2PlayTimeDef = user1PlayTimeDef;
-                user1PlayTimeDef = formattedTime;
+                user3PlayTimeSur = user2PlayTimeSur;
+                user2PlayTimeSur = user1PlayTimeSur;
+                user1PlayTimeSur = formattedTime;
                 String filePath = "E:\\"; // Change this to your desired directory
-                String fileName = "TankShotter_LeaderBoard_Map1.txt";
+                String fileName = "TankShotter_LeaderBoard_Map2.txt";
 
                 String content = "Name  Score  Play Time\n" + gameModeDef +
                         "\n" +
@@ -1195,25 +1243,25 @@ public class Map1_Defence extends JFrame implements Runnable {
                         (Integer.valueOf(formattedTime.charAt(3)) * 10 + Integer.valueOf(formattedTime.charAt(4))) * 60
                         + Integer.valueOf(formattedTime.charAt(6)) * 10
                         + Integer.valueOf(formattedTime.charAt(7));
-                int player1time = (Integer.valueOf(user1PlayTimeDef.charAt(0)) * 10
-                        + Integer.valueOf(user1PlayTimeDef.charAt(1))) * 60 * 60 +
-                        (Integer.valueOf(user1PlayTimeDef.charAt(3)) * 10 + Integer.valueOf(user1PlayTimeDef.charAt(4)))
+                int player1time = (Integer.valueOf(user1PlayTimeSur.charAt(0)) * 10
+                        + Integer.valueOf(user1PlayTimeSur.charAt(1))) * 60 * 60 +
+                        (Integer.valueOf(user1PlayTimeSur.charAt(3)) * 10 + Integer.valueOf(user1PlayTimeSur.charAt(4)))
                                 * 60
-                        + Integer.valueOf(user1PlayTimeDef.charAt(6)) * 10
-                        + Integer.valueOf(user1PlayTimeDef.charAt(7));
+                        + Integer.valueOf(user1PlayTimeSur.charAt(6)) * 10
+                        + Integer.valueOf(user1PlayTimeSur.charAt(7));
                 if (time >= player1time) {
                     String name = JOptionPane.showInputDialog("Please enter your name: ");
-                    user3NameDef = user2NameDef;
-                    user2NameDef = name;
+                    user3NameSur = user2NameSur;
+                    user2NameSur = name;
 
-                    user3ScoreDef = user2ScoreDef;
-                    user2ScoreDef = String.valueOf(score);
+                    user3ScoreSur = user2ScoreSur;
+                    user2ScoreSur = String.valueOf(score);
 
-                    user3PlayTimeDef = user2PlayTimeDef;
-                    user2PlayTimeDef = formattedTime;
+                    user3PlayTimeSur = user2PlayTimeSur;
+                    user2PlayTimeSur = formattedTime;
 
                     String filePath = "E:\\"; // Change this to your desired directory
-                    String fileName = "TankShotter_LeaderBoard_Map1.txt";
+                    String fileName = "TankShotter_LeaderBoard_Map2.txt";
 
                     String content = "Name  Score  Play Time\n" + gameModeDef +
                             "\n" +
@@ -1232,19 +1280,19 @@ public class Map1_Defence extends JFrame implements Runnable {
                     }
                 } else {
                     String name = JOptionPane.showInputDialog("Please enter your name: ");
-                    user3NameDef = user2NameDef;
-                    user2NameDef = user1NameDef;
-                    user1NameDef = name;
+                    user3NameSur = user2NameSur;
+                    user2NameSur = user1NameSur;
+                    user1NameSur = name;
 
-                    user3ScoreDef = user2ScoreDef;
-                    user2ScoreDef = user1ScoreDef;
-                    user1ScoreDef = String.valueOf(score);
+                    user3ScoreSur = user2ScoreSur;
+                    user2ScoreSur = user1ScoreSur;
+                    user1ScoreSur = String.valueOf(score);
 
-                    user3PlayTimeDef = user2PlayTimeDef;
-                    user2PlayTimeDef = user1PlayTimeDef;
-                    user1PlayTimeDef = formattedTime;
+                    user3PlayTimeSur = user2PlayTimeSur;
+                    user2PlayTimeSur = user1PlayTimeSur;
+                    user1PlayTimeSur = formattedTime;
                     String filePath = "E:\\"; // Change this to your desired directory
-                    String fileName = "TankShotter_LeaderBoard_Map1.txt";
+                    String fileName = "TankShotter_LeaderBoard_Map2.txt";
 
                     String content = "Name  Score  Play Time\n" + gameModeDef +
                             "\n" +
@@ -1265,20 +1313,20 @@ public class Map1_Defence extends JFrame implements Runnable {
             }
         }
 
-        else if (this.score >= Integer.parseInt(user2ScoreDef)) {
-            if (this.score > Integer.parseInt(user2ScoreDef)) {
+        else if (this.score >= Integer.parseInt(user2ScoreSur)) {
+            if (this.score > Integer.parseInt(user2ScoreSur)) {
                 String name = JOptionPane.showInputDialog("Please enter your name: ");
-                user3NameDef = user2NameDef;
-                user2NameDef = name;
+                user3NameSur = user2NameSur;
+                user2NameSur = name;
 
-                user3ScoreDef = user2ScoreDef;
-                user2ScoreDef = String.valueOf(score);
+                user3ScoreSur = user2ScoreSur;
+                user2ScoreSur = String.valueOf(score);
 
-                user3PlayTimeDef = user2PlayTimeDef;
-                user2PlayTimeDef = formattedTime;
+                user3PlayTimeSur = user2PlayTimeSur;
+                user2PlayTimeSur = formattedTime;
 
                 String filePath = "E:\\"; // Change this to your desired directory
-                String fileName = "TankShotter_LeaderBoard_Map1.txt";
+                String fileName = "TankShotter_LeaderBoard_Map2.txt";
 
                 String content = "Name  Score  Play Time\n" + gameModeDef +
                         "\n" +
@@ -1302,21 +1350,21 @@ public class Map1_Defence extends JFrame implements Runnable {
                         + Integer.valueOf(formattedTime.charAt(6)) * 10
                         + Integer.valueOf(formattedTime.charAt(7));
                 int player2time = (Integer.valueOf(user2PlayTimeDef.charAt(0)) * 10
-                        + Integer.valueOf(user2PlayTimeDef.charAt(1))) * 60 * 60 +
-                        (Integer.valueOf(user2PlayTimeDef.charAt(3)) * 10 + Integer.valueOf(user2PlayTimeDef.charAt(4)))
+                        + Integer.valueOf(user2PlayTimeSur.charAt(1))) * 60 * 60 +
+                        (Integer.valueOf(user2PlayTimeSur.charAt(3)) * 10 + Integer.valueOf(user2PlayTimeDef.charAt(4)))
                                 * 60
-                        + Integer.valueOf(user2PlayTimeDef.charAt(6)) * 10
-                        + Integer.valueOf(user2PlayTimeDef.charAt(7));
+                        + Integer.valueOf(user2PlayTimeSur.charAt(6)) * 10
+                        + Integer.valueOf(user2PlayTimeSur.charAt(7));
                 if (time >= player2time) {
                     String name = JOptionPane.showInputDialog("Please enter your name: ");
-                    user3NameDef = name;
+                    user3NameSur = name;
 
-                    user3ScoreDef = String.valueOf(score);
+                    user3ScoreSur = String.valueOf(score);
 
-                    user3PlayTimeDef = formattedTime;
+                    user3PlayTimeSur = formattedTime;
 
                     String filePath = "E:\\"; // Change this to your desired directory
-                    String fileName = "TankShotter_LeaderBoard_Map1.txt";
+                    String fileName = "TankShotter_LeaderBoard_Map2.txt";
 
                     String content = "Name  Score  Play Time\n" + gameModeDef +
                             "\n" +
@@ -1335,17 +1383,17 @@ public class Map1_Defence extends JFrame implements Runnable {
                     }
                 } else {
                     String name = JOptionPane.showInputDialog("Please enter your name: ");
-                    user3NameDef = user2NameDef;
-                    user2NameDef = name;
+                    user3NameSur = user2NameSur;
+                    user2NameSur = name;
 
-                    user3ScoreDef = user2ScoreDef;
-                    user2ScoreDef = String.valueOf(score);
+                    user3ScoreSur = user2ScoreSur;
+                    user2ScoreSur = String.valueOf(score);
 
-                    user3PlayTimeDef = user2PlayTimeDef;
-                    user2PlayTimeDef = formattedTime;
+                    user3PlayTimeSur = user2PlayTimeDef;
+                    user2PlayTimeSur = formattedTime;
 
                     String filePath = "E:\\"; // Change this to your desired directory
-                    String fileName = "TankShotter_LeaderBoard_Map1.txt";
+                    String fileName = "TankShotter_LeaderBoard_Map2.txt";
 
                     String content = "Name  Score  Play Time\n" + gameModeDef +
                             "\n" +
@@ -1365,17 +1413,17 @@ public class Map1_Defence extends JFrame implements Runnable {
                 }
 
             }
-        } else if (this.score >= Integer.parseInt(user3ScoreDef)) {
-            if (this.score > Integer.parseInt(user3ScoreDef)) {
+        } else if (this.score >= Integer.parseInt(user3ScoreSur)) {
+            if (this.score > Integer.parseInt(user3ScoreSur)) {
                 String name = JOptionPane.showInputDialog("Please enter your name: ");
-                user3NameDef = name;
+                user3NameSur = name;
 
-                user3ScoreDef = String.valueOf(score);
+                user3ScoreSur = String.valueOf(score);
 
-                user3PlayTimeDef = formattedTime;
+                user3PlayTimeSur = formattedTime;
 
                 String filePath = "E:\\"; // Change this to your desired directory
-                String fileName = "TankShotter_LeaderBoard_Map1.txt";
+                String fileName = "TankShotter_LeaderBoard_Map2.txt";
 
                 String content = "Name  Score  Play Time\n" + gameModeDef +
                         "\n" +
@@ -1398,22 +1446,22 @@ public class Map1_Defence extends JFrame implements Runnable {
                         (Integer.valueOf(formattedTime.charAt(3)) * 10 + Integer.valueOf(formattedTime.charAt(4))) * 60
                         + Integer.valueOf(formattedTime.charAt(6)) * 10
                         + Integer.valueOf(formattedTime.charAt(7));
-                int player3time = (Integer.valueOf(user3PlayTimeDef.charAt(0)) * 10
-                        + Integer.valueOf(user3PlayTimeDef.charAt(1))) * 60 * 60 +
-                        (Integer.valueOf(user3PlayTimeDef.charAt(3) * 10 + Integer.valueOf(user3PlayTimeDef.charAt(4)))
+                int player3time = (Integer.valueOf(user3PlayTimeSur.charAt(0)) * 10
+                        + Integer.valueOf(user3PlayTimeSur.charAt(1))) * 60 * 60 +
+                        (Integer.valueOf(user3PlayTimeSur.charAt(3)) * 10 + Integer.valueOf(user3PlayTimeSur.charAt(4)))
                                 * 60
-                                + Integer.valueOf(user3PlayTimeDef.charAt(6)) * 10
-                                + Integer.valueOf(user3PlayTimeDef.charAt(7)));
+                        + Integer.valueOf(user3PlayTimeSur.charAt(6)) * 10
+                        + Integer.valueOf(user3PlayTimeSur.charAt(7));
                 if (time < player3time) {
                     String name = JOptionPane.showInputDialog("Please enter your name: ");
-                    user3NameDef = name;
+                    user3NameSur = name;
 
-                    user3ScoreDef = String.valueOf(score);
+                    user3ScoreSur = String.valueOf(score);
 
-                    user3PlayTimeDef = formattedTime;
+                    user3PlayTimeSur = formattedTime;
 
                     String filePath = "E:\\"; // Change this to your desired directory
-                    String fileName = "TankShotter_LeaderBoard_Map1.txt";
+                    String fileName = "TankShotter_LeaderBoard_Map2.txt";
 
                     String content = "Name  Score  Play Time\n" + gameModeDef +
                             "\n" +
@@ -1436,31 +1484,13 @@ public class Map1_Defence extends JFrame implements Runnable {
             JOptionPane.showMessageDialog(null,
                     "Your score and play time is not satisfy to enter leader board!!! \n Good luck next time");
         }
-        int response = JOptionPane.showConfirmDialog(
-                null,
-                "Do you want to process to next map ? \n Yes for continue, No for exit",
-                "Confirm Map Choice",
-                JOptionPane.YES_NO_OPTION,
-                JOptionPane.QUESTION_MESSAGE);
-
-        if (response == JOptionPane.YES_OPTION) {
-            System.out.println("User chose 'Yes'");
-            this.dispose();
-            Map2_Defence map2 = new Map2_Defence();
-            new Thread(map2).start();
-        } else if (response == JOptionPane.NO_OPTION) {
-            System.out.println("User chose 'No'.");
-            this.dispose();
-            HomePage home = new HomePage(false);
-            new Thread(home).start();
-        } else {
-            System.out.println("Dialog was closed or canceled without a specific choice.");
-        }
-        this.requestFocus();
+        this.dispose();
+        VictoryScreen v = new VictoryScreen();
+        new Thread(v).start();
     }
 
-    private void readTextFromFile_Map1() {
-        String filePath = "E:\\TankShotter_LeaderBoard_Map1.txt";
+    private void readTextFromFile_Map2() {
+        String filePath = "E:\\TankShotter_LeaderBoard_Map2.txt";
         try {
             // Read all lines from the file
             List<String> lines = Files.readAllLines(Paths.get(filePath));
@@ -1543,7 +1573,7 @@ public class Map1_Defence extends JFrame implements Runnable {
     }
 
     public static void main(String[] args) {
-        Map1_Defence map1 = new Map1_Defence();
-        new Thread(map1).start();
+        Map2_Survival map2 = new Map2_Survival();
+        new Thread(map2).start();
     }
 }

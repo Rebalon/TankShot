@@ -36,7 +36,6 @@ import Mechanic.Move.UserTank;
 import Mechanic.UnmoveObject.BrickBlock;
 import Mechanic.UnmoveObject.BulletIncrease;
 import Mechanic.UnmoveObject.Clock;
-import Mechanic.UnmoveObject.HeartGoal;
 import Mechanic.UnmoveObject.HeartUp;
 import Mechanic.UnmoveObject.SteelBlock;
 import Mechanic.UnmoveObject.Unmove;
@@ -46,7 +45,7 @@ import Mechanic.UnmoveObject.invisibleObstacle;
 import UI.Direction;
 import UI.GamePage.HomePage;
 
-public class Map1_Defence extends JFrame implements Runnable {
+public class Map1_Survival extends JFrame implements Runnable {
     private LinkedList<Point> Boss = new LinkedList<>();
     private JLabel HeartIcon = new JLabel();
     private JLabel HeartDisplay = new JLabel();
@@ -95,8 +94,9 @@ public class Map1_Defence extends JFrame implements Runnable {
     private boolean isPause = false;
     private int pausetime = 0;
     private String formattedTime;
+    private int time;
 
-    public Map1_Defence() {
+    public Map1_Survival() {
         initial();
     }
 
@@ -507,6 +507,13 @@ public class Map1_Defence extends JFrame implements Runnable {
 
         // Update the JLabel text
         runTimeDisplay.setText("Playtime: " + formattedTime);
+        time = ((Integer.valueOf(formattedTime.charAt(0)) - 48) * 10 + Integer.valueOf(formattedTime.charAt(1)) - 48)
+                * 60 * 60
+                +
+                ((Integer.valueOf(formattedTime.charAt(3)) - 48) * 10 + Integer.valueOf(formattedTime.charAt(4)) - 48)
+                        * 60
+                + (Integer.valueOf(formattedTime.charAt(6)) - 48) * 10
+                + Integer.valueOf(formattedTime.charAt(7)) - 48;
     }
 
     private void drawMap() {
@@ -649,11 +656,6 @@ public class Map1_Defence extends JFrame implements Runnable {
             this.add(brk.drawObject());
         }
 
-        Point Heart = new Point(600, 710);
-        HeartGoal heart = new HeartGoal(Heart);
-        damageBlock.add(heart);
-        this.add(heart.drawObject());
-
         for (int i = 0; i < 5; i++) {
             Point woddenboxPoint = new Point(i * 40, 230);
             WoodenBox wb = new WoodenBox(woddenboxPoint);
@@ -743,9 +745,11 @@ public class Map1_Defence extends JFrame implements Runnable {
      */
 
     private void updateGame() {
-        if (numOfEnemy1Kill >= 5 && numOfEnemy2Kill >= 5) {
+
+        if (time == 300) {
             MovetoMap2();
         }
+
         Iterator<Shot> iterator = shots.iterator();
         if (userTank1.getHealth() < 0) {
             userTank1.setHealth(0);
@@ -806,14 +810,16 @@ public class Map1_Defence extends JFrame implements Runnable {
         while (iterator2.hasNext()) {
             Unmove unm = iterator2.next();
             if (unm.isDestroy()) {
-                if (unm instanceof HeartGoal) {
-                    isPause = true;
-                    JOptionPane.showMessageDialog(null, "Protect point has been destroyed!!!");
-                    JOptionPane.showMessageDialog(null, "Back to home page!!!");
-                    this.dispose();
-                    HomePage home = new HomePage(false);
-                    new Thread(home).start();
-                }
+                /*
+                 * if (unm instanceof HeartGoal) {
+                 * isPause = true;
+                 * JOptionPane.showMessageDialog(null, "Protect point has been destroyed!!!");
+                 * JOptionPane.showMessageDialog(null, "Back to home page!!!");
+                 * this.dispose();
+                 * HomePage home = new HomePage(false);
+                 * new Thread(home).start();
+                 * }
+                 */
                 if (unm instanceof WoodenBox) {
                     Random random = new Random();
                     int canGetItem = random.nextInt(101) + 1;
@@ -1157,20 +1163,20 @@ public class Map1_Defence extends JFrame implements Runnable {
         isPause = true;
         JOptionPane.showMessageDialog(null, "You win first map");
         readTextFromFile_Map1();
-        if (this.score >= Integer.parseInt(user1ScoreDef)) {
-            if (this.score > Integer.parseInt(user1ScoreDef)) {
+        if (this.score >= Integer.parseInt(user1ScoreSur)) {
+            if (this.score > Integer.parseInt(user1ScoreSur)) {
                 String name = JOptionPane.showInputDialog("Please enter your name: ");
-                user3NameDef = user2NameDef;
-                user2NameDef = user1NameDef;
-                user1NameDef = name;
+                user3NameSur = user2NameSur;
+                user2NameSur = user1NameSur;
+                user1NameSur = name;
 
-                user3ScoreDef = user2ScoreDef;
-                user2ScoreDef = user1ScoreDef;
-                user1ScoreDef = String.valueOf(score);
+                user3ScoreSur = user2ScoreSur;
+                user2ScoreSur = user1ScoreSur;
+                user1ScoreSur = String.valueOf(score);
 
-                user3PlayTimeDef = user2PlayTimeDef;
-                user2PlayTimeDef = user1PlayTimeDef;
-                user1PlayTimeDef = formattedTime;
+                user3PlayTimeSur = user2PlayTimeSur;
+                user2PlayTimeSur = user1PlayTimeSur;
+                user1PlayTimeSur = formattedTime;
                 String filePath = "E:\\"; // Change this to your desired directory
                 String fileName = "TankShotter_LeaderBoard_Map1.txt";
 
@@ -1190,92 +1196,48 @@ public class Map1_Defence extends JFrame implements Runnable {
                     System.out.println("File creation failed.");
                 }
             } else {
-                int time = (Integer.valueOf(formattedTime.charAt(0)) * 10 + Integer.valueOf(formattedTime.charAt(1)))
-                        * 60 * 60 +
-                        (Integer.valueOf(formattedTime.charAt(3)) * 10 + Integer.valueOf(formattedTime.charAt(4))) * 60
-                        + Integer.valueOf(formattedTime.charAt(6)) * 10
-                        + Integer.valueOf(formattedTime.charAt(7));
-                int player1time = (Integer.valueOf(user1PlayTimeDef.charAt(0)) * 10
-                        + Integer.valueOf(user1PlayTimeDef.charAt(1))) * 60 * 60 +
-                        (Integer.valueOf(user1PlayTimeDef.charAt(3)) * 10 + Integer.valueOf(user1PlayTimeDef.charAt(4)))
-                                * 60
-                        + Integer.valueOf(user1PlayTimeDef.charAt(6)) * 10
-                        + Integer.valueOf(user1PlayTimeDef.charAt(7));
-                if (time >= player1time) {
-                    String name = JOptionPane.showInputDialog("Please enter your name: ");
-                    user3NameDef = user2NameDef;
-                    user2NameDef = name;
+                String name = JOptionPane.showInputDialog("Please enter your name: ");
+                user3NameSur = user2NameSur;
+                user2NameSur = name;
 
-                    user3ScoreDef = user2ScoreDef;
-                    user2ScoreDef = String.valueOf(score);
+                user3ScoreSur = user2ScoreSur;
+                user2ScoreSur = String.valueOf(score);
 
-                    user3PlayTimeDef = user2PlayTimeDef;
-                    user2PlayTimeDef = formattedTime;
+                user3PlayTimeSur = user2PlayTimeSur;
+                user2PlayTimeSur = formattedTime;
 
-                    String filePath = "E:\\"; // Change this to your desired directory
-                    String fileName = "TankShotter_LeaderBoard_Map1.txt";
+                String filePath = "E:\\"; // Change this to your desired directory
+                String fileName = "TankShotter_LeaderBoard_Map1.txt";
 
-                    String content = "Name  Score  Play Time\n" + gameModeDef +
-                            "\n" +
-                            user1NameDef + "      " + user1ScoreDef + "   " + user1PlayTimeDef + "\n" +
-                            user2NameDef + "      " + user2ScoreDef + "   " + user2PlayTimeDef + "\n" +
-                            user3NameDef + "      " + user3ScoreDef + "   " + user3PlayTimeDef + "\n" +
-                            gameModeSur + "\n" +
-                            user1NameSur + "      " + user1ScoreSur + "   " + user1PlayTimeSur + "\n" +
-                            user2NameSur + "      " + user2ScoreSur + "   " + user2PlayTimeSur + "\n" +
-                            user3NameSur + "      " + user3ScoreSur + "   " + user3PlayTimeSur + "\n";
-                    boolean isFileCreated = HomePage.createAndWriteFileUsingNIO(filePath, fileName, content);
-                    if (isFileCreated) {
-                        System.out.println("File created and saved successfully!");
-                    } else {
-                        System.out.println("File creation failed.");
-                    }
+                String content = "Name  Score  Play Time\n" + gameModeDef +
+                        "\n" +
+                        user1NameDef + "      " + user1ScoreDef + "   " + user1PlayTimeDef + "\n" +
+                        user2NameDef + "      " + user2ScoreDef + "   " + user2PlayTimeDef + "\n" +
+                        user3NameDef + "      " + user3ScoreDef + "   " + user3PlayTimeDef + "\n" +
+                        gameModeSur + "\n" +
+                        user1NameSur + "      " + user1ScoreSur + "   " + user1PlayTimeSur + "\n" +
+                        user2NameSur + "      " + user2ScoreSur + "   " + user2PlayTimeSur + "\n" +
+                        user3NameSur + "      " + user3ScoreSur + "   " + user3PlayTimeSur + "\n";
+                boolean isFileCreated = HomePage.createAndWriteFileUsingNIO(filePath, fileName, content);
+                if (isFileCreated) {
+                    System.out.println("File created and saved successfully!");
                 } else {
-                    String name = JOptionPane.showInputDialog("Please enter your name: ");
-                    user3NameDef = user2NameDef;
-                    user2NameDef = user1NameDef;
-                    user1NameDef = name;
-
-                    user3ScoreDef = user2ScoreDef;
-                    user2ScoreDef = user1ScoreDef;
-                    user1ScoreDef = String.valueOf(score);
-
-                    user3PlayTimeDef = user2PlayTimeDef;
-                    user2PlayTimeDef = user1PlayTimeDef;
-                    user1PlayTimeDef = formattedTime;
-                    String filePath = "E:\\"; // Change this to your desired directory
-                    String fileName = "TankShotter_LeaderBoard_Map1.txt";
-
-                    String content = "Name  Score  Play Time\n" + gameModeDef +
-                            "\n" +
-                            user1NameDef + "      " + user1ScoreDef + "   " + user1PlayTimeDef + "\n" +
-                            user2NameDef + "      " + user2ScoreDef + "   " + user2PlayTimeDef + "\n" +
-                            user3NameDef + "      " + user3ScoreDef + "   " + user3PlayTimeDef + "\n" +
-                            gameModeSur + "\n" +
-                            user1NameSur + "      " + user1ScoreSur + "   " + user1PlayTimeSur + "\n" +
-                            user2NameSur + "      " + user2ScoreSur + "   " + user2PlayTimeSur + "\n" +
-                            user3NameSur + "      " + user3ScoreSur + "   " + user3PlayTimeSur + "\n";
-                    boolean isFileCreated = HomePage.createAndWriteFileUsingNIO(filePath, fileName, content);
-                    if (isFileCreated) {
-                        System.out.println("File created and saved successfully!");
-                    } else {
-                        System.out.println("File creation failed.");
-                    }
+                    System.out.println("File creation failed.");
                 }
             }
         }
 
-        else if (this.score >= Integer.parseInt(user2ScoreDef)) {
-            if (this.score > Integer.parseInt(user2ScoreDef)) {
+        else if (this.score >= Integer.parseInt(user2ScoreSur)) {
+            if (this.score > Integer.parseInt(user2ScoreSur)) {
                 String name = JOptionPane.showInputDialog("Please enter your name: ");
-                user3NameDef = user2NameDef;
-                user2NameDef = name;
+                user3NameSur = user2NameSur;
+                user2NameSur = name;
 
-                user3ScoreDef = user2ScoreDef;
-                user2ScoreDef = String.valueOf(score);
+                user3ScoreSur = user2ScoreSur;
+                user2ScoreSur = String.valueOf(score);
 
-                user3PlayTimeDef = user2PlayTimeDef;
-                user2PlayTimeDef = formattedTime;
+                user3PlayTimeSur = user2PlayTimeSur;
+                user2PlayTimeSur = formattedTime;
 
                 String filePath = "E:\\"; // Change this to your desired directory
                 String fileName = "TankShotter_LeaderBoard_Map1.txt";
@@ -1296,83 +1258,41 @@ public class Map1_Defence extends JFrame implements Runnable {
                     System.out.println("File creation failed.");
                 }
             } else {
-                int time = (Integer.valueOf(formattedTime.charAt(0)) * 10 + Integer.valueOf(formattedTime.charAt(1)))
-                        * 60 * 60 +
-                        (Integer.valueOf(formattedTime.charAt(3)) * 10 + Integer.valueOf(formattedTime.charAt(4))) * 60
-                        + Integer.valueOf(formattedTime.charAt(6)) * 10
-                        + Integer.valueOf(formattedTime.charAt(7));
-                int player2time = (Integer.valueOf(user2PlayTimeDef.charAt(0)) * 10
-                        + Integer.valueOf(user2PlayTimeDef.charAt(1))) * 60 * 60 +
-                        (Integer.valueOf(user2PlayTimeDef.charAt(3)) * 10 + Integer.valueOf(user2PlayTimeDef.charAt(4)))
-                                * 60
-                        + Integer.valueOf(user2PlayTimeDef.charAt(6)) * 10
-                        + Integer.valueOf(user2PlayTimeDef.charAt(7));
-                if (time >= player2time) {
-                    String name = JOptionPane.showInputDialog("Please enter your name: ");
-                    user3NameDef = name;
+                String name = JOptionPane.showInputDialog("Please enter your name: ");
+                user3NameSur = name;
 
-                    user3ScoreDef = String.valueOf(score);
+                user3ScoreSur = String.valueOf(score);
 
-                    user3PlayTimeDef = formattedTime;
+                user3PlayTimeSur = formattedTime;
 
-                    String filePath = "E:\\"; // Change this to your desired directory
-                    String fileName = "TankShotter_LeaderBoard_Map1.txt";
+                String filePath = "E:\\"; // Change this to your desired directory
+                String fileName = "TankShotter_LeaderBoard_Map1.txt";
 
-                    String content = "Name  Score  Play Time\n" + gameModeDef +
-                            "\n" +
-                            user1NameDef + "      " + user1ScoreDef + "   " + user1PlayTimeDef + "\n" +
-                            user2NameDef + "      " + user2ScoreDef + "   " + user2PlayTimeDef + "\n" +
-                            user3NameDef + "      " + user3ScoreDef + "   " + user3PlayTimeDef + "\n" +
-                            gameModeSur + "\n" +
-                            user1NameSur + "      " + user1ScoreSur + "   " + user1PlayTimeSur + "\n" +
-                            user2NameSur + "      " + user2ScoreSur + "   " + user2PlayTimeSur + "\n" +
-                            user3NameSur + "      " + user3ScoreSur + "   " + user3PlayTimeSur + "\n";
-                    boolean isFileCreated = HomePage.createAndWriteFileUsingNIO(filePath, fileName, content);
-                    if (isFileCreated) {
-                        System.out.println("File created and saved successfully!");
-                    } else {
-                        System.out.println("File creation failed.");
-                    }
+                String content = "Name  Score  Play Time\n" + gameModeDef +
+                        "\n" +
+                        user1NameDef + "      " + user1ScoreDef + "   " + user1PlayTimeDef + "\n" +
+                        user2NameDef + "      " + user2ScoreDef + "   " + user2PlayTimeDef + "\n" +
+                        user3NameDef + "      " + user3ScoreDef + "   " + user3PlayTimeDef + "\n" +
+                        gameModeSur + "\n" +
+                        user1NameSur + "      " + user1ScoreSur + "   " + user1PlayTimeSur + "\n" +
+                        user2NameSur + "      " + user2ScoreSur + "   " + user2PlayTimeSur + "\n" +
+                        user3NameSur + "      " + user3ScoreSur + "   " + user3PlayTimeSur + "\n";
+                boolean isFileCreated = HomePage.createAndWriteFileUsingNIO(filePath, fileName, content);
+                if (isFileCreated) {
+                    System.out.println("File created and saved successfully!");
                 } else {
-                    String name = JOptionPane.showInputDialog("Please enter your name: ");
-                    user3NameDef = user2NameDef;
-                    user2NameDef = name;
-
-                    user3ScoreDef = user2ScoreDef;
-                    user2ScoreDef = String.valueOf(score);
-
-                    user3PlayTimeDef = user2PlayTimeDef;
-                    user2PlayTimeDef = formattedTime;
-
-                    String filePath = "E:\\"; // Change this to your desired directory
-                    String fileName = "TankShotter_LeaderBoard_Map1.txt";
-
-                    String content = "Name  Score  Play Time\n" + gameModeDef +
-                            "\n" +
-                            user1NameDef + "      " + user1ScoreDef + "   " + user1PlayTimeDef + "\n" +
-                            user2NameDef + "      " + user2ScoreDef + "   " + user2PlayTimeDef + "\n" +
-                            user3NameDef + "      " + user3ScoreDef + "   " + user3PlayTimeDef + "\n" +
-                            gameModeSur + "\n" +
-                            user1NameSur + "      " + user1ScoreSur + "   " + user1PlayTimeSur + "\n" +
-                            user2NameSur + "      " + user2ScoreSur + "   " + user2PlayTimeSur + "\n" +
-                            user3NameSur + "      " + user3ScoreSur + "   " + user3PlayTimeSur + "\n";
-                    boolean isFileCreated = HomePage.createAndWriteFileUsingNIO(filePath, fileName, content);
-                    if (isFileCreated) {
-                        System.out.println("File created and saved successfully!");
-                    } else {
-                        System.out.println("File creation failed.");
-                    }
+                    System.out.println("File creation failed.");
                 }
 
             }
-        } else if (this.score >= Integer.parseInt(user3ScoreDef)) {
-            if (this.score > Integer.parseInt(user3ScoreDef)) {
+        } else if (this.score >= Integer.parseInt(user3ScoreSur)) {
+            if (this.score > Integer.parseInt(user3ScoreSur)) {
                 String name = JOptionPane.showInputDialog("Please enter your name: ");
-                user3NameDef = name;
+                user3NameSur = name;
 
-                user3ScoreDef = String.valueOf(score);
+                user3ScoreSur = String.valueOf(score);
 
-                user3PlayTimeDef = formattedTime;
+                user3PlayTimeSur = formattedTime;
 
                 String filePath = "E:\\"; // Change this to your desired directory
                 String fileName = "TankShotter_LeaderBoard_Map1.txt";
@@ -1392,45 +1312,7 @@ public class Map1_Defence extends JFrame implements Runnable {
                 } else {
                     System.out.println("File creation failed.");
                 }
-            } else {
-                int time = (Integer.valueOf(formattedTime.charAt(0)) * 10 + Integer.valueOf(formattedTime.charAt(1)))
-                        * 60 * 60 +
-                        (Integer.valueOf(formattedTime.charAt(3)) * 10 + Integer.valueOf(formattedTime.charAt(4))) * 60
-                        + Integer.valueOf(formattedTime.charAt(6)) * 10
-                        + Integer.valueOf(formattedTime.charAt(7));
-                int player3time = (Integer.valueOf(user3PlayTimeDef.charAt(0)) * 10
-                        + Integer.valueOf(user3PlayTimeDef.charAt(1))) * 60 * 60 +
-                        (Integer.valueOf(user3PlayTimeDef.charAt(3) * 10 + Integer.valueOf(user3PlayTimeDef.charAt(4)))
-                                * 60
-                                + Integer.valueOf(user3PlayTimeDef.charAt(6)) * 10
-                                + Integer.valueOf(user3PlayTimeDef.charAt(7)));
-                if (time < player3time) {
-                    String name = JOptionPane.showInputDialog("Please enter your name: ");
-                    user3NameDef = name;
 
-                    user3ScoreDef = String.valueOf(score);
-
-                    user3PlayTimeDef = formattedTime;
-
-                    String filePath = "E:\\"; // Change this to your desired directory
-                    String fileName = "TankShotter_LeaderBoard_Map1.txt";
-
-                    String content = "Name  Score  Play Time\n" + gameModeDef +
-                            "\n" +
-                            user1NameDef + "      " + user1ScoreDef + "   " + user1PlayTimeDef + "\n" +
-                            user2NameDef + "      " + user2ScoreDef + "   " + user2PlayTimeDef + "\n" +
-                            user3NameDef + "      " + user3ScoreDef + "   " + user3PlayTimeDef + "\n" +
-                            gameModeSur + "\n" +
-                            user1NameSur + "      " + user1ScoreSur + "   " + user1PlayTimeSur + "\n" +
-                            user2NameSur + "      " + user2ScoreSur + "   " + user2PlayTimeSur + "\n" +
-                            user3NameSur + "      " + user3ScoreSur + "   " + user3PlayTimeSur + "\n";
-                    boolean isFileCreated = HomePage.createAndWriteFileUsingNIO(filePath, fileName, content);
-                    if (isFileCreated) {
-                        System.out.println("File created and saved successfully!");
-                    } else {
-                        System.out.println("File creation failed.");
-                    }
-                }
             }
         } else {
             JOptionPane.showMessageDialog(null,
@@ -1446,7 +1328,7 @@ public class Map1_Defence extends JFrame implements Runnable {
         if (response == JOptionPane.YES_OPTION) {
             System.out.println("User chose 'Yes'");
             this.dispose();
-            Map2_Defence map2 = new Map2_Defence();
+            Map2_Survival map2 = new Map2_Survival();
             new Thread(map2).start();
         } else if (response == JOptionPane.NO_OPTION) {
             System.out.println("User chose 'No'.");
@@ -1543,7 +1425,7 @@ public class Map1_Defence extends JFrame implements Runnable {
     }
 
     public static void main(String[] args) {
-        Map1_Defence map1 = new Map1_Defence();
+        Map1_Survival map1 = new Map1_Survival();
         new Thread(map1).start();
     }
 }
