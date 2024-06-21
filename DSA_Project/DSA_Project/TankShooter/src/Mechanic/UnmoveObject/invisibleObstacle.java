@@ -1,3 +1,6 @@
+/* Name: Nguyen Van Lac Thien - ITCSIU22245
+ Purpose: set position of the end of the map
+*/
 package Mechanic.UnmoveObject;
 
 import java.awt.Point;

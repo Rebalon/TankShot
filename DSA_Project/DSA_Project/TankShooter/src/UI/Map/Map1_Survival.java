@@ -1,3 +1,7 @@
+/* Name: Nguyen Van Lac Thien - ITCSIU22245
+ Purpose: draw the Map 1 survival mode and its functions.
+*/
+
 package UI.Map;
 
 import java.awt.Cursor;

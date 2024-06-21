@@ -1,3 +1,6 @@
+/* Name: Nguyen Van Lac Thien - ITCSIU22245
+ Purpose: draw the user tank image and manage the tank movement, health.
+*/
 package Mechanic.MoveObject;
 
 import java.awt.Point;

@@ -1,3 +1,7 @@
+/* Name: Nguyen Van Lac Thien - ITCSIU22245
+ Purpose: draw the Victory page.
+*/
+
 package UI.GamePage;
 
 import java.awt.event.ActionEvent;

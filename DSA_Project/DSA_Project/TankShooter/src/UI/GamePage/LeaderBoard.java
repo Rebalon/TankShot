@@ -1,3 +1,7 @@
+/* Name: Nguyen Van Lac Thien - ITCSIU22245
+ Purpose: draw the Leader Board page and its functions.
+*/
+
 package UI.GamePage;
 
 import java.awt.event.ActionEvent;

@@ -1,3 +1,6 @@
+/* Name: Nguyen Van Lac Thien - ITCSIU22245
+ Purpose: draw the boss image and manage the boss health.
+*/
 package Mechanic.MoveObject;
 
 import java.awt.Point;

@@ -1,3 +1,6 @@
+/* Name: Nguyen Van Lac Thien - ITCSIU22245
+ Purpose: Abstract class Move to generalization what method need to implement in the subclass. Avoiding mistake.
+*/
 package Mechanic.MoveObject;
 
 import java.awt.Point;

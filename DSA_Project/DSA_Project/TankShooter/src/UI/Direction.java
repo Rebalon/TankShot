@@ -1,3 +1,7 @@
+/* Name: Nguyen Van Lac Thien - ITCSIU22245
+ Purpose: Implement some direction as an int to use for movement of move object
+*/
+
 package UI;
 
 public class Direction {

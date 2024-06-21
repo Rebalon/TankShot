@@ -1,3 +1,6 @@
+/* Name: Nguyen Van Lac Thien - ITCSIU22245
+ Purpose: draw the bullet image and manage the bullet movement as well as whether the bullet hit an objects.
+*/
 package Mechanic.MoveObject;
 
 import java.awt.Point;

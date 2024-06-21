@@ -1,3 +1,8 @@
+
+/* Name: Nguyen Van Lac Thien - ITCSIU22245
+ Purpose: draw the Choose map page and its functions.
+*/
+
 package UI.GamePage;
 
 import java.awt.event.ActionEvent;

@@ -1,3 +1,6 @@
+/* Name: Nguyen Van Lac Thien - ITCSIU22245
+ Purpose: draw the Brick Block image and manage the block health.
+*/
 package Mechanic.UnmoveObject;
 
 import java.awt.Point;

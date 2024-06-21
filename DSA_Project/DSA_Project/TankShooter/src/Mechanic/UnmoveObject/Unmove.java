@@ -1,3 +1,7 @@
+/* Name: Nguyen Van Lac Thien - ITCSIU22245
+ Purpose: Abstract class Unmove to generalization what method need to implement in the subclass. Avoiding mistake.
+*/
+
 package Mechanic.UnmoveObject;
 
 import java.awt.Point;

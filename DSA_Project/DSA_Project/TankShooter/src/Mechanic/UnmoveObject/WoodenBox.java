@@ -1,3 +1,7 @@
+/* Name: Nguyen Van Lac Thien - ITCSIU22245
+ Purpose: draw the woodenBox Block image and manage it health.
+*/
+
 package Mechanic.UnmoveObject;
 
 import java.awt.Point;
