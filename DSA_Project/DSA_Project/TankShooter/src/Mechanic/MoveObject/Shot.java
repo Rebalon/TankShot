@@ -1,4 +1,4 @@
-package Mechanic.Move;
+package Mechanic.MoveObject;
 
 import java.awt.Point;
 import java.util.Iterator;
@@ -6,7 +6,6 @@ import java.util.LinkedList;
 
 import javax.swing.ImageIcon;
 import javax.swing.JLabel;
-import javax.swing.Timer;
 
 import Mechanic.UnmoveObject.BrickRegenerate;
 import Mechanic.UnmoveObject.BulletIncrease;
@@ -19,10 +18,8 @@ import UI.Direction;
 public class Shot extends Move {
     private Point pos;
     private int SPEED = 10;
-
     private JLabel Bullet;
     private int direction = Direction.NO_DIRECTION;
-    private Timer moveTimer;
     private boolean isDamage = false;
     private LinkedList<Unmove> Obstacle = new LinkedList<>();
     private int isitself = 0;

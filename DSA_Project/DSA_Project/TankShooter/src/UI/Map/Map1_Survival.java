@@ -27,12 +27,12 @@ import javax.swing.JLabel;
 import javax.swing.JOptionPane;
 import javax.swing.Timer;
 
-import Mechanic.Move.EnemyTank1;
-import Mechanic.Move.EnemyTank2;
-import Mechanic.Move.EnemyTank3;
-import Mechanic.Move.Move;
-import Mechanic.Move.Shot;
-import Mechanic.Move.UserTank;
+import Mechanic.MoveObject.EnemyTank1;
+import Mechanic.MoveObject.EnemyTank2;
+import Mechanic.MoveObject.EnemyTank3;
+import Mechanic.MoveObject.Move;
+import Mechanic.MoveObject.Shot;
+import Mechanic.MoveObject.UserTank;
 import Mechanic.UnmoveObject.BrickBlock;
 import Mechanic.UnmoveObject.BulletIncrease;
 import Mechanic.UnmoveObject.Clock;
@@ -462,10 +462,8 @@ public class Map1_Survival extends JFrame implements Runnable {
         Item = new Timer(5000, new ActionListener() { // ~60 FPS
             @Override
             public void actionPerformed(ActionEvent e) {
-                if (!isPause) {
-                    Point pos = new Point(600, 390);
-                    getContentPane().add(DropItem(pos), 2);
-                }
+                Point pos = new Point(600, 390);
+                getContentPane().add(DropItem(pos), 2);
             }
         });
         Item.setRepeats(false);
@@ -738,15 +736,9 @@ public class Map1_Survival extends JFrame implements Runnable {
 
     }
 
-    /*
-     * private void drawUserTank() {
-     * userTank1.setDirection(currentDirection);
-     * }
-     */
-
     private void updateGame() {
 
-        if (time == 300) {
+        if (time == 180) {
             MovetoMap2();
         }
 

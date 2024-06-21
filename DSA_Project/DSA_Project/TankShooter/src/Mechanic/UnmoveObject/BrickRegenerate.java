@@ -7,7 +7,7 @@ import javax.swing.JLabel;
 
 public class BrickRegenerate extends Unmove {
     private Point pos = new Point();
-    private JLabel clock = new JLabel();
+    private JLabel Brick = new JLabel();
     private int Health = 1;
     private boolean isDestroy = false;
 
@@ -18,16 +18,16 @@ public class BrickRegenerate extends Unmove {
     @Override
     public JLabel drawObject() {
         if (Health > 0) {
-            clock.setIcon(new ImageIcon(getClass().getResource("/Image/StoneBrickRegen.png")));
-            clock.setBounds(pos.x, pos.y, 80, 40);
-            clock.setVisible(true);
+            Brick.setIcon(new ImageIcon(getClass().getResource("/Image/StoneBrickRegen.png")));
+            Brick.setBounds(pos.x, pos.y, 80, 40);
+            Brick.setVisible(true);
 
         } else {
             this.isDestroy = true;
-            clock.setIcon(null);
-            clock.setVisible(false);
+            Brick.setIcon(null);
+            Brick.setVisible(false);
         }
-        return clock;
+        return Brick;
     }
 
     @Override
@@ -48,6 +48,6 @@ public class BrickRegenerate extends Unmove {
 
     @Override
     public JLabel getJLabel() {
-        return this.clock;
+        return this.Brick;
     }
 }

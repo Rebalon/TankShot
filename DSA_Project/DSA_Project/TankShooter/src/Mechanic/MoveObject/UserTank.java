@@ -1,4 +1,4 @@
-package Mechanic.Move;
+package Mechanic.MoveObject;
 
 import java.awt.Point;
 import java.util.LinkedList;
@@ -33,6 +33,7 @@ public class UserTank extends Move {
         this.direction = d;
     }
 
+    @Override
     public JLabel draw() {
         /* Image img = null; */
         if (Health > 0) {
@@ -59,6 +60,7 @@ public class UserTank extends Move {
         return TankImage;
     }
 
+    @Override
     public void move() {
         switch (direction) {
             case Direction.EAST:
@@ -122,6 +124,7 @@ public class UserTank extends Move {
         return this.position;
     }
 
+    @Override
     public void isDamage() {
         Health--;
         draw();

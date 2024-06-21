@@ -1,4 +1,4 @@
-package Mechanic.Move;
+package Mechanic.MoveObject;
 
 import java.awt.Point;
 import java.util.LinkedList;
@@ -10,32 +10,31 @@ import javax.swing.JLabel;
 import Mechanic.UnmoveObject.Unmove;
 import UI.Direction;
 
-public class EnemyTank1 extends Move {
+public class EnemyTank2 extends Move {
     private Point position;
-    private JLabel tankImage;
-    private int health = 1;
+    private JLabel TankImage = new JLabel();
+    private int Health = 3;
+    private boolean isDestroy;
     private int isitself = 0;
-    private boolean isDestroy = false;
 
-    public EnemyTank1(Point inputPos) {
+    public EnemyTank2(Point inputPos) {
         this.position = inputPos;
-        this.tankImage = new JLabel();
         draw(); // Initial draw call to set up the JLabel
     }
 
     @Override
     public JLabel draw() {
-        if (health == 1) {
-            tankImage.setIcon(new ImageIcon(getClass().getResource("/Image/enemyTank_1.png")));
-            tankImage.setBounds(position.x, position.y, 40, 40);
-            tankImage.setVisible(true);
+        if (Health > 0) {
+            TankImage.setIcon(new ImageIcon(getClass().getResource("/Image/enemyTank_2.png")));
+            TankImage.setBounds(position.x, position.y, 40, 40);
+            TankImage.setVisible(true);
         } else {
-            tankImage.setIcon(null);
-            tankImage.setBounds(position.x, position.y, 40, 40);
-            tankImage.setVisible(false);
+            TankImage.setIcon(null);
+            TankImage.setBounds(position.x, position.y, 40, 40);
+            TankImage.setVisible(false);
             this.isDestroy = true;
         }
-        return tankImage;
+        return TankImage;
     }
 
     @Override
@@ -62,6 +61,13 @@ public class EnemyTank1 extends Move {
     @Override
     public void isCollision(LinkedList<Unmove> obstacle, Point previous, Point newPos, LinkedList<Move> tank,
             LinkedList<Point> boss) {
+        for (Point p : boss) {
+            if (newPos.equals(p)) {
+                this.setPosition(previous);
+                draw();
+                break;
+            }
+        }
         for (Unmove p : obstacle) {
             if (newPos.x == p.getPos().x && newPos.y == p.getPos().y) {
                 this.setPosition(previous);
@@ -87,8 +93,9 @@ public class EnemyTank1 extends Move {
         this.position = pos;
     }
 
+    @Override
     public void isDamage() {
-        health--;
+        Health--;
         draw();
     }
 
@@ -97,29 +104,13 @@ public class EnemyTank1 extends Move {
         return this.position;
     }
 
-    public Point getPosition() {
-        return position;
-    }
-
-    public JLabel getTankImage() {
-        return tankImage;
-    }
-
-    public int getHealth() {
-        return health;
-    }
-
-    public int getIsitself() {
-        return isitself;
-    }
-
     @Override
     public boolean isDestroy() {
-        return isDestroy;
+        return this.isDestroy;
     }
 
     @Override
     public JLabel getImage() {
-        return tankImage;
+        return TankImage;
     }
 }

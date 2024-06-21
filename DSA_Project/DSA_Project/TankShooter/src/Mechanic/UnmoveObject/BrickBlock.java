@@ -51,10 +51,6 @@ public class BrickBlock extends Unmove {
         return Health;
     }
 
-    public JLabel getBrickBlock() {
-        return BrickBlock;
-    }
-
     @Override
     public boolean isDestroy() {
         return isDestroy;
@@ -65,17 +61,9 @@ public class BrickBlock extends Unmove {
         return BrickBlock;
     }
 
-    public void setPos(Point pos) {
-        this.pos = pos;
-    }
-
     public void setHealth(int health) {
         BrickBlock.setVisible(true);
         Health = health;
-    }
-
-    public void setBrickBlock(JLabel brickBlock) {
-        BrickBlock = brickBlock;
     }
 
     public void setDestroy(boolean isDestroy) {

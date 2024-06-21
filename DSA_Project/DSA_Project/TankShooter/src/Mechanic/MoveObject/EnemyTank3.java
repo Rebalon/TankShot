@@ -1,4 +1,4 @@
-package Mechanic.Move;
+package Mechanic.MoveObject;
 
 import java.awt.Point;
 import java.util.LinkedList;
@@ -13,19 +13,16 @@ import UI.Direction;
 public class EnemyTank3 extends Move {
     private Point position;
     private JLabel TankImage = new JLabel();
-    private int direction = Direction.EAST;
     private int Health = 6;
     private boolean isDestroy = false;
     private int isitself = 0;
 
     public EnemyTank3(Point inputPos) {
         this.position = inputPos;
+        draw(); // Initial draw call to set up the JLabel
     }
 
-    public void setDirection(int d) {
-        this.direction = d;
-    }
-
+    @Override
     public JLabel draw() {
         if (Health > 0) {
             TankImage.setIcon(new ImageIcon(getClass().getResource("/Image/enemyTank_3.png")));
@@ -96,6 +93,7 @@ public class EnemyTank3 extends Move {
         this.position = pos;
     }
 
+    @Override
     public void isDamage() {
         Health--;
         draw();

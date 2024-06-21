@@ -27,13 +27,13 @@ import javax.swing.JLabel;
 import javax.swing.JOptionPane;
 import javax.swing.Timer;
 
-import Mechanic.Move.Boss;
-import Mechanic.Move.EnemyTank1;
-import Mechanic.Move.EnemyTank2;
-import Mechanic.Move.EnemyTank3;
-import Mechanic.Move.Move;
-import Mechanic.Move.Shot;
-import Mechanic.Move.UserTank;
+import Mechanic.MoveObject.Boss;
+import Mechanic.MoveObject.EnemyTank1;
+import Mechanic.MoveObject.EnemyTank2;
+import Mechanic.MoveObject.EnemyTank3;
+import Mechanic.MoveObject.Move;
+import Mechanic.MoveObject.Shot;
+import Mechanic.MoveObject.UserTank;
 import Mechanic.UnmoveObject.BrickBlock;
 import Mechanic.UnmoveObject.BrickRegenerate;
 import Mechanic.UnmoveObject.BulletIncrease;
@@ -50,8 +50,6 @@ import UI.GamePage.VictoryScreen;
 
 public class Map2_Survival extends JFrame implements Runnable {
     private LinkedList<Point> Boss = new LinkedList<>();
-    /* private LinkedList<Move> boss = new LinkedList<>(); */
-    // Use normal way as only one boss
     private Boss bossT;
     private JLabel HeartIcon = new JLabel();
     private JLabel HeartDisplay = new JLabel();
@@ -513,10 +511,8 @@ public class Map2_Survival extends JFrame implements Runnable {
         Item = new Timer(3500, new ActionListener() { // ~60 FPS
             @Override
             public void actionPerformed(ActionEvent e) {
-                if (!isPause) {
-                    Point pos = new Point(600, 550);
-                    getContentPane().add(DropItem(pos), 2);
-                }
+                Point pos = new Point(600, 550);
+                getContentPane().add(DropItem(pos), 2);
             }
         });
         Item.setRepeats(false);
@@ -736,12 +732,6 @@ public class Map2_Survival extends JFrame implements Runnable {
 
     }
 
-    /*
-     * private void drawUserTank() {
-     * userTank1.setDirection(currentDirection);
-     * }
-     */
-
     private void updateGame() {
         if (bossT.isDestroy() && time <= 30) {
             for (int h = 0; h < 7; h++) {
@@ -751,7 +741,7 @@ public class Map2_Survival extends JFrame implements Runnable {
             }
             score += 30000;
             score += 30000;
-            MovetoVicory();
+            MovetoVictory();
         } else if (bossT.isDestroy() && time <= 60) {
             for (int h = 0; h < 7; h++) {
                 for (int i = 0; i < 16; i++) {
@@ -760,7 +750,7 @@ public class Map2_Survival extends JFrame implements Runnable {
             }
             score += 30000;
             score += 20000;
-            MovetoVicory();
+            MovetoVictory();
         } else if (bossT.isDestroy() && time <= 90) {
             for (int h = 0; h < 7; h++) {
                 for (int i = 0; i < 16; i++) {
@@ -769,7 +759,7 @@ public class Map2_Survival extends JFrame implements Runnable {
             }
             score += 30000;
             score += 10000;
-            MovetoVicory();
+            MovetoVictory();
         } else if (time > 90) {
             isPause = true;
             JOptionPane.showMessageDialog(null, "Time up!!! You are defeated!!!");
@@ -1201,7 +1191,7 @@ public class Map2_Survival extends JFrame implements Runnable {
     private String user3ScoreSur;
     private String user3PlayTimeSur;
 
-    private void MovetoVicory() {
+    private void MovetoVictory() {
         isPause = true;
         JOptionPane.showMessageDialog(null, "You win!!! Congratulation!!!");
         readTextFromFile_Map2();

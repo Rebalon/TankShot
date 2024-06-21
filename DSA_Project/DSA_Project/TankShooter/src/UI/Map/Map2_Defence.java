@@ -27,13 +27,13 @@ import javax.swing.JLabel;
 import javax.swing.JOptionPane;
 import javax.swing.Timer;
 
-import Mechanic.Move.Boss;
-import Mechanic.Move.EnemyTank1;
-import Mechanic.Move.EnemyTank2;
-import Mechanic.Move.EnemyTank3;
-import Mechanic.Move.Move;
-import Mechanic.Move.Shot;
-import Mechanic.Move.UserTank;
+import Mechanic.MoveObject.Boss;
+import Mechanic.MoveObject.EnemyTank1;
+import Mechanic.MoveObject.EnemyTank2;
+import Mechanic.MoveObject.EnemyTank3;
+import Mechanic.MoveObject.Move;
+import Mechanic.MoveObject.Shot;
+import Mechanic.MoveObject.UserTank;
 import Mechanic.UnmoveObject.BrickBlock;
 import Mechanic.UnmoveObject.BrickRegenerate;
 import Mechanic.UnmoveObject.BulletIncrease;
@@ -51,8 +51,6 @@ import UI.GamePage.VictoryScreen;
 
 public class Map2_Defence extends JFrame implements Runnable {
     private LinkedList<Point> Boss = new LinkedList<>();
-    /* private LinkedList<Move> boss = new LinkedList<>(); */
-    // Use normal way as only one boss
     private Boss bossT;
     private JLabel HeartIcon = new JLabel();
     private JLabel HeartDisplay = new JLabel();
@@ -513,11 +511,9 @@ public class Map2_Defence extends JFrame implements Runnable {
         Item = new Timer(3500, new ActionListener() { // ~60 FPS
             @Override
             public void actionPerformed(ActionEvent e) {
-                if (!isPause) {
-                    System.out.println("Addd");
-                    Point pos = new Point(600, 550);
-                    getContentPane().add(DropItem(pos), 2);
-                }
+                System.out.println("Addd");
+                Point pos = new Point(600, 550);
+                getContentPane().add(DropItem(pos), 2);
             }
         });
         Item.setRepeats(false);
@@ -735,12 +731,6 @@ public class Map2_Defence extends JFrame implements Runnable {
 
     }
 
-    /*
-     * private void drawUserTank() {
-     * userTank1.setDirection(currentDirection);
-     * }
-     */
-
     private void updateGame() {
         if (bossT.isDestroy()) {
             for (int h = 0; h < 7; h++) {
@@ -749,7 +739,7 @@ public class Map2_Defence extends JFrame implements Runnable {
                 }
             }
             score += 30000;
-            MovetoVicory();
+            MovetoVictory();
         }
 
         if (userTank1.getHealth() < 0) {
@@ -1183,7 +1173,7 @@ public class Map2_Defence extends JFrame implements Runnable {
     private String user3ScoreSur;
     private String user3PlayTimeSur;
 
-    private void MovetoVicory() {
+    private void MovetoVictory() {
         isPause = true;
         JOptionPane.showMessageDialog(null, "You win!!! Congratulation!!!");
         readTextFromFile_Map2();

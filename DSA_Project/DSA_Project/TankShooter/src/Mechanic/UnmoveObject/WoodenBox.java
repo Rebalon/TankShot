@@ -20,17 +20,9 @@ public class WoodenBox extends Unmove {
         return Health;
     }
 
-    public void setHealth(int health) {
-        Health = health;
-    }
-
     @Override
     public Point getPos() {
         return Pos;
-    }
-
-    public void setPos(Point pos) {
-        Pos = pos;
     }
 
     @Override
@@ -50,10 +42,6 @@ public class WoodenBox extends Unmove {
         return woddenbox;
     }
 
-    public void takeDamage() {
-        Health--;
-    }
-
     @Override
     public void isDamage() {
         this.Health--;
@@ -63,10 +51,6 @@ public class WoodenBox extends Unmove {
     @Override
     public boolean isDestroy() {
         return isDestroy;
-    }
-
-    public JLabel getWoddenbox() {
-        return woddenbox;
     }
 
     @Override
