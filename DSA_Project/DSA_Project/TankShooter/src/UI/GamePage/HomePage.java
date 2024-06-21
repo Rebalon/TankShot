@@ -108,7 +108,16 @@ public class HomePage extends JFrame implements Runnable {
         // Define the file path and name
         String filePath = "E:\\"; // Change this to your desired directory
         String fileName = "TankShotter_LeaderBoard_Map1.txt";
+        // Combine file path and name
+        Path path = Paths.get(filePath, fileName);
 
+        // Check if the file exists
+        if (Files.exists(path)) {
+            System.out.println("File exists: " + path.toString());
+            return;
+        } else {
+            System.out.println("File does not exist: " + path.toString());
+        }
         String content = "Name  Score  Play Time\n" +
                 "Defence\n" +
                 "Hung     0   0:00:00\n" +
