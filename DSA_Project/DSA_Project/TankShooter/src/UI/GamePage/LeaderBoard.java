@@ -7,6 +7,7 @@ package UI.GamePage;
 import java.awt.event.ActionEvent;
 import java.io.IOException;
 import java.nio.file.Files;
+import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.List;
 
@@ -67,12 +68,14 @@ public class LeaderBoard extends JFrame implements Runnable {
     private String user3PlayTimeSur2;
     private boolean isAddedMap1 = false;
     private boolean isAddedMap2 = false;
+    String SavePath = null;
     private DefaultTableModel model = new DefaultTableModel(
             new Object[][] {}, // Initial empty data
             new String[] { "Name", "Score", "Play Time" } // Column names
     );
 
-    public LeaderBoard() {
+    public LeaderBoard(String savePath) {
+        this.SavePath = savePath;
         initial();
     }
 
@@ -186,7 +189,8 @@ public class LeaderBoard extends JFrame implements Runnable {
     }
 
     private void readTextFromFile_Map1() {
-        String filePath = "E:\\TankShotter_LeaderBoard_Map1.txt";
+        String filePath = SavePath + "\\TankShotter_LeaderBoard_Map1.txt"; // Change this to your desired directory
+        System.out.println(filePath);
         try {
             // Read all lines from the file
             List<String> lines = Files.readAllLines(Paths.get(filePath));
@@ -258,7 +262,7 @@ public class LeaderBoard extends JFrame implements Runnable {
     }
 
     private void readTextFromFile_Map2() {
-        String filePath = "E:\\TankShotter_LeaderBoard_Map2.txt";
+        String filePath = SavePath + "\\TankShotter_LeaderBoard_Map2.txt";
         try {
             // Read all lines from the file
             List<String> lines = Files.readAllLines(Paths.get(filePath));
@@ -331,7 +335,7 @@ public class LeaderBoard extends JFrame implements Runnable {
 
     private void btnBackActionPerformed(ActionEvent evt) {
         this.dispose();
-        HomePage home = new HomePage(false);
+        HomePage home = new HomePage();
         new Thread(home).start();
     }
 
@@ -347,7 +351,7 @@ public class LeaderBoard extends JFrame implements Runnable {
     }
 
     public static void main(String[] args) {
-        LeaderBoard ld = new LeaderBoard();
+        LeaderBoard ld = new LeaderBoard(null);
         new Thread(ld).start();
     }
 

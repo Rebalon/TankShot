@@ -12,16 +12,10 @@ import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.KeyAdapter;
 import java.awt.event.KeyEvent;
-import java.awt.event.MouseEvent;
-import java.awt.event.MouseMotionAdapter;
-import java.io.IOException;
-import java.nio.file.Files;
-import java.nio.file.Paths;
 import java.time.Duration;
 import java.time.Instant;
 import java.util.Iterator;
 import java.util.LinkedList;
-import java.util.List;
 import java.util.Random;
 
 import javax.swing.ImageIcon;
@@ -29,6 +23,7 @@ import javax.swing.JButton;
 import javax.swing.JFrame;
 import javax.swing.JLabel;
 import javax.swing.JOptionPane;
+import javax.swing.JPanel;
 import javax.swing.Timer;
 
 import Mechanic.MoveObject.EnemyTank1;
@@ -64,14 +59,19 @@ public class Map1_Defence extends JFrame implements Runnable {
     private JLabel Score = new JLabel("Score: 0");
     private JLabel EnemyTank1Icon = new JLabel();
     private JLabel EnemyTank2Icon = new JLabel();
+    private JLabel HeartIncreseIcon = new JLabel();
+    // private JLabel EnemyTank3Icon = new JLabel();
     private JLabel EnemyTank1Killed = new JLabel();
     private JLabel EnemyTank2Killed = new JLabel();
-    private JLabel UserTankImage = new JLabel();
+    // private JLabel EnemyTank3Killed = new JLabel();
+    // private JLabel UserTankImage = new JLabel();
+    private JLabel HeartIncreseCount = new JLabel();
+    private int NumberOfHeartInc = 0;
     private JLabel UserTankLife = new JLabel();
     private JButton back = new JButton();
     private int numOfEnemy1Kill = 0;
     private int numOfEnemy2Kill = 0;
-    private int numberOfLife = 3;
+    private int numberOfLife = 0;
     private Point userTank;
     private int direction = Direction.NO_DIRECTION;
     private int currentDirection = Direction.EAST;
@@ -99,111 +99,31 @@ public class Map1_Defence extends JFrame implements Runnable {
     private boolean isPause = false;
     private int pausetime = 0;
     private String formattedTime;
+    private JPanel BattleField = null;
 
     public Map1_Defence() {
         initial();
     }
 
     private void initial() {
-        this.setName("TankShooter");
+        // this.setName("TankShooter");
+        // this.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+        // this.setLayout(null);
+        // this.pack();
+        // this.setVisible(true);
+        // this.setBounds(0, 0, 1340, 785);
+        // this.setFocusable(true);
+        this.setTitle("Map 1 Defence");
+        this.setSize(1340, 800);
         this.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-        this.setLayout(null);
+        this.setVisible(true);
+        BattleField = new JPanel();
+        BattleField.setLayout(null); // Use layout as needed
+
         drawMap();
         drawDamageObject();
-
-        HeartIcon.setFont(new java.awt.Font("Times New Roman", 1, 80));
-        HeartIcon.setIcon(new ImageIcon(getClass().getResource("/Image/HeartImage.png")));
-        HeartIcon.setVisible(true);
-        HeartIcon.setBounds(0, 0, 40, 40);
-        this.add(HeartIcon);
-
-        HeartDisplay.setFont(new java.awt.Font("Times New Roman", 1, 40));
-        HeartDisplay.setText(String.valueOf(userTank1.getHealth()));
-        HeartDisplay.setVisible(true);
-        HeartDisplay.setBounds(80, 0, 40, 40);
-        this.add(HeartDisplay);
-
-        bulletIcon.setFont(new java.awt.Font("Times New Roman", 1, 80));
-        bulletIcon.setIcon(new ImageIcon(getClass().getResource("/Image/bullet.png")));
-        bulletIcon.setVisible(true);
-        bulletIcon.setBounds(160, 0, 40, 40);
-        this.add(bulletIcon);
-
-        RemainBullet.setFont(new java.awt.Font("Times New Roman", 1, 40));
-        RemainBullet.setText(String.valueOf(this.MaxBulletCount - this.currentBullet));
-        RemainBullet.setVisible(true);
-        RemainBullet.setBounds(200, 0, 40, 40);
-        this.add(RemainBullet);
-
-        X.setFont(new java.awt.Font("Times New Roman", 1, 20));
-        X.setText("X");
-        X.setVisible(true);
-        X.setBounds(250, 0, 40, 40);
-        this.add(X);
-
-        bulletPerShot.setFont(new java.awt.Font("Times New Roman", 1, 40));
-        bulletPerShot.setText(String.valueOf(userTank1.getCurrentNumOfBullet()));
-        bulletPerShot.setVisible(true);
-        bulletPerShot.setBounds(280, 0, 40, 40);
-        this.add(bulletPerShot);
-
-        runTimeDisplay.setFont(new java.awt.Font("Times New Roman", 1, 40));
-        runTimeDisplay.setBounds(400, 0, 400, 40);
-        this.add(runTimeDisplay);
-        initializeTimer();
-
-        Score.setFont(new java.awt.Font("Times New Roman", 1, 40));
-        Score.setVisible(true);
-        Score.setBounds(800, 0, 200, 40);
-        this.add(Score);
-
-        EnemyTank1Icon.setFont(new java.awt.Font("Times New Roman", 1, 80));
-        EnemyTank1Icon.setIcon(new ImageIcon(getClass().getResource("/Image/enemyTank_1.png")));
-        EnemyTank1Icon.setVisible(true);
-        EnemyTank1Icon.setBounds(1000, 0, 40, 40);
-        this.add(EnemyTank1Icon);
-
-        EnemyTank1Killed.setFont(new java.awt.Font("Times New Roman", 1, 40));
-        EnemyTank1Killed.setText(String.valueOf(numOfEnemy1Kill));
-        EnemyTank1Killed.setVisible(true);
-        EnemyTank1Killed.setBounds(1010, 40, 40, 40);
-        this.add(EnemyTank1Killed);
-
-        EnemyTank2Icon.setFont(new java.awt.Font("Times New Roman", 1, 80));
-        EnemyTank2Icon.setIcon(new ImageIcon(getClass().getResource("/Image/enemyTank_2.png")));
-        EnemyTank2Icon.setVisible(true);
-        EnemyTank2Icon.setBounds(1080, 0, 40, 40);
-        this.add(EnemyTank2Icon);
-
-        EnemyTank2Killed.setFont(new java.awt.Font("Times New Roman", 1, 40));
-        EnemyTank2Killed.setText(String.valueOf(numOfEnemy2Kill));
-        EnemyTank2Killed.setVisible(true);
-        EnemyTank2Killed.setBounds(1090, 40, 40, 40);
-        this.add(EnemyTank2Killed);
-
-        UserTankImage.setFont(new java.awt.Font("Times New Roman", 1, 80));
-        UserTankImage.setIcon(new ImageIcon(getClass().getResource("/Image/tankUp.png")));
-        UserTankImage.setVisible(true);
-        UserTankImage.setBounds(1160, 0, 40, 40);
-        this.add(UserTankImage);
-
-        UserTankLife.setFont(new java.awt.Font("Times New Roman", 1, 40));
-        UserTankLife.setText(String.valueOf(numberOfLife));
-        UserTankLife.setVisible(true);
-        UserTankLife.setBounds(1170, 40, 40, 40);
-        this.add(UserTankLife);
-
-        back.setFont(new java.awt.Font("Times New Roman", 1, 20));
-        back.setText("Back");
-        back.setVisible(true);
-        back.setBounds(1220, 0, 100, 20);
-        back.addActionListener(new java.awt.event.ActionListener() {
-            public void actionPerformed(java.awt.event.ActionEvent evt) {
-                btnBackActionPerformed(evt);
-            }
-        });
-        this.add(back);
-
+        drawTopLiner();
+        this.add(BattleField);
         this.addKeyListener(new KeyAdapter() {
             @Override
             public void keyPressed(KeyEvent e) {
@@ -234,64 +154,89 @@ public class Map1_Defence extends JFrame implements Runnable {
                                 if (canFire()) {
                                     if (userTank1.getCurrentNumOfBullet() == 1) {
                                         Point tankPos = new Point(userTank1.getPos());
-                                        Shot shot = new Shot(tankPos);
-                                        shot.setDirection(currentDirection);
+                                        // System.out.println(tankPos);
+                                        Shot shot = new Shot(tankPos, currentDirection);
+                                        // System.out.println();
                                         shots.add(shot);
-                                        getContentPane().add(shot.draw());
+                                        // Draw and add the new shot JLabel to the panel
+                                        JLabel shotLabel = shot.draw(); // Assuming draw() returns a JLabel
+                                        BattleField.add(shotLabel);
+
                                         // Ensure the bullet appears on top
-                                        setComponentZOrder(shot.draw(), 0);
+                                        BattleField.setComponentZOrder(shotLabel, 0);
+                                        BattleField.revalidate();
+                                        BattleField.repaint();
+
                                         currentBullet++;
                                     } else if (userTank1.getCurrentNumOfBullet() == 2) {// No increse in number of
                                                                                         // bullet
                                         Point tankPos = new Point(userTank1.getPos());
-                                        Shot shot = new Shot(tankPos);
-                                        shot.setDirection(currentDirection);
+                                        Shot shot = new Shot(tankPos, currentDirection);
                                         shots.add(shot);
-                                        getContentPane().add(shot.draw());
+                                        JLabel shotLabel = shot.draw(); // Assuming draw() returns a JLabel
+                                        BattleField.add(shotLabel);
+
                                         // Ensure the bullet appears on top
-                                        setComponentZOrder(shot.draw(), 0);
+                                        BattleField.setComponentZOrder(shotLabel, 0);
+                                        BattleField.revalidate();
+                                        BattleField.repaint();
+
                                         currentBullet++;
 
                                         Timer timer = new Timer(100, x -> {
                                             Point tankPos1 = new Point(userTank1.getPos());
-                                            Shot shot1 = new Shot(tankPos1);
-                                            shot1.setDirection(currentDirection);
+                                            Shot shot1 = new Shot(tankPos1, currentDirection);
                                             shots.add(shot1);
-                                            getContentPane().add(shot1.draw());
+                                            JLabel shotLabel1 = shot1.draw(); // Assuming draw() returns a JLabel
+                                            BattleField.add(shotLabel1);
+
                                             // Ensure the bullet appears on top
-                                            setComponentZOrder(shot1.draw(), 0);
+                                            BattleField.setComponentZOrder(shotLabel1, 0);
+                                            BattleField.revalidate();
+                                            BattleField.repaint();
                                         });
                                         timer.setRepeats(false);
                                         timer.start();
                                     } else if (userTank1.getCurrentNumOfBullet() == 3) {
                                         Point tankPos = new Point(userTank1.getPos());
-                                        Shot shot = new Shot(tankPos);
-                                        shot.setDirection(currentDirection);
+                                        Shot shot = new Shot(tankPos, currentDirection);
                                         shots.add(shot);
-                                        getContentPane().add(shot.draw());
+                                        JLabel shotLabel = shot.draw(); // Assuming draw() returns a JLabel
+                                        BattleField.add(shotLabel);
+
                                         // Ensure the bullet appears on top
-                                        setComponentZOrder(shot.draw(), 0);
+                                        BattleField.setComponentZOrder(shotLabel, 0);
+                                        BattleField.revalidate();
+                                        BattleField.repaint();
+
                                         currentBullet++;
 
                                         Timer timer = new Timer(100, x -> {
                                             Point tankPos1 = new Point(userTank1.getPos());
-                                            Shot shot1 = new Shot(tankPos1);
-                                            shot1.setDirection(currentDirection);
+                                            Shot shot1 = new Shot(tankPos1, currentDirection);
                                             shots.add(shot1);
-                                            getContentPane().add(shot1.draw());
+                                            JLabel shotLabel1 = shot1.draw(); // Assuming draw() returns a JLabel
+                                            BattleField.add(shotLabel1);
+
                                             // Ensure the bullet appears on top
-                                            setComponentZOrder(shot1.draw(), 0);
+                                            BattleField.setComponentZOrder(shotLabel1, 0);
+                                            BattleField.revalidate();
+                                            BattleField.repaint();
                                         });
                                         timer.setRepeats(false);
                                         timer.start();
                                         Timer timer1 = new Timer(200, x -> {
                                             Point tankPos2 = new Point(userTank1.getPos());
-                                            Shot shot2 = new Shot(tankPos2);
-                                            shot2.setDirection(currentDirection);
+                                            Shot shot2 = new Shot(tankPos2, currentDirection);
                                             shots.add(shot2);
-                                            getContentPane().add(shot2.draw());
+                                            JLabel shotLabel2 = shot2.draw(); // Assuming draw() returns a JLabel
+                                            BattleField.add(shotLabel2);
+
                                             // Ensure the bullet appears on top
-                                            setComponentZOrder(shot2.draw(), 0);
+                                            BattleField.setComponentZOrder(shotLabel2, 0);
+                                            BattleField.revalidate();
+                                            BattleField.repaint();
+
                                         });
                                         timer1.setRepeats(false);
                                         timer1.start();
@@ -302,11 +247,11 @@ public class Map1_Defence extends JFrame implements Runnable {
                                     f.setVisible(true);
                                     f.setBounds(160, 40, 200, 20);
                                     f.setForeground(new java.awt.Color(0, 0, 0));
-                                    getContentPane().add(f, 0);
+                                    BattleField.add(f, 0);
                                     reloadBullet();
                                 }
                             } else {
-                                System.out.println("Reloading started, will take 3 seconds...");
+                                // System.out.println("Reloading started, will take 3 seconds...");
                             }
                         }
                         break;
@@ -322,27 +267,16 @@ public class Map1_Defence extends JFrame implements Runnable {
             }
         });
 
-        this.setFocusable(true);
-
         Image img = new ImageIcon("DSA_Project\\DSA_Project\\TankShooter\\src\\Image\\target.png").getImage();
         Cursor customCursor = Toolkit.getDefaultToolkit().createCustomCursor(img, new Point(16, 16), "targetCursor");
         setCursor(customCursor);
-
-        this.addMouseMotionListener(new MouseMotionAdapter() {
-            @Override
-            public void mouseMoved(MouseEvent e) {
-            }
-        });
-
-        this.pack();
-        this.setVisible(true);
-        this.setExtendedState(JFrame.MAXIMIZED_BOTH);
         Update = new Timer(24, new ActionListener() { // ~60 FPS
             @Override
             public void actionPerformed(ActionEvent e) {
                 if (!isPause) {
                     updateGame();
-                    getContentPane().repaint();
+                    BattleField.revalidate();
+                    BattleField.repaint();
                 }
             }
         });
@@ -356,8 +290,6 @@ public class Map1_Defence extends JFrame implements Runnable {
                         move.move();
                         Point pos = new Point(move.getPos());
                         move.isCollision(damageBlock, previous, pos, EnemyTank, Boss);
-                        revalidate();
-                        repaint();
                     }
                 }
             }
@@ -372,36 +304,40 @@ public class Map1_Defence extends JFrame implements Runnable {
                     for (Move move : EnemyTank) {
                         if (move instanceof EnemyTank1) {
                             Point tankPos = new Point(move.getPos());
-                            Shot shot = new Shot(tankPos);
                             Random random = new Random();
                             int randomDirect = random.nextInt(4) + 1;
-                            shot.setDirection(randomDirect);
+                            Shot shot = new Shot(tankPos, randomDirect);
                             EnemyShot.add(shot);
-                            getContentPane().add(shot.draw());
+                            JLabel EnemyshotLabel = shot.draw(); // Assuming draw() returns a JLabel
+                            BattleField.add(EnemyshotLabel);
                             // Ensure the bullet appears on top
-                            setComponentZOrder(shot.draw(), 0);
+                            BattleField.setComponentZOrder(EnemyshotLabel, 0);
+                            BattleField.revalidate();
+                            BattleField.repaint();
                         } else if (move instanceof EnemyTank2) {
                             Point tankPos = new Point(move.getPos());
-                            Shot shot = new Shot(tankPos);
                             Random random = new Random();
                             int randomDirect = random.nextInt(4) + 1;
-                            shot.setDirection(randomDirect);
+                            Shot shot = new Shot(tankPos, randomDirect);
                             EnemyShot.add(shot);
-                            getContentPane().add(shot.draw());
-
+                            JLabel EnemyshotLabel = shot.draw(); // Assuming draw() returns a JLabel
+                            BattleField.add(EnemyshotLabel);
                             // Ensure the bullet appears on top
-                            setComponentZOrder(shot.draw(), 0);
+                            BattleField.setComponentZOrder(EnemyshotLabel, 0);
+                            BattleField.revalidate();
+                            BattleField.repaint();
 
                             // Create a Timer to delay the addition of shot1 by 1 second
                             Timer timer = new Timer(100, x -> {
                                 Point tankPos1 = new Point(move.getPos());
-                                Shot shot1 = new Shot(tankPos1);
-                                shot1.setDirection(randomDirect);
+                                Shot shot1 = new Shot(tankPos1, randomDirect);
                                 EnemyShot.add(shot1);
-                                getContentPane().add(shot1.draw());
-
+                                JLabel EnemyshotLabel1 = shot1.draw(); // Assuming draw() returns a JLabel
+                                BattleField.add(EnemyshotLabel1);
                                 // Ensure the bullet appears on top
-                                setComponentZOrder(shot1.draw(), 0);
+                                BattleField.setComponentZOrder(EnemyshotLabel1, 0);
+                                BattleField.revalidate();
+                                BattleField.repaint();
                             });
 
                             // Ensure the timer only runs once
@@ -409,50 +345,54 @@ public class Map1_Defence extends JFrame implements Runnable {
                             timer.start();
                         } else if (move instanceof EnemyTank3) {
                             Point tankPos = new Point(move.getPos());
-                            Shot shot = new Shot(tankPos);
                             Random random = new Random();
                             int randomDirect = random.nextInt(4) + 1;
-                            shot.setDirection(randomDirect);
+                            Shot shot = new Shot(tankPos, randomDirect);
                             EnemyShot.add(shot);
-                            getContentPane().add(shot.draw());
-
+                            JLabel EnemyshotLabel = shot.draw(); // Assuming draw() returns a JLabel
+                            BattleField.add(EnemyshotLabel);
                             // Ensure the bullet appears on top
-                            setComponentZOrder(shot.draw(), 0);
+                            BattleField.setComponentZOrder(EnemyshotLabel, 0);
+                            BattleField.revalidate();
+                            BattleField.repaint();
 
                             // Create a Timer to delay the addition of shot1 by 1 second
                             Timer timer = new Timer(100, x -> {
                                 Point tankPos1 = new Point(move.getPos());
-                                Shot shot1 = new Shot(tankPos1);
-                                shot1.setDirection(randomDirect);
+                                Shot shot1 = new Shot(tankPos1, randomDirect);
                                 EnemyShot.add(shot1);
-                                getContentPane().add(shot1.draw());
-
+                                JLabel EnemyshotLabel1 = shot1.draw(); // Assuming draw() returns a JLabel
+                                BattleField.add(EnemyshotLabel1);
                                 // Ensure the bullet appears on top
-                                setComponentZOrder(shot1.draw(), 0);
+                                BattleField.setComponentZOrder(EnemyshotLabel1, 0);
+                                BattleField.revalidate();
+                                BattleField.repaint();
                             });
                             timer.setRepeats(false);
                             timer.start();
                             Timer timer1 = new Timer(200, x -> {
                                 Point tankPos2 = new Point(move.getPos());
-                                Shot shot2 = new Shot(tankPos2);
-                                shot2.setDirection(randomDirect);
+                                Shot shot2 = new Shot(tankPos2, randomDirect);
                                 EnemyShot.add(shot2);
-                                getContentPane().add(shot2.draw());
-
+                                JLabel EnemyshotLabel2 = shot2.draw(); // Assuming draw() returns a JLabel
+                                BattleField.add(EnemyshotLabel2);
                                 // Ensure the bullet appears on top
-                                setComponentZOrder(shot2.draw(), 0);
+                                BattleField.setComponentZOrder(EnemyshotLabel2, 0);
+                                BattleField.revalidate();
+                                BattleField.repaint();
                             });
                             timer1.setRepeats(false);
                             timer1.start();
                             Timer timer2 = new Timer(300, x -> {
                                 Point tankPos3 = new Point(move.getPos());
-                                Shot shot3 = new Shot(tankPos3);
-                                shot3.setDirection(randomDirect);
+                                Shot shot3 = new Shot(tankPos3, randomDirect);
                                 EnemyShot.add(shot3);
-                                getContentPane().add(shot3.draw());
-
+                                JLabel EnemyshotLabel3 = shot3.draw(); // Assuming draw() returns a JLabel
+                                BattleField.add(EnemyshotLabel3);
                                 // Ensure the bullet appears on top
-                                setComponentZOrder(shot3.draw(), 0);
+                                BattleField.setComponentZOrder(EnemyshotLabel3, 0);
+                                BattleField.revalidate();
+                                BattleField.repaint();
                             });
                             timer2.setRepeats(false);
                             timer2.start();
@@ -467,11 +407,119 @@ public class Map1_Defence extends JFrame implements Runnable {
             @Override
             public void actionPerformed(ActionEvent e) {
                 Point pos = new Point(600, 390);
-                getContentPane().add(DropItem(pos), 2);
+                BattleField.add(DropItem(pos), 2);
             }
         });
         Item.setRepeats(false);
         /* Item.start(); */
+    }
+
+    private void drawTopLiner() {
+        HeartIcon.setFont(new java.awt.Font("Times New Roman", 1, 80));
+        HeartIcon.setIcon(new ImageIcon(getClass().getResource("/Image/HeartImage.png")));
+        HeartIcon.setVisible(true);
+        HeartIcon.setBounds(0, 0, 40, 40);
+        BattleField.add(HeartIcon);
+
+        HeartDisplay.setFont(new java.awt.Font("Times New Roman", 1, 40));
+        HeartDisplay.setText(String.valueOf(userTank1.getHealth()));
+        HeartDisplay.setVisible(true);
+        HeartDisplay.setBounds(80, 0, 40, 40);
+        BattleField.add(HeartDisplay);
+
+        bulletIcon.setFont(new java.awt.Font("Times New Roman", 1, 80));
+        bulletIcon.setIcon(new ImageIcon(getClass().getResource("/Image/bullet.png")));
+        bulletIcon.setVisible(true);
+        bulletIcon.setBounds(160, 0, 40, 40);
+        BattleField.add(bulletIcon);
+
+        RemainBullet.setFont(new java.awt.Font("Times New Roman", 1, 40));
+        RemainBullet.setText(String.valueOf(this.MaxBulletCount - this.currentBullet));
+        RemainBullet.setVisible(true);
+        RemainBullet.setBounds(200, 0, 40, 40);
+        BattleField.add(RemainBullet);
+
+        X.setFont(new java.awt.Font("Times New Roman", 1, 20));
+        X.setText("X");
+        X.setVisible(true);
+        X.setBounds(250, 0, 40, 40);
+        BattleField.add(X);
+
+        bulletPerShot.setFont(new java.awt.Font("Times New Roman", 1, 40));
+        bulletPerShot.setText(String.valueOf(userTank1.getCurrentNumOfBullet()));
+        bulletPerShot.setVisible(true);
+        bulletPerShot.setBounds(280, 0, 40, 40);
+        BattleField.add(bulletPerShot);
+
+        runTimeDisplay.setFont(new java.awt.Font("Times New Roman", 1, 40));
+        runTimeDisplay.setBounds(400, 0, 400, 40);
+        BattleField.add(runTimeDisplay);
+        initializeTimer();
+
+        Score.setFont(new java.awt.Font("Times New Roman", 1, 40));
+        Score.setVisible(true);
+        Score.setBounds(800, 0, 200, 40);
+        BattleField.add(Score);
+
+        EnemyTank1Icon.setFont(new java.awt.Font("Times New Roman", 1, 80));
+        EnemyTank1Icon.setIcon(new ImageIcon(getClass().getResource("/Image/enemyTank_1.png")));
+        EnemyTank1Icon.setVisible(true);
+        EnemyTank1Icon.setBounds(1000, 0, 40, 40);
+        BattleField.add(EnemyTank1Icon);
+
+        EnemyTank1Killed.setFont(new java.awt.Font("Times New Roman", 1, 40));
+        EnemyTank1Killed.setText(String.valueOf(numOfEnemy1Kill));
+        EnemyTank1Killed.setVisible(true);
+        EnemyTank1Killed.setBounds(1010, 40, 40, 40);
+        BattleField.add(EnemyTank1Killed);
+
+        EnemyTank2Icon.setFont(new java.awt.Font("Times New Roman", 1, 80));
+        EnemyTank2Icon.setIcon(new ImageIcon(getClass().getResource("/Image/enemyTank_2.png")));
+        EnemyTank2Icon.setVisible(true);
+        EnemyTank2Icon.setBounds(1080, 0, 40, 40);
+        BattleField.add(EnemyTank2Icon);
+
+        EnemyTank2Killed.setFont(new java.awt.Font("Times New Roman", 1, 40));
+        EnemyTank2Killed.setText(String.valueOf(numOfEnemy2Kill));
+        EnemyTank2Killed.setVisible(true);
+        EnemyTank2Killed.setBounds(1090, 40, 40, 40);
+        BattleField.add(EnemyTank2Killed);
+
+        // EnemyTank3Icon.setFont(new java.awt.Font("Times New Roman", 1, 80));
+        // EnemyTank3Icon.setIcon(new
+        // ImageIcon(getClass().getResource("/Image/enemyTank_3.png")));
+        // EnemyTank3Icon.setVisible(true);
+        // EnemyTank3Icon.setBounds(1160, 0, 40, 40);
+        // BattleField.add(EnemyTank3Icon);
+
+        // EnemyTank3Killed.setFont(new java.awt.Font("Times New Roman", 1, 40));
+        // EnemyTank3Killed.setText(String.valueOf(numberOfLife));
+        // EnemyTank3Killed.setVisible(true);
+        // EnemyTank3Killed.setBounds(1170, 40, 40, 40);
+        // BattleField.add(EnemyTank3Killed);
+
+        HeartIncreseIcon.setFont(new java.awt.Font("Times New Roman", 1, 80));
+        HeartIncreseIcon.setIcon(new ImageIcon(getClass().getResource("/Image/HeartImageIncrease.png")));
+        HeartIncreseIcon.setVisible(true);
+        HeartIncreseIcon.setBounds(1160, 0, 40, 40);
+        BattleField.add(HeartIncreseIcon);
+
+        HeartIncreseCount.setFont(new java.awt.Font("Times New Roman", 1, 40));
+        HeartIncreseCount.setText(String.valueOf(NumberOfHeartInc));
+        HeartIncreseCount.setVisible(true);
+        HeartIncreseCount.setBounds(1170, 40, 40, 40);
+        BattleField.add(HeartIncreseCount);
+
+        back.setFont(new java.awt.Font("Times New Roman", 1, 20));
+        back.setText("Back");
+        back.setVisible(true);
+        back.setBounds(1220, 0, 100, 20);
+        back.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                btnBackActionPerformed(evt);
+            }
+        });
+        BattleField.add(back);
     }
 
     private void initializeTimer() {
@@ -529,96 +577,96 @@ public class Map1_Defence extends JFrame implements Runnable {
             this.damageBlock.add(ste1);
             this.damageBlock.add(ste2);
             this.damageBlock.add(ste3);
-            this.add(ste.drawObject());
-            this.add(ste1.drawObject());
-            this.add(ste2.drawObject());
-            this.add(ste3.drawObject());
+            BattleField.add(ste.drawObject());
+            BattleField.add(ste1.drawObject());
+            BattleField.add(ste2.drawObject());
+            BattleField.add(ste3.drawObject());
         }
         for (int i = 0; i < 33; i++) {
             Point invisiblePoint = new Point(i * 40, 30);
             invisibleObstacle in = new invisibleObstacle(invisiblePoint);
             this.damageBlock.add(in);
-            this.add(in.drawObject());
+            BattleField.add(in.drawObject());
         }
         for (int i = 0; i < 33; i++) {
             Point invisiblePoint = new Point(i * 40, 750);
             invisibleObstacle in = new invisibleObstacle(invisiblePoint);
             this.damageBlock.add(in);
-            this.add(in.drawObject());
+            BattleField.add(in.drawObject());
         }
         for (int i = 0; i < 17; i++) {
             Point invisiblePoint = new Point(-40, 70 + i * 40);
             invisibleObstacle in = new invisibleObstacle(invisiblePoint);
             this.damageBlock.add(in);
-            this.add(in.drawObject());
+            BattleField.add(in.drawObject());
         }
         for (int i = 0; i < 17; i++) {
             Point invisiblePoint = new Point(1320, 70 + i * 40);
             invisibleObstacle in = new invisibleObstacle(invisiblePoint);
             this.damageBlock.add(in);
-            this.add(in.drawObject());
+            BattleField.add(in.drawObject());
         }
         for (int i = 0; i < 5; i++) {
             Point waterPoint = new Point(i * 40, 190);
             Water wat = new Water(waterPoint);
             this.damageBlock.add(wat);
-            this.add(wat.drawObject());
+            BattleField.add(wat.drawObject());
         }
         for (int i = 0; i < 2; i++) {
             Point waterPoint = new Point(160, 150 - (i * 40));
             Water wat = new Water(waterPoint);
             this.damageBlock.add(wat);
-            this.add(wat.drawObject());
+            BattleField.add(wat.drawObject());
         }
         for (int i = 0; i < 5; i++) {
             Point waterPoint = new Point(i * 40, 590);
             Water wat = new Water(waterPoint);
             this.damageBlock.add(wat);
-            this.add(wat.drawObject());
+            BattleField.add(wat.drawObject());
         }
         for (int i = 0; i < 2; i++) {
             Point waterPoint = new Point(160, 630 + (i * 40));
             Water wat = new Water(waterPoint);
             this.damageBlock.add(wat);
-            this.add(wat.drawObject());
+            BattleField.add(wat.drawObject());
         }
         for (int i = 0; i < 5; i++) {
             Point waterPoint = new Point(1120 + i * 40, 190);
             Water wat = new Water(waterPoint);
             this.damageBlock.add(wat);
-            this.add(wat.drawObject());
+            BattleField.add(wat.drawObject());
         }
         for (int i = 0; i < 2; i++) {
             Point waterPoint = new Point(1120, 150 - (i * 40));
             Water wat = new Water(waterPoint);
             this.damageBlock.add(wat);
-            this.add(wat.drawObject());
+            BattleField.add(wat.drawObject());
         }
         for (int i = 0; i < 5; i++) {
             Point waterPoint = new Point(1120 + i * 40, 590);
             Water wat = new Water(waterPoint);
             this.damageBlock.add(wat);
-            this.add(wat.drawObject());
+            BattleField.add(wat.drawObject());
         }
         for (int i = 0; i < 2; i++) {
             Point waterPoint = new Point(1120, 630 + (i * 40));
             Water wat = new Water(waterPoint);
             this.damageBlock.add(wat);
-            this.add(wat.drawObject());
+            BattleField.add(wat.drawObject());
         }
 
         for (int i = 0; i < 7; i++) {
             Point waterPoint = new Point(480 + (i * 40), 190);
             Water wat = new Water(waterPoint);
             this.damageBlock.add(wat);
-            this.add(wat.drawObject());
+            BattleField.add(wat.drawObject());
         }
 
         for (int i = 0; i < 7; i++) {
             Point waterPoint = new Point(480 + (i * 40), 550);
             Water wat = new Water(waterPoint);
             this.damageBlock.add(wat);
-            this.add(wat.drawObject());
+            BattleField.add(wat.drawObject());
         }
     }
 
@@ -626,7 +674,7 @@ public class Map1_Defence extends JFrame implements Runnable {
         this.userTank = new Point(200, 670);
         this.userTank1 = new UserTank(userTank);
         ControlTank.add(userTank1);
-        this.add(userTank1.draw());
+        BattleField.add(userTank1.draw());
 
         // set linklist for damage object
         for (int i = 0; i < 3; i++) {
@@ -634,62 +682,62 @@ public class Map1_Defence extends JFrame implements Runnable {
             BrickBlock brk = new BrickBlock(BrickBlockPoint);
 
             damageBlock.add(brk);
-            this.add(brk.drawObject());
+            BattleField.add(brk.drawObject());
         }
         for (int i = 0; i < 3; i++) {
             Point BrickBlockPoint = new Point(520, 630 + (i * 40));
             BrickBlock brk = new BrickBlock(BrickBlockPoint);
 
             damageBlock.add(brk);
-            this.add(brk.drawObject());
+            BattleField.add(brk.drawObject());
         }
         for (int i = 0; i < 3; i++) {
             Point BrickBlockPoint = new Point(680, 630 + (i * 40));
             BrickBlock brk = new BrickBlock(BrickBlockPoint);
 
             damageBlock.add(brk);
-            this.add(brk.drawObject());
+            BattleField.add(brk.drawObject());
         }
 
         Point Heart = new Point(600, 710);
         HeartGoal heart = new HeartGoal(Heart);
         damageBlock.add(heart);
-        this.add(heart.drawObject());
+        BattleField.add(heart.drawObject());
 
         for (int i = 0; i < 5; i++) {
             Point woddenboxPoint = new Point(i * 40, 230);
             WoodenBox wb = new WoodenBox(woddenboxPoint);
             // Wooden class no need jlabel as pass is a referrence
             damageBlock.add(wb);
-            this.add(wb.drawObject());
+            BattleField.add(wb.drawObject());
         }
         for (int i = 0; i < 5; i++) {
             Point woddenboxPoint = new Point(i * 40, 550);
             WoodenBox wb = new WoodenBox(woddenboxPoint);
             // Wooden class no need jlabel as pass is a referrence
             damageBlock.add(wb);
-            this.add(wb.drawObject());
+            BattleField.add(wb.drawObject());
         }
         for (int i = 0; i < 5; i++) {
             Point woddenboxPoint = new Point(1120 + i * 40, 230);
             WoodenBox wb = new WoodenBox(woddenboxPoint);
             // Wooden class no need jlabel as pass is a referrence
             damageBlock.add(wb);
-            this.add(wb.drawObject());
+            BattleField.add(wb.drawObject());
         }
         for (int i = 0; i < 5; i++) {
             Point woddenboxPoint = new Point(1120 + i * 40, 550);
             WoodenBox wb = new WoodenBox(woddenboxPoint);
             // Wooden class no need jlabel as pass is a referrence
             damageBlock.add(wb);
-            this.add(wb.drawObject());
+            BattleField.add(wb.drawObject());
         }
         for (int i = 0; i < 7; i++) {
             Point woddenboxPoint = new Point(480 + (i * 40), 510);
             WoodenBox wb = new WoodenBox(woddenboxPoint);
             // Wooden class no need jlabel as pass is a referrence
             damageBlock.add(wb);
-            this.add(wb.drawObject());
+            BattleField.add(wb.drawObject());
         }
         for (int i = 0; i < 2; i++) {
             Point woddenboxPoint = new Point(80 + (i * 200), 350);
@@ -705,10 +753,10 @@ public class Map1_Defence extends JFrame implements Runnable {
             damageBlock.add(wb1);
             damageBlock.add(wb2);
             damageBlock.add(wb3);
-            this.add(wb.drawObject());
-            this.add(wb1.drawObject());
-            this.add(wb2.drawObject());
-            this.add(wb3.drawObject());
+            BattleField.add(wb.drawObject());
+            BattleField.add(wb1.drawObject());
+            BattleField.add(wb2.drawObject());
+            BattleField.add(wb3.drawObject());
         }
         for (int i = 0; i < 2; i++) {
             Point woddenboxPoint = new Point(880 + (i * 200), 350);
@@ -724,25 +772,25 @@ public class Map1_Defence extends JFrame implements Runnable {
             damageBlock.add(wb1);
             damageBlock.add(wb2);
             damageBlock.add(wb3);
-            this.add(wb.drawObject());
-            this.add(wb1.drawObject());
-            this.add(wb2.drawObject());
-            this.add(wb3.drawObject());
+            BattleField.add(wb.drawObject());
+            BattleField.add(wb1.drawObject());
+            BattleField.add(wb2.drawObject());
+            BattleField.add(wb3.drawObject());
         }
 
         jlabel1.setIcon(new ImageIcon(
                 getClass().getResource("/Image/background.png")));
         jlabel1.setBounds(0, 70, 1320, 750);
         jlabel1.setVisible(true);
-        getContentPane().add(jlabel1);
+        BattleField.add(jlabel1);
 
     }
 
     private void updateGame() {
-        if (numOfEnemy1Kill >= 5 && numOfEnemy2Kill >= 5) {
+        if (numOfEnemy1Kill >= 1 && numOfEnemy2Kill >= 1) {
             MovetoMap2();
         }
-        Iterator<Shot> iterator = shots.iterator();
+
         if (userTank1.getHealth() < 0) {
             userTank1.setHealth(0);
         }
@@ -750,40 +798,43 @@ public class Map1_Defence extends JFrame implements Runnable {
             HeartDisplay.setText(String.valueOf(userTank1.getHealth()));
             endGame();
         }
+
         // Update all bullets
         UserTankLife.setText(String.valueOf(numberOfLife));
         EnemyTank1Killed.setText(String.valueOf(numOfEnemy1Kill));
         EnemyTank2Killed.setText(String.valueOf(numOfEnemy2Kill));
+        HeartIncreseCount.setText(String.valueOf(NumberOfHeartInc));
         bulletPerShot.setText(String.valueOf(userTank1.getCurrentNumOfBullet()));
         HeartDisplay.setText(String.valueOf(userTank1.getHealth()));
         RemainBullet.setText(String.valueOf(this.MaxBulletCount - this.currentBullet));
         Score.setText("Score: " + score);
+
         if (currentBullet == 12) {
             j.setFont(new java.awt.Font("Times New Roman", 1, 80));
             j.setVisible(true);
             j.setBounds(300, 200, 800, 80);
             j.setForeground(new java.awt.Color(255, 255, 255));
-            this.add(j, 0);
+            BattleField.add(j, 0);
         } else {
-            this.remove(j);
-            this.remove(f);
+            BattleField.remove(j);
+            BattleField.remove(f);
         }
         if (direction != Direction.NO_DIRECTION) {
             currentDirection = direction;
             userTankMove();
-            revalidate();
-            repaint();
             direction = Direction.NO_DIRECTION;
         }
+
+        Iterator<Shot> iterator = shots.iterator();
         while (iterator.hasNext()) {
             Shot shot = iterator.next();
             shot.move();
             shot.setObstacle(damageBlock, EnemyTank, null, null);
             if (shot.getisDamage()) {
-                this.remove(shot.getImage());
+                BattleField.remove(shot.getImage());
+                // shot.setImage(null);
                 iterator.remove();
             }
-            shot.draw();
         }
         Iterator<Shot> iterator1 = EnemyShot.iterator();
         while (iterator1.hasNext()) {
@@ -791,10 +842,10 @@ public class Map1_Defence extends JFrame implements Runnable {
             shot.move();
             shot.setObstacle(damageBlock, ControlTank, null, null);
             if (shot.getisDamage()) {
-                this.remove(shot.getImage());
+                BattleField.remove(shot.getImage());
+                shot.setImage(null);
                 iterator1.remove();
             }
-            shot.draw();
         }
         // Update all obstacle
         LinkedList<Unmove> newItems = new LinkedList<>();
@@ -807,7 +858,7 @@ public class Map1_Defence extends JFrame implements Runnable {
                     JOptionPane.showMessageDialog(null, "Protect point has been destroyed!!!");
                     JOptionPane.showMessageDialog(null, "Back to home page!!!");
                     this.dispose();
-                    HomePage home = new HomePage(false);
+                    HomePage home = new HomePage();
                     new Thread(home).start();
                 }
                 if (unm instanceof WoodenBox) {
@@ -817,7 +868,7 @@ public class Map1_Defence extends JFrame implements Runnable {
                         Point pos = new Point(unm.getPos());
                         Unmove item = gachaItem(pos);
                         newItems.add(item);
-                        this.add(item.drawObject(), 2);
+                        BattleField.add(item.drawObject(), 2);
                         gachaPercentage = 10;
                     } else {
                         gachaPercentage += 10;
@@ -828,9 +879,11 @@ public class Map1_Defence extends JFrame implements Runnable {
                     if (unm instanceof Clock) {
                         score += 100;
                         stopEnemyMove();
-                    }
-                    if (unm instanceof BulletIncrease || unm instanceof HeartUp) {
+                    } else if (unm instanceof BulletIncrease) {
                         score += 200;
+                    } else {
+                        score += 200;
+                        NumberOfHeartInc += 1;
                     }
                     timeDropSup = false;
                 }
@@ -839,9 +892,11 @@ public class Map1_Defence extends JFrame implements Runnable {
                     if (unm instanceof Clock) {
                         score += 100;
                         stopEnemyMove();
-                    }
-                    if (unm instanceof BulletIncrease || unm instanceof HeartUp) {
+                    } else if (unm instanceof BulletIncrease) {
                         score += 200;
+                    } else {
+                        score += 200;
+                        NumberOfHeartInc += 1;
                     }
                 }
                 this.remove(unm.getJLabel());
@@ -860,22 +915,24 @@ public class Map1_Defence extends JFrame implements Runnable {
                     numOfEnemy2Kill += 1;
                     score += 500;
                 }
-                this.remove(move.getImage());
+                BattleField.remove(move.getImage());
                 iterator3.remove();
                 currentEnemy--;
             }
         }
 
         // one for user tank later
+
         if (currentEnemy < 3) {
-            this.add(Enemyspawn(), 1);
+            BattleField.add(Enemyspawn(), 1);
         }
+
         if (!timeDropSup) {
             timeDropSup = true;
             Item.start();
         }
-        this.revalidate();
-        this.repaint();
+        // this.revalidate();
+        // this.repaint();
     }
 
     private void stopEnemyMove() {
@@ -1078,7 +1135,7 @@ public class Map1_Defence extends JFrame implements Runnable {
         if (response == JOptionPane.YES_OPTION) {
             System.out.println("User chose 'Yes'.");
             this.dispose();
-            HomePage home = new HomePage(false);
+            HomePage home = new HomePage();
             new Thread(home).start();
         } else {
             isPause = false; // Unpause the game if user chooses 'No' or closes the dialog
@@ -1112,7 +1169,7 @@ public class Map1_Defence extends JFrame implements Runnable {
                 JOptionPane.showMessageDialog(null, "No more chance !!!. Good luck next time !!!");
                 JOptionPane.showMessageDialog(null, "Return to homepage!!!");
                 this.dispose();
-                HomePage home = new HomePage(false);
+                HomePage home = new HomePage();
                 new Thread(home).start();
             }
             System.out.println("User chose 'Yes'.");
@@ -1120,7 +1177,7 @@ public class Map1_Defence extends JFrame implements Runnable {
             System.out.println("User chose 'No'.");
             JOptionPane.showMessageDialog(null, "Good luck next time !!!");
             this.dispose();
-            HomePage home = new HomePage(false);
+            HomePage home = new HomePage();
             new Thread(home).start();
         } else {
             isPause = false;
@@ -1128,305 +1185,30 @@ public class Map1_Defence extends JFrame implements Runnable {
         }
     }
 
-    private String gameModeDef;
-    private String gameModeSur;
-    private String user1NameDef;
-    private String user1ScoreDef;
-    private String user1PlayTimeDef;
-    private String user2NameDef;
-    private String user2ScoreDef;
-    private String user2PlayTimeDef;
-    private String user3NameDef;
-    private String user3ScoreDef;
-    private String user3PlayTimeDef;
-    private String user1NameSur;
-    private String user1ScoreSur;
-    private String user1PlayTimeSur;
-    private String user2NameSur;
-    private String user2ScoreSur;
-    private String user2PlayTimeSur;
-    private String user3NameSur;
-    private String user3ScoreSur;
-    private String user3PlayTimeSur;
-
     private void MovetoMap2() {
         isPause = true;
         JOptionPane.showMessageDialog(null, "You win first map");
-        readTextFromFile_Map1();
-        if (this.score >= Integer.parseInt(user1ScoreDef)) {
-            if (this.score > Integer.parseInt(user1ScoreDef)) {
-                String name = JOptionPane.showInputDialog("Please enter your name: ");
-                user3NameDef = user2NameDef;
-                user2NameDef = user1NameDef;
-                user1NameDef = name;
-
-                user3ScoreDef = user2ScoreDef;
-                user2ScoreDef = user1ScoreDef;
-                user1ScoreDef = String.valueOf(score);
-
-                user3PlayTimeDef = user2PlayTimeDef;
-                user2PlayTimeDef = user1PlayTimeDef;
-                user1PlayTimeDef = formattedTime;
-                String filePath = "E:\\"; // Change this to your desired directory
-                String fileName = "TankShotter_LeaderBoard_Map1.txt";
-
-                String content = "Name  Score  Play Time\n" + gameModeDef +
-                        "\n" +
-                        user1NameDef + "      " + user1ScoreDef + "   " + user1PlayTimeDef + "\n" +
-                        user2NameDef + "      " + user2ScoreDef + "   " + user2PlayTimeDef + "\n" +
-                        user3NameDef + "      " + user3ScoreDef + "   " + user3PlayTimeDef + "\n" +
-                        gameModeSur + "\n" +
-                        user1NameSur + "      " + user1ScoreSur + "   " + user1PlayTimeSur + "\n" +
-                        user2NameSur + "      " + user2ScoreSur + "   " + user2PlayTimeSur + "\n" +
-                        user3NameSur + "      " + user3ScoreSur + "   " + user3PlayTimeSur + "\n";
-                boolean isFileCreated = HomePage.createAndWriteFileUsingNIO(filePath, fileName, content);
-                if (isFileCreated) {
-                    System.out.println("File created and saved successfully!");
-                } else {
-                    System.out.println("File creation failed.");
-                }
-            } else {
-                int time = (Integer.valueOf(formattedTime.charAt(0)) * 10 + Integer.valueOf(formattedTime.charAt(1)))
-                        * 60 * 60 +
-                        (Integer.valueOf(formattedTime.charAt(3)) * 10 + Integer.valueOf(formattedTime.charAt(4))) * 60
-                        + Integer.valueOf(formattedTime.charAt(6)) * 10
-                        + Integer.valueOf(formattedTime.charAt(7));
-                int player1time = (Integer.valueOf(user1PlayTimeDef.charAt(0)) * 10
-                        + Integer.valueOf(user1PlayTimeDef.charAt(1))) * 60 * 60 +
-                        (Integer.valueOf(user1PlayTimeDef.charAt(3)) * 10 + Integer.valueOf(user1PlayTimeDef.charAt(4)))
-                                * 60
-                        + Integer.valueOf(user1PlayTimeDef.charAt(6)) * 10
-                        + Integer.valueOf(user1PlayTimeDef.charAt(7));
-                if (time >= player1time) {
-                    String name = JOptionPane.showInputDialog("Please enter your name: ");
-                    user3NameDef = user2NameDef;
-                    user2NameDef = name;
-
-                    user3ScoreDef = user2ScoreDef;
-                    user2ScoreDef = String.valueOf(score);
-
-                    user3PlayTimeDef = user2PlayTimeDef;
-                    user2PlayTimeDef = formattedTime;
-
-                    String filePath = "E:\\"; // Change this to your desired directory
-                    String fileName = "TankShotter_LeaderBoard_Map1.txt";
-
-                    String content = "Name  Score  Play Time\n" + gameModeDef +
-                            "\n" +
-                            user1NameDef + "      " + user1ScoreDef + "   " + user1PlayTimeDef + "\n" +
-                            user2NameDef + "      " + user2ScoreDef + "   " + user2PlayTimeDef + "\n" +
-                            user3NameDef + "      " + user3ScoreDef + "   " + user3PlayTimeDef + "\n" +
-                            gameModeSur + "\n" +
-                            user1NameSur + "      " + user1ScoreSur + "   " + user1PlayTimeSur + "\n" +
-                            user2NameSur + "      " + user2ScoreSur + "   " + user2PlayTimeSur + "\n" +
-                            user3NameSur + "      " + user3ScoreSur + "   " + user3PlayTimeSur + "\n";
-                    boolean isFileCreated = HomePage.createAndWriteFileUsingNIO(filePath, fileName, content);
-                    if (isFileCreated) {
-                        System.out.println("File created and saved successfully!");
-                    } else {
-                        System.out.println("File creation failed.");
-                    }
-                } else {
-                    String name = JOptionPane.showInputDialog("Please enter your name: ");
-                    user3NameDef = user2NameDef;
-                    user2NameDef = user1NameDef;
-                    user1NameDef = name;
-
-                    user3ScoreDef = user2ScoreDef;
-                    user2ScoreDef = user1ScoreDef;
-                    user1ScoreDef = String.valueOf(score);
-
-                    user3PlayTimeDef = user2PlayTimeDef;
-                    user2PlayTimeDef = user1PlayTimeDef;
-                    user1PlayTimeDef = formattedTime;
-                    String filePath = "E:\\"; // Change this to your desired directory
-                    String fileName = "TankShotter_LeaderBoard_Map1.txt";
-
-                    String content = "Name  Score  Play Time\n" + gameModeDef +
-                            "\n" +
-                            user1NameDef + "      " + user1ScoreDef + "   " + user1PlayTimeDef + "\n" +
-                            user2NameDef + "      " + user2ScoreDef + "   " + user2PlayTimeDef + "\n" +
-                            user3NameDef + "      " + user3ScoreDef + "   " + user3PlayTimeDef + "\n" +
-                            gameModeSur + "\n" +
-                            user1NameSur + "      " + user1ScoreSur + "   " + user1PlayTimeSur + "\n" +
-                            user2NameSur + "      " + user2ScoreSur + "   " + user2PlayTimeSur + "\n" +
-                            user3NameSur + "      " + user3ScoreSur + "   " + user3PlayTimeSur + "\n";
-                    boolean isFileCreated = HomePage.createAndWriteFileUsingNIO(filePath, fileName, content);
-                    if (isFileCreated) {
-                        System.out.println("File created and saved successfully!");
-                    } else {
-                        System.out.println("File creation failed.");
-                    }
-                }
-            }
-        }
-
-        else if (this.score >= Integer.parseInt(user2ScoreDef)) {
-            if (this.score > Integer.parseInt(user2ScoreDef)) {
-                String name = JOptionPane.showInputDialog("Please enter your name: ");
-                user3NameDef = user2NameDef;
-                user2NameDef = name;
-
-                user3ScoreDef = user2ScoreDef;
-                user2ScoreDef = String.valueOf(score);
-
-                user3PlayTimeDef = user2PlayTimeDef;
-                user2PlayTimeDef = formattedTime;
-
-                String filePath = "E:\\"; // Change this to your desired directory
-                String fileName = "TankShotter_LeaderBoard_Map1.txt";
-
-                String content = "Name  Score  Play Time\n" + gameModeDef +
-                        "\n" +
-                        user1NameDef + "      " + user1ScoreDef + "   " + user1PlayTimeDef + "\n" +
-                        user2NameDef + "      " + user2ScoreDef + "   " + user2PlayTimeDef + "\n" +
-                        user3NameDef + "      " + user3ScoreDef + "   " + user3PlayTimeDef + "\n" +
-                        gameModeSur + "\n" +
-                        user1NameSur + "      " + user1ScoreSur + "   " + user1PlayTimeSur + "\n" +
-                        user2NameSur + "      " + user2ScoreSur + "   " + user2PlayTimeSur + "\n" +
-                        user3NameSur + "      " + user3ScoreSur + "   " + user3PlayTimeSur + "\n";
-                boolean isFileCreated = HomePage.createAndWriteFileUsingNIO(filePath, fileName, content);
-                if (isFileCreated) {
-                    System.out.println("File created and saved successfully!");
-                } else {
-                    System.out.println("File creation failed.");
-                }
-            } else {
-                int time = (Integer.valueOf(formattedTime.charAt(0)) * 10 + Integer.valueOf(formattedTime.charAt(1)))
-                        * 60 * 60 +
-                        (Integer.valueOf(formattedTime.charAt(3)) * 10 + Integer.valueOf(formattedTime.charAt(4))) * 60
-                        + Integer.valueOf(formattedTime.charAt(6)) * 10
-                        + Integer.valueOf(formattedTime.charAt(7));
-                int player2time = (Integer.valueOf(user2PlayTimeDef.charAt(0)) * 10
-                        + Integer.valueOf(user2PlayTimeDef.charAt(1))) * 60 * 60 +
-                        (Integer.valueOf(user2PlayTimeDef.charAt(3)) * 10 + Integer.valueOf(user2PlayTimeDef.charAt(4)))
-                                * 60
-                        + Integer.valueOf(user2PlayTimeDef.charAt(6)) * 10
-                        + Integer.valueOf(user2PlayTimeDef.charAt(7));
-                if (time >= player2time) {
-                    String name = JOptionPane.showInputDialog("Please enter your name: ");
-                    user3NameDef = name;
-
-                    user3ScoreDef = String.valueOf(score);
-
-                    user3PlayTimeDef = formattedTime;
-
-                    String filePath = "E:\\"; // Change this to your desired directory
-                    String fileName = "TankShotter_LeaderBoard_Map1.txt";
-
-                    String content = "Name  Score  Play Time\n" + gameModeDef +
-                            "\n" +
-                            user1NameDef + "      " + user1ScoreDef + "   " + user1PlayTimeDef + "\n" +
-                            user2NameDef + "      " + user2ScoreDef + "   " + user2PlayTimeDef + "\n" +
-                            user3NameDef + "      " + user3ScoreDef + "   " + user3PlayTimeDef + "\n" +
-                            gameModeSur + "\n" +
-                            user1NameSur + "      " + user1ScoreSur + "   " + user1PlayTimeSur + "\n" +
-                            user2NameSur + "      " + user2ScoreSur + "   " + user2PlayTimeSur + "\n" +
-                            user3NameSur + "      " + user3ScoreSur + "   " + user3PlayTimeSur + "\n";
-                    boolean isFileCreated = HomePage.createAndWriteFileUsingNIO(filePath, fileName, content);
-                    if (isFileCreated) {
-                        System.out.println("File created and saved successfully!");
-                    } else {
-                        System.out.println("File creation failed.");
-                    }
-                } else {
-                    String name = JOptionPane.showInputDialog("Please enter your name: ");
-                    user3NameDef = user2NameDef;
-                    user2NameDef = name;
-
-                    user3ScoreDef = user2ScoreDef;
-                    user2ScoreDef = String.valueOf(score);
-
-                    user3PlayTimeDef = user2PlayTimeDef;
-                    user2PlayTimeDef = formattedTime;
-
-                    String filePath = "E:\\"; // Change this to your desired directory
-                    String fileName = "TankShotter_LeaderBoard_Map1.txt";
-
-                    String content = "Name  Score  Play Time\n" + gameModeDef +
-                            "\n" +
-                            user1NameDef + "      " + user1ScoreDef + "   " + user1PlayTimeDef + "\n" +
-                            user2NameDef + "      " + user2ScoreDef + "   " + user2PlayTimeDef + "\n" +
-                            user3NameDef + "      " + user3ScoreDef + "   " + user3PlayTimeDef + "\n" +
-                            gameModeSur + "\n" +
-                            user1NameSur + "      " + user1ScoreSur + "   " + user1PlayTimeSur + "\n" +
-                            user2NameSur + "      " + user2ScoreSur + "   " + user2PlayTimeSur + "\n" +
-                            user3NameSur + "      " + user3ScoreSur + "   " + user3PlayTimeSur + "\n";
-                    boolean isFileCreated = HomePage.createAndWriteFileUsingNIO(filePath, fileName, content);
-                    if (isFileCreated) {
-                        System.out.println("File created and saved successfully!");
-                    } else {
-                        System.out.println("File creation failed.");
-                    }
-                }
-
-            }
-        } else if (this.score >= Integer.parseInt(user3ScoreDef)) {
-            if (this.score > Integer.parseInt(user3ScoreDef)) {
-                String name = JOptionPane.showInputDialog("Please enter your name: ");
-                user3NameDef = name;
-
-                user3ScoreDef = String.valueOf(score);
-
-                user3PlayTimeDef = formattedTime;
-
-                String filePath = "E:\\"; // Change this to your desired directory
-                String fileName = "TankShotter_LeaderBoard_Map1.txt";
-
-                String content = "Name  Score  Play Time\n" + gameModeDef +
-                        "\n" +
-                        user1NameDef + "      " + user1ScoreDef + "   " + user1PlayTimeDef + "\n" +
-                        user2NameDef + "      " + user2ScoreDef + "   " + user2PlayTimeDef + "\n" +
-                        user3NameDef + "      " + user3ScoreDef + "   " + user3PlayTimeDef + "\n" +
-                        gameModeSur + "\n" +
-                        user1NameSur + "      " + user1ScoreSur + "   " + user1PlayTimeSur + "\n" +
-                        user2NameSur + "      " + user2ScoreSur + "   " + user2PlayTimeSur + "\n" +
-                        user3NameSur + "      " + user3ScoreSur + "   " + user3PlayTimeSur + "\n";
-                boolean isFileCreated = HomePage.createAndWriteFileUsingNIO(filePath, fileName, content);
-                if (isFileCreated) {
-                    System.out.println("File created and saved successfully!");
-                } else {
-                    System.out.println("File creation failed.");
-                }
-            } else {
-                int time = (Integer.valueOf(formattedTime.charAt(0)) * 10 + Integer.valueOf(formattedTime.charAt(1)))
-                        * 60 * 60 +
-                        (Integer.valueOf(formattedTime.charAt(3)) * 10 + Integer.valueOf(formattedTime.charAt(4))) * 60
-                        + Integer.valueOf(formattedTime.charAt(6)) * 10
-                        + Integer.valueOf(formattedTime.charAt(7));
-                int player3time = (Integer.valueOf(user3PlayTimeDef.charAt(0)) * 10
-                        + Integer.valueOf(user3PlayTimeDef.charAt(1))) * 60 * 60 +
-                        (Integer.valueOf(user3PlayTimeDef.charAt(3) * 10 + Integer.valueOf(user3PlayTimeDef.charAt(4)))
-                                * 60
-                                + Integer.valueOf(user3PlayTimeDef.charAt(6)) * 10
-                                + Integer.valueOf(user3PlayTimeDef.charAt(7)));
-                if (time < player3time) {
-                    String name = JOptionPane.showInputDialog("Please enter your name: ");
-                    user3NameDef = name;
-
-                    user3ScoreDef = String.valueOf(score);
-
-                    user3PlayTimeDef = formattedTime;
-
-                    String filePath = "E:\\"; // Change this to your desired directory
-                    String fileName = "TankShotter_LeaderBoard_Map1.txt";
-
-                    String content = "Name  Score  Play Time\n" + gameModeDef +
-                            "\n" +
-                            user1NameDef + "      " + user1ScoreDef + "   " + user1PlayTimeDef + "\n" +
-                            user2NameDef + "      " + user2ScoreDef + "   " + user2PlayTimeDef + "\n" +
-                            user3NameDef + "      " + user3ScoreDef + "   " + user3PlayTimeDef + "\n" +
-                            gameModeSur + "\n" +
-                            user1NameSur + "      " + user1ScoreSur + "   " + user1PlayTimeSur + "\n" +
-                            user2NameSur + "      " + user2ScoreSur + "   " + user2PlayTimeSur + "\n" +
-                            user3NameSur + "      " + user3ScoreSur + "   " + user3PlayTimeSur + "\n";
-                    boolean isFileCreated = HomePage.createAndWriteFileUsingNIO(filePath, fileName, content);
-                    if (isFileCreated) {
-                        System.out.println("File created and saved successfully!");
-                    } else {
-                        System.out.println("File creation failed.");
-                    }
-                }
+        CompareScore comp = new CompareScore(score, formattedTime);
+        int ResultCase = comp.getCaseOfResult();
+        System.out.println(ResultCase);
+        if (!(ResultCase == 9)) {
+            String name = JOptionPane.showInputDialog("Please enter your name: ");
+            if (ResultCase == 1) {
+                comp.Case1(name);
+            } else if (ResultCase == 2) {
+                comp.Case2(name);
+            } else if (ResultCase == 3) {
+                comp.Case3(name);
+            } else if (ResultCase == 4) {
+                comp.Case4(name);
+            } else if (ResultCase == 5) {
+                comp.Case5(name);
+            } else if (ResultCase == 6) {
+                comp.Case6(name);
+            } else if (ResultCase == 7) {
+                comp.Case7(name);
+            } else if (ResultCase == 8) {
+                comp.Case8(name);
             }
         } else {
             JOptionPane.showMessageDialog(null,
@@ -1447,84 +1229,12 @@ public class Map1_Defence extends JFrame implements Runnable {
         } else if (response == JOptionPane.NO_OPTION) {
             System.out.println("User chose 'No'.");
             this.dispose();
-            HomePage home = new HomePage(false);
+            HomePage home = new HomePage();
             new Thread(home).start();
         } else {
             System.out.println("Dialog was closed or canceled without a specific choice.");
         }
         this.requestFocus();
-    }
-
-    private void readTextFromFile_Map1() {
-        String filePath = "E:\\TankShotter_LeaderBoard_Map1.txt";
-        try {
-            // Read all lines from the file
-            List<String> lines = Files.readAllLines(Paths.get(filePath));
-            // Check if the file is not empty
-            if (lines.isEmpty()) {
-                System.out.println("The file is empty.");
-                return;
-            }
-            // Skip the header and parse each line
-            String mode = lines.get(1);
-            gameModeDef = mode;
-            String mode1 = lines.get(5);
-            gameModeSur = mode1;
-            for (int i = 2; i < 5; i++) {
-                String line = lines.get(i);
-                String[] parts = line.split("\\s+"); // Split by one or more spaces
-
-                if (parts.length == 3) { // Ensure there are exactly 3 parts
-                    String name = parts[0];
-                    String score = parts[1];
-                    String playTime = parts[2];
-                    if (i == 2) {
-                        user1NameDef = name;
-                        user1ScoreDef = score;
-                        user1PlayTimeDef = playTime;
-                    } else if (i == 3) {
-                        user2NameDef = name;
-                        user2ScoreDef = score;
-                        user2PlayTimeDef = playTime;
-                    } else if (i == 4) {
-                        user3NameDef = name;
-                        user3ScoreDef = score;
-                        user3PlayTimeDef = playTime;
-                    }
-                } else {
-                    System.out.println("Line format is incorrect: " + line);
-                }
-            }
-
-            for (int i = 6; i < 9; i++) {
-                String line = lines.get(i);
-                String[] parts = line.split("\\s+"); // Split by one or more spaces
-
-                if (parts.length == 3) { // Ensure there are exactly 3 parts
-                    String name = parts[0];
-                    String score = parts[1];
-                    String playTime = parts[2];
-                    if (i == 6) {
-                        user1NameSur = name;
-                        user1ScoreSur = score;
-                        user1PlayTimeSur = playTime;
-                    } else if (i == 7) {
-                        user2NameSur = name;
-                        user2ScoreSur = score;
-                        user2PlayTimeSur = playTime;
-                    } else if (i == 8) {
-                        user3NameSur = name;
-                        user3ScoreSur = score;
-                        user3PlayTimeSur = playTime;
-                    }
-                } else {
-                    System.out.println("Line format is incorrect: " + line);
-                }
-            }
-        } catch (IOException e) {
-            System.err.println("Failed to read the file: " + e.getMessage());
-            e.printStackTrace();
-        }
     }
 
     @Override

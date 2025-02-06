@@ -769,7 +769,7 @@ public class Map2_Survival extends JFrame implements Runnable {
             JOptionPane.showMessageDialog(null, "Time up!!! You are defeated!!!");
             JOptionPane.showMessageDialog(null, "Back to home page!!!");
             this.dispose();
-            HomePage home = new HomePage(false);
+            HomePage home = new HomePage();
             new Thread(home).start();
         }
         if (userTank1.getHealth() < 0) {
@@ -1124,7 +1124,7 @@ public class Map2_Survival extends JFrame implements Runnable {
         if (response == JOptionPane.YES_OPTION) {
             System.out.println("User chose 'Yes'.");
             this.dispose();
-            HomePage home = new HomePage(false);
+            HomePage home = new HomePage();
             new Thread(home).start();
         } else {
             isPause = false; // Unpause the game if user chooses 'No' or closes the dialog
@@ -1158,7 +1158,7 @@ public class Map2_Survival extends JFrame implements Runnable {
                 JOptionPane.showMessageDialog(null, "No more chance !!!. Good luck next time !!!");
                 JOptionPane.showMessageDialog(null, "Return to homepage!!!");
                 this.dispose();
-                HomePage home = new HomePage(false);
+                HomePage home = new HomePage();
                 new Thread(home).start();
             }
             System.out.println("User chose 'Yes'.");
@@ -1166,7 +1166,7 @@ public class Map2_Survival extends JFrame implements Runnable {
             System.out.println("User chose 'No'.");
             JOptionPane.showMessageDialog(null, "Good luck next time !!!");
             this.dispose();
-            HomePage home = new HomePage(false);
+            HomePage home = new HomePage();
             new Thread(home).start();
         } else {
             isPause = false;

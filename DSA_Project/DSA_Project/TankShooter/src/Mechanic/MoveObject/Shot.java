@@ -3,12 +3,15 @@
 */
 package Mechanic.MoveObject;
 
+import java.awt.Color;
 import java.awt.Point;
 import java.util.Iterator;
 import java.util.LinkedList;
 
 import javax.swing.ImageIcon;
 import javax.swing.JLabel;
+import javax.swing.SwingConstants;
+import javax.swing.border.LineBorder;
 
 import Mechanic.UnmoveObject.BrickRegenerate;
 import Mechanic.UnmoveObject.BulletIncrease;
@@ -27,48 +30,34 @@ public class Shot extends Move {
     private LinkedList<Unmove> Obstacle = new LinkedList<>();
     private int isitself = 0;
 
-    public Shot(Point position) {
+    public Shot(Point position, int direc) {
         this.pos = position;
+        this.direction = direc;
         Bullet = new JLabel();
         Bullet.setIcon(new ImageIcon(getClass().getResource("/Image/bullet.png")));
-        Point newPos = new Point();
         switch (direction) {
             case Direction.EAST:
-                newPos = new Point(pos.x + 40, pos.y + 30);
+                pos = new Point(pos.x + 30, pos.y);
                 break;
             case Direction.WEST:
-                newPos = new Point(pos.x - 20, pos.y + 20);
+                pos = new Point(pos.x - 30, pos.y);
                 break;
             case Direction.SOUTH:
-                newPos = new Point(pos.x + 20, pos.y + 60);
+                pos = new Point(pos.x, pos.y + 25);
                 break;
             case Direction.NORTH:
-                newPos = new Point(pos.x + 20, pos.y - 20);
+                pos = new Point(pos.x, pos.y - 25);
                 break;
         }
-        Bullet.setBounds(newPos.x, newPos.y, 40, 40);
+        // Center the icon inside the label
+        Bullet.setHorizontalAlignment(SwingConstants.CENTER);
+        Bullet.setVerticalAlignment(SwingConstants.CENTER);
+        // Bullet.setBorder(new LineBorder(Color.red, 5));
         Bullet.setVisible(true);
     }
 
     @Override
     public JLabel draw() {
-        // Update bullet's position in its label
-        Point newPos = new Point();
-        switch (direction) {
-            case Direction.EAST:
-                newPos = new Point(pos.x + 30, pos.y + 30);
-                break;
-            case Direction.WEST:
-                newPos = new Point(pos.x - 20, pos.y + 30);
-                break;
-            case Direction.SOUTH:
-                newPos = new Point(pos.x + 10, pos.y + 60);
-                break;
-            case Direction.NORTH:
-                newPos = new Point(pos.x + 10, pos.y - 10);
-                break;
-        }
-        Bullet.setBounds(newPos.x, newPos.y, 40, 40);
         return Bullet;
     }
 
@@ -89,6 +78,7 @@ public class Shot extends Move {
                 pos.translate(0, -SPEED);
                 break;
         }
+        Bullet.setBounds(pos.x, pos.y, 40, 40);
     }
 
     public boolean isBulletAtTarget(LinkedList<Unmove> obstacle, Point nextPos, LinkedList<Move> tank,
@@ -116,13 +106,14 @@ public class Shot extends Move {
         Iterator<Unmove> iterator = obstacle.iterator();
         while (iterator.hasNext()) {
             Unmove object = iterator.next();
+            // System.out.println(object.getPos());
             if (object instanceof Water || object instanceof Clock || object instanceof HeartUp
                     || object instanceof BulletIncrease || object instanceof BrickRegenerate) {
                 continue;
             } else if (nextPos.x == object.getPos().x && nextPos.y == object.getPos().y) {
-                if (object.isDestroy()) {
-                    continue;
-                }
+                // if (object.isDestroy()) {
+                // continue;
+                // }
                 isDamage = true;
                 object.isDamage();
                 break;
@@ -143,14 +134,35 @@ public class Shot extends Move {
     public void setObstacle(LinkedList<Unmove> obstacle, LinkedList<Move> tank, LinkedList<Point> boss,
             Boss currentBoss) {
         Obstacle = obstacle;
-        if (isBulletAtTarget(obstacle, pos, tank, boss, currentBoss)) {
-            Bullet.setVisible(false);
+        Point newPos = null;
+        switch (direction) {
+            case Direction.EAST:
+                newPos = new Point(pos.x - 30 + 40 - SPEED, pos.y);
+                break;
+            case Direction.WEST:
+                newPos = new Point(pos.x + 30 - 40 + SPEED, pos.y);
+                break;
+            case Direction.SOUTH:
+                newPos = new Point(pos.x, pos.y - 25 + 40 - SPEED);
+                break;
+            case Direction.NORTH:
+                newPos = new Point(pos.x, pos.y + 25 - 40 + SPEED);
+                break;
+        }
+
+        if (isBulletAtTarget(obstacle, newPos, tank, boss, currentBoss)) {
+            // Bullet.setVisible(!isDamage);
+
         }
     }
 
     @Override
     public JLabel getImage() {
         return Bullet;
+    }
+
+    public void setImage(JLabel image) {
+        this.Bullet = image;
     }
 
     public boolean getisDamage() {

@@ -25,4 +25,5 @@ public abstract class Move {
     public abstract boolean isDestroy();
 
     public abstract JLabel getImage();
+
 }

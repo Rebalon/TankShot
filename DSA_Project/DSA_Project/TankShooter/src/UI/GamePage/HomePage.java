@@ -5,11 +5,13 @@
 package UI.GamePage;
 
 import java.awt.event.ActionEvent;
+import java.io.File;
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.nio.file.StandardOpenOption;
+import java.util.prefs.Preferences;
 
 import javax.swing.ImageIcon;
 import javax.swing.JButton;
@@ -21,15 +23,29 @@ public class HomePage extends JFrame implements Runnable {
     private JLabel jlabel1 = new JLabel();
     private JButton newGame = new JButton();
     private JButton LeaderBoard = new JButton();
-    private boolean needtocreateFile = true;
     private JButton Guild = new JButton();
+    private String savePath = null;
+    private static final String GAME_FOLDER_KEY = "game_folder";
 
-    public HomePage(boolean needtocreatefile) {
-        this.needtocreateFile = needtocreatefile;
+    public HomePage() {
         initial();
     }
 
     private void initial() {
+
+        // Get and check if game folder was chosen
+        Preferences prefs = Preferences.userRoot().node(HomePage.class.getName());
+        // Retrieve the saved game folder path
+        String savedGameFolder = prefs.get(GAME_FOLDER_KEY, null);
+        SelectSaveLocation selectSaveLocation = new SelectSaveLocation();
+        if (savedGameFolder == null || !selectSaveLocation.isValidDirectory(savedGameFolder)) {
+            savePath = selectSaveLocation.Select();
+        } else {
+            savePath = savedGameFolder;
+            // System.out.println("Game folder is located at: " + savedGameFolder);
+        }
+        // System.out.println(installationPath);
+
         jlabel1.setFont(new java.awt.Font("Times New Roman", 1, 80)); // NOI18N
         jlabel1.setForeground(new java.awt.Color(0, 0, 0));
         jlabel1.setText("Tank Shooter");
@@ -76,9 +92,9 @@ public class HomePage extends JFrame implements Runnable {
         background.setIcon(new ImageIcon(getClass().getResource("/Image/HomePage.png")));
         background.setBounds(0, 0, 1320, 820);
         background.setVisible(true);
-        if (needtocreateFile) {
-            initialLeaderBoardFile();
-        }
+
+        initialLeaderBoardFile();
+
         this.add(background);
         this.setFocusable(true);
         this.pack();
@@ -94,7 +110,7 @@ public class HomePage extends JFrame implements Runnable {
 
     private void btnLeaderBoardActionPerformed(ActionEvent evt) {
         this.dispose();
-        LeaderBoard LB = new LeaderBoard();
+        LeaderBoard LB = new LeaderBoard(savePath);
         new Thread(LB).start();
     }
 
@@ -106,18 +122,20 @@ public class HomePage extends JFrame implements Runnable {
 
     private void initialLeaderBoardFile() {
         // Define the file path and name
-        String filePath = "E:\\"; // Change this to your desired directory
+        // System.out.println(savePath);
+        String filePath = savePath; // Change this to your desired directory
         String fileName = "TankShotter_LeaderBoard_Map1.txt";
         // Combine file path and name
         Path path = Paths.get(filePath, fileName);
 
-        // Check if the file exists
+        // // Check if the file exists
         if (Files.exists(path)) {
-            System.out.println("File exists: " + path.toString());
+            // System.out.println("File exists: " + path.toString());
             return;
-        } else {
-            System.out.println("File does not exist: " + path.toString());
         }
+        // } else {
+        // System.out.println("File does not exist: " + path.toString());
+        // }
         String content = "Name  Score  Play Time\n" +
                 "Defence\n" +
                 "Hung     0   0:00:00\n" +
@@ -134,7 +152,7 @@ public class HomePage extends JFrame implements Runnable {
         } else {
             System.out.println("File creation failed.");
         }
-        String filePath1 = "E:\\"; // Change this to your desired directory
+        String filePath1 = savePath; // Change this to your desired directory
         String fileName1 = "TankShotter_LeaderBoard_Map2.txt";
         String content1 = "Name  Score  Play Time\n" +
                 "Defence\n" +
@@ -187,7 +205,7 @@ public class HomePage extends JFrame implements Runnable {
     }
 
     public static void main(String[] args) {
-        HomePage home = new HomePage(false);
+        HomePage home = new HomePage();
         new Thread(home).start();
     }
 }

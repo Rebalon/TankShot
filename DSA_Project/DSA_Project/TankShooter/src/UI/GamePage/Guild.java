@@ -130,7 +130,7 @@ public class Guild extends JFrame implements Runnable {
 
     private void btnBackActionPerformed(ActionEvent evt) {
         this.dispose();
-        HomePage home = new HomePage(false);
+        HomePage home = new HomePage();
         new Thread(home).start();
     }
 
