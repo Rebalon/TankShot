@@ -23,12 +23,14 @@ import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Random;
+import java.util.prefs.Preferences;
 
 import javax.swing.ImageIcon;
 import javax.swing.JButton;
 import javax.swing.JFrame;
 import javax.swing.JLabel;
 import javax.swing.JOptionPane;
+import javax.swing.JPanel;
 import javax.swing.Timer;
 
 import Mechanic.MoveObject.Boss;
@@ -103,111 +105,38 @@ public class Map2_Survival extends JFrame implements Runnable {
     private int pausetime = 0;
     private String formattedTime;
     private int time;
+    private JPanel BattleField = null;
+    private JLabel EnemyTank1Icon = new JLabel();
+    private JLabel EnemyTank1Killed = new JLabel();
+    private int numOfEnemy1Kill = 0;
+    private JLabel HeartIncreseIcon = new JLabel();
+    private JLabel HeartIncreseCount = new JLabel();
+    private int NumberOfHeartInc = 0;
+    private Timer BossShotTimer;
+    private static final String GAME_FOLDER_KEY = "game_folder";
+    private String savePath = null;
 
     public Map2_Survival() {
         initial();
     }
 
     private void initial() {
-        this.setName("TankShooter");
+        Preferences prefs = Preferences.userRoot().node(HomePage.class.getName());
+        // Retrieve the saved game folder path
+        String savedGameFolder = prefs.get(GAME_FOLDER_KEY, null);
+        savePath = savedGameFolder;
+        this.setFocusable(true);
+        this.setTitle("Map 1 Defence");
+        this.setSize(1340, 800);
         this.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-        this.setLayout(null);
+        this.setVisible(true);
+        BattleField = new JPanel();
+        BattleField.setLayout(null); // Use layout as needed
+
         drawMap();
         drawDamageObject();
-
-        HeartIcon.setFont(new java.awt.Font("Times New Roman", 1, 80));
-        HeartIcon.setIcon(new ImageIcon(getClass().getResource("/Image/HeartImage.png")));
-        HeartIcon.setVisible(true);
-        HeartIcon.setBounds(0, 0, 40, 40);
-        this.add(HeartIcon);
-
-        HeartDisplay.setFont(new java.awt.Font("Times New Roman", 1, 40));
-        HeartDisplay.setText(String.valueOf(userTank1.getHealth()));
-        HeartDisplay.setVisible(true);
-        HeartDisplay.setBounds(80, 0, 40, 40);
-        this.add(HeartDisplay);
-
-        bulletIcon.setFont(new java.awt.Font("Times New Roman", 1, 80));
-        bulletIcon.setIcon(new ImageIcon(getClass().getResource("/Image/bullet.png")));
-        bulletIcon.setVisible(true);
-        bulletIcon.setBounds(160, 0, 40, 40);
-        this.add(bulletIcon);
-
-        RemainBullet.setFont(new java.awt.Font("Times New Roman", 1, 40));
-        RemainBullet.setText(String.valueOf(this.MaxBulletCount - this.currentBullet));
-        RemainBullet.setVisible(true);
-        RemainBullet.setBounds(200, 0, 40, 40);
-        this.add(RemainBullet);
-
-        X.setFont(new java.awt.Font("Times New Roman", 1, 20));
-        X.setText("X");
-        X.setVisible(true);
-        X.setBounds(250, 0, 40, 40);
-        this.add(X);
-
-        bulletPerShot.setFont(new java.awt.Font("Times New Roman", 1, 40));
-        bulletPerShot.setText(String.valueOf(userTank1.getCurrentNumOfBullet()));
-        bulletPerShot.setVisible(true);
-        bulletPerShot.setBounds(280, 0, 40, 40);
-        this.add(bulletPerShot);
-
-        runTimeDisplay.setFont(new java.awt.Font("Times New Roman", 1, 40));
-        runTimeDisplay.setBounds(400, 0, 400, 40);
-        this.add(runTimeDisplay);
-        initializeTimer();
-
-        Score.setFont(new java.awt.Font("Times New Roman", 1, 40));
-        Score.setVisible(true);
-        Score.setBounds(800, 0, 200, 40);
-        this.add(Score);
-
-        EnemyTank3Icon.setFont(new java.awt.Font("Times New Roman", 1, 80));
-        EnemyTank3Icon.setIcon(new ImageIcon(getClass().getResource("/Image/enemyTank_3.png")));
-        EnemyTank3Icon.setVisible(true);
-        EnemyTank3Icon.setBounds(1000, 0, 40, 40);
-        this.add(EnemyTank3Icon);
-
-        EnemyTank3Killed.setFont(new java.awt.Font("Times New Roman", 1, 40));
-        EnemyTank3Killed.setText(String.valueOf(numOfEnemy3Kill));
-        EnemyTank3Killed.setVisible(true);
-        EnemyTank3Killed.setBounds(1010, 40, 40, 40);
-        this.add(EnemyTank3Killed);
-
-        EnemyTank2Icon.setFont(new java.awt.Font("Times New Roman", 1, 80));
-        EnemyTank2Icon.setIcon(new ImageIcon(getClass().getResource("/Image/enemyTank_2.png")));
-        EnemyTank2Icon.setVisible(true);
-        EnemyTank2Icon.setBounds(1080, 0, 40, 40);
-        this.add(EnemyTank2Icon);
-
-        EnemyTank2Killed.setFont(new java.awt.Font("Times New Roman", 1, 40));
-        EnemyTank2Killed.setText(String.valueOf(numOfEnemy2Kill));
-        EnemyTank2Killed.setVisible(true);
-        EnemyTank2Killed.setBounds(1090, 40, 40, 40);
-        this.add(EnemyTank2Killed);
-
-        UserTankImage.setFont(new java.awt.Font("Times New Roman", 1, 80));
-        UserTankImage.setIcon(new ImageIcon(getClass().getResource("/Image/tankUp.png")));
-        UserTankImage.setVisible(true);
-        UserTankImage.setBounds(1160, 0, 40, 40);
-        this.add(UserTankImage);
-
-        UserTankLife.setFont(new java.awt.Font("Times New Roman", 1, 40));
-        UserTankLife.setText(String.valueOf(numberOfLife));
-        UserTankLife.setVisible(true);
-        UserTankLife.setBounds(1170, 40, 40, 40);
-        this.add(UserTankLife);
-
-        back.setFont(new java.awt.Font("Times New Roman", 1, 20));
-        back.setText("Back");
-        back.setVisible(true);
-        back.setBounds(1220, 0, 100, 20);
-        back.addActionListener(new java.awt.event.ActionListener() {
-            public void actionPerformed(java.awt.event.ActionEvent evt) {
-                btnBackActionPerformed(evt);
-            }
-        });
-        this.add(back);
-
+        drawTopLiner();
+        this.add(BattleField);
         this.addKeyListener(new KeyAdapter() {
             @Override
             public void keyPressed(KeyEvent e) {
@@ -236,81 +165,38 @@ public class Map2_Survival extends JFrame implements Runnable {
                         if (!isPause) {
                             if (!isLoading) {
                                 if (canFire()) {
-                                    if (userTank1.getCurrentNumOfBullet() == 1) {
-                                        Point tankPos = new Point(userTank1.getPos());
-                                        Shot shot = new Shot(tankPos);
-                                        shot.setDirection(currentDirection);
-                                        shots.add(shot);
-                                        getContentPane().add(shot.draw());
-                                        // Ensure the bullet appears on top
-                                        setComponentZOrder(shot.draw(), 0);
-                                        currentBullet++;
-                                    } else if (userTank1.getCurrentNumOfBullet() == 2) {// No increse in number of
-                                                                                        // bullet
-                                        Point tankPos = new Point(userTank1.getPos());
-                                        Shot shot = new Shot(tankPos);
-                                        shot.setDirection(currentDirection);
-                                        shots.add(shot);
-                                        getContentPane().add(shot.draw());
-                                        // Ensure the bullet appears on top
-                                        setComponentZOrder(shot.draw(), 0);
-                                        currentBullet++;
+                                    for (int i = 0; i < userTank1.getCurrentNumOfBullet(); i++) {
+                                        int delay = 100 * i;
+                                        Timer timer = new Timer(delay, x -> {
+                                            Point tankPos = new Point(userTank1.getPos());
+                                            // System.out.println(tankPos);
+                                            Shot shot = new Shot(tankPos, currentDirection);
+                                            // System.out.println();
+                                            shots.add(shot);
+                                            // Draw and add the new shot JLabel to the panel
+                                            JLabel shotLabel = shot.draw(); // Assuming draw() returns a JLabel
+                                            BattleField.add(shotLabel);
 
-                                        Timer timer = new Timer(100, x -> {
-                                            Point tankPos1 = new Point(userTank1.getPos());
-                                            Shot shot1 = new Shot(tankPos1);
-                                            shot1.setDirection(currentDirection);
-                                            shots.add(shot1);
-                                            getContentPane().add(shot1.draw());
                                             // Ensure the bullet appears on top
-                                            setComponentZOrder(shot1.draw(), 0);
+                                            BattleField.setComponentZOrder(shotLabel, 0);
+                                            BattleField.revalidate();
+                                            BattleField.repaint();
                                         });
                                         timer.setRepeats(false);
                                         timer.start();
-                                    } else if (userTank1.getCurrentNumOfBullet() == 3) {
-                                        Point tankPos = new Point(userTank1.getPos());
-                                        Shot shot = new Shot(tankPos);
-                                        shot.setDirection(currentDirection);
-                                        shots.add(shot);
-                                        getContentPane().add(shot.draw());
-                                        // Ensure the bullet appears on top
-                                        setComponentZOrder(shot.draw(), 0);
-                                        currentBullet++;
 
-                                        Timer timer = new Timer(100, x -> {
-                                            Point tankPos1 = new Point(userTank1.getPos());
-                                            Shot shot1 = new Shot(tankPos1);
-                                            shot1.setDirection(currentDirection);
-                                            shots.add(shot1);
-                                            getContentPane().add(shot1.draw());
-                                            // Ensure the bullet appears on top
-                                            setComponentZOrder(shot1.draw(), 0);
-                                        });
-                                        timer.setRepeats(false);
-                                        timer.start();
-                                        Timer timer1 = new Timer(200, x -> {
-                                            Point tankPos2 = new Point(userTank1.getPos());
-                                            Shot shot2 = new Shot(tankPos2);
-                                            shot2.setDirection(currentDirection);
-                                            shots.add(shot2);
-                                            getContentPane().add(shot2.draw());
-                                            // Ensure the bullet appears on top
-                                            setComponentZOrder(shot2.draw(), 0);
-                                        });
-                                        timer1.setRepeats(false);
-                                        timer1.start();
                                     }
-
+                                    currentBullet++;
                                 } else {
                                     f.setFont(new java.awt.Font("Times New Roman", 1, 20));
                                     f.setVisible(true);
                                     f.setBounds(160, 40, 200, 20);
                                     f.setForeground(new java.awt.Color(0, 0, 0));
-                                    getContentPane().add(f, 0);
+                                    BattleField.add(f, 0);
                                     reloadBullet();
                                 }
                             } else {
-                                System.out.println("Reloading started, will take 3 seconds...");
+                                // System.out.println("Reloading started, will take 3 seconds...");
                             }
                         }
                         break;
@@ -326,27 +212,16 @@ public class Map2_Survival extends JFrame implements Runnable {
             }
         });
 
-        this.setFocusable(true);
-
         Image img = new ImageIcon("DSA_Project\\DSA_Project\\TankShooter\\src\\Image\\target.png").getImage();
         Cursor customCursor = Toolkit.getDefaultToolkit().createCustomCursor(img, new Point(16, 16), "targetCursor");
         setCursor(customCursor);
-
-        this.addMouseMotionListener(new MouseMotionAdapter() {
-            @Override
-            public void mouseMoved(MouseEvent e) {
-            }
-        });
-
-        this.pack();
-        this.setVisible(true);
-        this.setExtendedState(JFrame.MAXIMIZED_BOTH);
         Update = new Timer(24, new ActionListener() { // ~60 FPS
             @Override
             public void actionPerformed(ActionEvent e) {
                 if (!isPause) {
                     updateGame();
-                    getContentPane().repaint();
+                    BattleField.revalidate();
+                    BattleField.repaint();
                 }
             }
         });
@@ -360,8 +235,6 @@ public class Map2_Survival extends JFrame implements Runnable {
                         move.move();
                         Point pos = new Point(move.getPos());
                         move.isCollision(damageBlock, previous, pos, EnemyTank, Boss);
-                        revalidate();
-                        repaint();
                     }
                 }
             }
@@ -374,82 +247,73 @@ public class Map2_Survival extends JFrame implements Runnable {
             public void actionPerformed(ActionEvent e) {
                 if (!isPause) {
                     for (Move move : EnemyTank) {
-                        if (move instanceof EnemyTank2) {
-                            Point tankPos = new Point(move.getPos());
-                            Shot shot = new Shot(tankPos);
-                            Random random = new Random();
-                            int randomDirect = random.nextInt(4) + 1;
-                            shot.setDirection(randomDirect);
-                            EnemyShot.add(shot);
-                            getContentPane().add(shot.draw());
+                        if (move instanceof EnemyTank1) {
+                            for (int i = 0; i < 1; i++) {
+                                int delay = 100 * i;
+                                Timer timer = new Timer(delay, x -> {
+                                    Point tankPos = new Point(move.getPos());
+                                    Random random = new Random();
+                                    int randomDirect = random.nextInt(4) + 1;
+                                    // System.out.println(tankPos);
+                                    Shot shot = new Shot(tankPos, randomDirect);
+                                    // System.out.println();
+                                    EnemyShot.add(shot);
+                                    // Draw and add the new shot JLabel to the panel
+                                    JLabel EnemyshotLabel = shot.draw(); // Assuming draw() returns a JLabel
+                                    BattleField.add(EnemyshotLabel);
+                                    // Ensure the bullet appears on top
+                                    BattleField.setComponentZOrder(EnemyshotLabel, 0);
+                                    BattleField.revalidate();
+                                    BattleField.repaint();
+                                });
+                                timer.setRepeats(false);
+                                timer.start();
+                            }
 
-                            // Ensure the bullet appears on top
-                            setComponentZOrder(shot.draw(), 0);
-
-                            // Create a Timer to delay the addition of shot1 by 1 second
-                            Timer timer = new Timer(100, x -> {
-                                Point tankPos1 = new Point(move.getPos());
-                                Shot shot1 = new Shot(tankPos1);
-                                shot1.setDirection(randomDirect);
-                                EnemyShot.add(shot1);
-                                getContentPane().add(shot1.draw());
-
-                                // Ensure the bullet appears on top
-                                setComponentZOrder(shot1.draw(), 0);
-                            });
-
-                            // Ensure the timer only runs once
-                            timer.setRepeats(false);
-                            timer.start();
+                        } else if (move instanceof EnemyTank2) {
+                            for (int i = 0; i < 2; i++) {
+                                int delay = 100 * i;
+                                Timer timer = new Timer(delay, x -> {
+                                    Point tankPos = new Point(move.getPos());
+                                    Random random = new Random();
+                                    int randomDirect = random.nextInt(4) + 1;
+                                    // System.out.println(tankPos);
+                                    Shot shot = new Shot(tankPos, randomDirect);
+                                    // System.out.println();
+                                    EnemyShot.add(shot);
+                                    // Draw and add the new shot JLabel to the panel
+                                    JLabel EnemyshotLabel = shot.draw(); // Assuming draw() returns a JLabel
+                                    BattleField.add(EnemyshotLabel);
+                                    // Ensure the bullet appears on top
+                                    BattleField.setComponentZOrder(EnemyshotLabel, 0);
+                                    BattleField.revalidate();
+                                    BattleField.repaint();
+                                });
+                                timer.setRepeats(false);
+                                timer.start();
+                            }
                         } else if (move instanceof EnemyTank3) {
-                            Point tankPos = new Point(move.getPos());
-                            Shot shot = new Shot(tankPos);
-                            Random random = new Random();
-                            int randomDirect = random.nextInt(4) + 1;
-                            shot.setDirection(randomDirect);
-                            EnemyShot.add(shot);
-                            getContentPane().add(shot.draw());
-
-                            // Ensure the bullet appears on top
-                            setComponentZOrder(shot.draw(), 0);
-
-                            // Create a Timer to delay the addition of shot1 by 1 second
-                            Timer timer = new Timer(100, x -> {
-                                Point tankPos1 = new Point(move.getPos());
-                                Shot shot1 = new Shot(tankPos1);
-                                shot1.setDirection(randomDirect);
-                                EnemyShot.add(shot1);
-                                getContentPane().add(shot1.draw());
-
-                                // Ensure the bullet appears on top
-                                setComponentZOrder(shot1.draw(), 0);
-                            });
-                            timer.setRepeats(false);
-                            timer.start();
-                            Timer timer1 = new Timer(200, x -> {
-                                Point tankPos2 = new Point(move.getPos());
-                                Shot shot2 = new Shot(tankPos2);
-                                shot2.setDirection(randomDirect);
-                                EnemyShot.add(shot2);
-                                getContentPane().add(shot2.draw());
-
-                                // Ensure the bullet appears on top
-                                setComponentZOrder(shot2.draw(), 0);
-                            });
-                            timer1.setRepeats(false);
-                            timer1.start();
-                            Timer timer2 = new Timer(300, x -> {
-                                Point tankPos3 = new Point(move.getPos());
-                                Shot shot3 = new Shot(tankPos3);
-                                shot3.setDirection(randomDirect);
-                                EnemyShot.add(shot3);
-                                getContentPane().add(shot3.draw());
-
-                                // Ensure the bullet appears on top
-                                setComponentZOrder(shot3.draw(), 0);
-                            });
-                            timer2.setRepeats(false);
-                            timer2.start();
+                            for (int i = 0; i < 3; i++) {
+                                int delay = 100 * i;
+                                Timer timer = new Timer(delay, x -> {
+                                    Point tankPos = new Point(move.getPos());
+                                    Random random = new Random();
+                                    int randomDirect = random.nextInt(4) + 1;
+                                    // System.out.println(tankPos);
+                                    Shot shot = new Shot(tankPos, randomDirect);
+                                    // System.out.println();
+                                    EnemyShot.add(shot);
+                                    // Draw and add the new shot JLabel to the panel
+                                    JLabel EnemyshotLabel = shot.draw(); // Assuming draw() returns a JLabel
+                                    BattleField.add(EnemyshotLabel);
+                                    // Ensure the bullet appears on top
+                                    BattleField.setComponentZOrder(EnemyshotLabel, 0);
+                                    BattleField.revalidate();
+                                    BattleField.repaint();
+                                });
+                                timer.setRepeats(false);
+                                timer.start();
+                            }
                         }
                     }
                 }
@@ -457,69 +321,154 @@ public class Map2_Survival extends JFrame implements Runnable {
         });
         EnemyShotTimer.start();
 
-        EnemyShotTimer = new Timer(4000, new ActionListener() { // ~60 FPS
+        BossShotTimer = new Timer(3000, new ActionListener() { // ~60 FPS
             @Override
             public void actionPerformed(ActionEvent e) {
                 if (!isPause) {
-                    for (int i = 0; i < 8; i++) {
-                        int i1 = i;
-                        Shot shot = new Shot(new Point(480 + i1 * 40, 270));
-                        shot.setDirection(2);
-                        EnemyShot.add(shot);
-                        getContentPane().add(shot.draw());
+                    for (int i = 0; i < 16; i++) {
+                        for (int f = 0; f < 1; f++) {
+                            int delay = 100 * f;
+                            int r = i;
+                            Timer timer = new Timer(delay, x -> {
+                                Point BossShotPos = new Point(360 + r * 40, 70 + 6 * 40);
+                                Shot shot = new Shot(BossShotPos, 2);
+                                // System.out.println();
+                                EnemyShot.add(shot);
+                                // Draw and add the new shot JLabel to the panel
+                                JLabel shotLabel = shot.draw(); // Assuming draw() returns a JLabel
+                                BattleField.add(shotLabel);
 
-                        // Ensure the bullet appears on top
-                        setComponentZOrder(shot.draw(), 0);
+                                // Ensure the bullet appears on top
+                                BattleField.setComponentZOrder(shotLabel, 0);
+                                BattleField.revalidate();
+                                BattleField.repaint();
+                            });
+                            timer.setRepeats(false);
+                            timer.start();
 
-                        // Create a Timer to delay the addition of shot1 by 1 second
-                        Timer timer = new Timer(100, x -> {
-                            Shot shot1 = new Shot(new Point(480 + i1 * 40, 270));
-                            shot1.setDirection(2);
-                            EnemyShot.add(shot1);
-                            getContentPane().add(shot1.draw());
-
-                            // Ensure the bullet appears on top
-                            setComponentZOrder(shot1.draw(), 0);
-                        });
-                        timer.setRepeats(false);
-                        timer.start();
-                        Timer timer1 = new Timer(200, x -> {
-                            Shot shot2 = new Shot(new Point(480 + i1 * 40, 270));
-                            shot2.setDirection(2);
-                            EnemyShot.add(shot2);
-                            getContentPane().add(shot2.draw());
-
-                            // Ensure the bullet appears on top
-                            setComponentZOrder(shot2.draw(), 0);
-                        });
-                        timer1.setRepeats(false);
-                        timer1.start();
-                        Timer timer2 = new Timer(300, x -> {
-                            Shot shot3 = new Shot(new Point(480 + i1 * 40, 270));
-                            shot3.setDirection(2);
-                            EnemyShot.add(shot3);
-                            getContentPane().add(shot3.draw());
-
-                            // Ensure the bullet appears on top
-                            setComponentZOrder(shot3.draw(), 0);
-                        });
-                        timer2.setRepeats(false);
-                        timer2.start();
+                        }
+                        // Boss.add(new Point(360 + i * 40, 70 + h * 40));
                     }
                 }
             }
-
         });
-        EnemyShotTimer.start();
+        BossShotTimer.start();
 
-        Item = new Timer(3500, new ActionListener() { // ~60 FPS
+        Item = new Timer(5000, new ActionListener() { // ~60 FPS
             @Override
             public void actionPerformed(ActionEvent e) {
-                Point pos = new Point(600, 550);
-                getContentPane().add(DropItem(pos), 2);
+                Point pos = new Point(600, 390);
+                BattleField.add(DropItem(pos), 2);
             }
         });
         Item.setRepeats(false);
+    }
+
+    private void drawTopLiner() {
+        HeartIcon.setFont(new java.awt.Font("Times New Roman", 1, 80));
+        HeartIcon.setIcon(new ImageIcon(getClass().getResource("/Image/HeartImage.png")));
+        HeartIcon.setVisible(true);
+        HeartIcon.setBounds(0, 0, 40, 40);
+        BattleField.add(HeartIcon);
+
+        HeartDisplay.setFont(new java.awt.Font("Times New Roman", 1, 40));
+        HeartDisplay.setText(String.valueOf(userTank1.getHealth()));
+        HeartDisplay.setVisible(true);
+        HeartDisplay.setBounds(80, 0, 40, 40);
+        BattleField.add(HeartDisplay);
+
+        bulletIcon.setFont(new java.awt.Font("Times New Roman", 1, 80));
+        bulletIcon.setIcon(new ImageIcon(getClass().getResource("/Image/bullet.png")));
+        bulletIcon.setVisible(true);
+        bulletIcon.setBounds(160, 0, 40, 40);
+        BattleField.add(bulletIcon);
+
+        RemainBullet.setFont(new java.awt.Font("Times New Roman", 1, 40));
+        RemainBullet.setText(String.valueOf(this.MaxBulletCount - this.currentBullet));
+        RemainBullet.setVisible(true);
+        RemainBullet.setBounds(200, 0, 40, 40);
+        BattleField.add(RemainBullet);
+
+        X.setFont(new java.awt.Font("Times New Roman", 1, 20));
+        X.setText("X");
+        X.setVisible(true);
+        X.setBounds(250, 0, 40, 40);
+        BattleField.add(X);
+
+        bulletPerShot.setFont(new java.awt.Font("Times New Roman", 1, 40));
+        bulletPerShot.setText(String.valueOf(userTank1.getCurrentNumOfBullet()));
+        bulletPerShot.setVisible(true);
+        bulletPerShot.setBounds(280, 0, 40, 40);
+        BattleField.add(bulletPerShot);
+
+        runTimeDisplay.setFont(new java.awt.Font("Times New Roman", 1, 40));
+        runTimeDisplay.setBounds(500, 0, 400, 40);
+        BattleField.add(runTimeDisplay);
+        initializeTimer();
+
+        Score.setFont(new java.awt.Font("Times New Roman", 1, 40));
+        Score.setVisible(true);
+        Score.setBounds(600, 30, 200, 40);
+        BattleField.add(Score);
+
+        EnemyTank1Icon.setFont(new java.awt.Font("Times New Roman", 1, 80));
+        EnemyTank1Icon.setIcon(new ImageIcon(getClass().getResource("/Image/enemyTank_1.png")));
+        EnemyTank1Icon.setVisible(true);
+        EnemyTank1Icon.setBounds(920, 0, 40, 40);
+        BattleField.add(EnemyTank1Icon);
+
+        EnemyTank1Killed.setFont(new java.awt.Font("Times New Roman", 1, 40));
+        EnemyTank1Killed.setText(String.valueOf(numOfEnemy1Kill));
+        EnemyTank1Killed.setVisible(true);
+        EnemyTank1Killed.setBounds(930, 40, 40, 40);
+        BattleField.add(EnemyTank1Killed);
+
+        EnemyTank2Icon.setFont(new java.awt.Font("Times New Roman", 1, 80));
+        EnemyTank2Icon.setIcon(new ImageIcon(getClass().getResource("/Image/enemyTank_2.png")));
+        EnemyTank2Icon.setVisible(true);
+        EnemyTank2Icon.setBounds(1000, 0, 40, 40);
+        BattleField.add(EnemyTank2Icon);
+
+        EnemyTank2Killed.setFont(new java.awt.Font("Times New Roman", 1, 40));
+        EnemyTank2Killed.setText(String.valueOf(numOfEnemy2Kill));
+        EnemyTank2Killed.setVisible(true);
+        EnemyTank2Killed.setBounds(1010, 40, 40, 40);
+        BattleField.add(EnemyTank2Killed);
+
+        EnemyTank3Icon.setFont(new java.awt.Font("Times New Roman", 1, 80));
+        EnemyTank3Icon.setIcon(new ImageIcon(getClass().getResource("/Image/enemyTank_3.png")));
+        EnemyTank3Icon.setVisible(true);
+        EnemyTank3Icon.setBounds(1080, 0, 40, 40);
+        BattleField.add(EnemyTank3Icon);
+
+        EnemyTank3Killed.setFont(new java.awt.Font("Times New Roman", 1, 40));
+        EnemyTank3Killed.setText(String.valueOf(numOfEnemy3Kill));
+        EnemyTank3Killed.setVisible(true);
+        EnemyTank3Killed.setBounds(1090, 40, 40, 40);
+        BattleField.add(EnemyTank3Killed);
+
+        HeartIncreseIcon.setFont(new java.awt.Font("Times New Roman", 1, 80));
+        HeartIncreseIcon.setIcon(new ImageIcon(getClass().getResource("/Image/HeartImageIncrease.png")));
+        HeartIncreseIcon.setVisible(true);
+        HeartIncreseIcon.setBounds(1160, 0, 40, 40);
+        BattleField.add(HeartIncreseIcon);
+
+        HeartIncreseCount.setFont(new java.awt.Font("Times New Roman", 1, 40));
+        HeartIncreseCount.setText(String.valueOf(NumberOfHeartInc));
+        HeartIncreseCount.setVisible(true);
+        HeartIncreseCount.setBounds(1170, 40, 40, 40);
+        BattleField.add(HeartIncreseCount);
+
+        back.setFont(new java.awt.Font("Times New Roman", 1, 20));
+        back.setText("Back");
+        back.setVisible(true);
+        back.setBounds(1220, 0, 100, 20);
+        back.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                btnBackActionPerformed(evt);
+            }
+        });
+        BattleField.add(back);
     }
 
     private void initializeTimer() {
@@ -584,41 +533,41 @@ public class Map2_Survival extends JFrame implements Runnable {
             this.damageBlock.add(ste1);
             this.damageBlock.add(ste2);
             this.damageBlock.add(ste3);
-            this.add(ste.drawObject());
-            this.add(ste1.drawObject());
-            this.add(ste2.drawObject());
-            this.add(ste3.drawObject());
+            BattleField.add(ste.drawObject());
+            BattleField.add(ste1.drawObject());
+            BattleField.add(ste2.drawObject());
+            BattleField.add(ste3.drawObject());
         }
         for (int i = 0; i < 33; i++) {
             Point invisiblePoint = new Point(i * 40, 30);
             invisibleObstacle in = new invisibleObstacle(invisiblePoint);
             this.damageBlock.add(in);
-            this.add(in.drawObject());
+            BattleField.add(in.drawObject());
         }
 
         for (int i = 0; i < 33; i++) {
             Point invisiblePoint = new Point(i * 40, 750);
             invisibleObstacle in = new invisibleObstacle(invisiblePoint);
             this.damageBlock.add(in);
-            this.add(in.drawObject());
+            BattleField.add(in.drawObject());
         }
         for (int i = 0; i < 17; i++) {
             Point invisiblePoint = new Point(-40, 70 + i * 40);
             invisibleObstacle in = new invisibleObstacle(invisiblePoint);
             this.damageBlock.add(in);
-            this.add(in.drawObject());
+            BattleField.add(in.drawObject());
         }
         for (int i = 0; i < 17; i++) {
             Point invisiblePoint = new Point(1320, 70 + i * 40);
             invisibleObstacle in = new invisibleObstacle(invisiblePoint);
             this.damageBlock.add(in);
-            this.add(in.drawObject());
+            BattleField.add(in.drawObject());
         }
         for (int i = 0; i < 33; i++) {
             Point waterPoint = new Point(i * 40, 310);
             Water wat = new Water(waterPoint);
             this.damageBlock.add(wat);
-            this.add(wat.drawObject());
+            BattleField.add(wat.drawObject());
         }
     }
 
@@ -626,7 +575,7 @@ public class Map2_Survival extends JFrame implements Runnable {
         this.userTank = new Point(200, 670);
         this.userTank1 = new UserTank(userTank);
         ControlTank.add(userTank1);
-        this.add(userTank1.draw());
+        BattleField.add(userTank1.draw());
 
         Point bossTank = new Point(360, 70);
         this.bossT = new Boss(bossTank);
@@ -635,7 +584,7 @@ public class Map2_Survival extends JFrame implements Runnable {
                 Boss.add(new Point(360 + i * 40, 70 + h * 40));
             }
         }
-        this.add(bossT.draw());
+        BattleField.add(bossT.draw());
 
         // set linklist for damage object
         for (int i = 0; i < 3; i++) {
@@ -643,21 +592,21 @@ public class Map2_Survival extends JFrame implements Runnable {
             BrickBlock brk = new BrickBlock(BrickBlockPoint);
 
             damageBlock.add(brk);
-            this.add(brk.drawObject());
+            BattleField.add(brk.drawObject());
         }
         for (int i = 0; i < 3; i++) {
             Point BrickBlockPoint = new Point(520, 630 + (i * 40));
             BrickBlock brk = new BrickBlock(BrickBlockPoint);
 
             damageBlock.add(brk);
-            this.add(brk.drawObject());
+            BattleField.add(brk.drawObject());
         }
         for (int i = 0; i < 3; i++) {
             Point BrickBlockPoint = new Point(680, 630 + (i * 40));
             BrickBlock brk = new BrickBlock(BrickBlockPoint);
 
             damageBlock.add(brk);
-            this.add(brk.drawObject());
+            BattleField.add(brk.drawObject());
         }
 
         for (int i = 0; i < 5; i++) {
@@ -665,7 +614,7 @@ public class Map2_Survival extends JFrame implements Runnable {
             WoodenBox wb = new WoodenBox(woddenboxPoint);
             // Wooden class no need jlabel as pass is a referrence
             damageBlock.add(wb);
-            this.add(wb.drawObject());
+            BattleField.add(wb.drawObject());
         }
 
         for (int i = 0; i < 5; i++) {
@@ -673,21 +622,21 @@ public class Map2_Survival extends JFrame implements Runnable {
             WoodenBox wb = new WoodenBox(woddenboxPoint);
             // Wooden class no need jlabel as pass is a referrence
             damageBlock.add(wb);
-            this.add(wb.drawObject());
+            BattleField.add(wb.drawObject());
         }
         for (int i = 0; i < 7; i++) {
             Point BrickBlockPoint = new Point(480 + (i * 40), 510);
             BrickBlock brk = new BrickBlock(BrickBlockPoint);
 
             damageBlock.add(brk);
-            this.add(brk.drawObject());
+            BattleField.add(brk.drawObject());
         }
         for (int i = 0; i < 7; i++) {
             Point BrickBlockPoint = new Point(480 + (i * 40), 470);
             BrickBlock brk = new BrickBlock(BrickBlockPoint);
 
             damageBlock.add(brk);
-            this.add(brk.drawObject());
+            BattleField.add(brk.drawObject());
         }
         for (int i = 0; i < 2; i++) {
             Point woddenboxPoint = new Point(80 + (i * 200), 350);
@@ -703,10 +652,10 @@ public class Map2_Survival extends JFrame implements Runnable {
             damageBlock.add(wb1);
             damageBlock.add(wb2);
             damageBlock.add(wb3);
-            this.add(wb.drawObject());
-            this.add(wb1.drawObject());
-            this.add(wb2.drawObject());
-            this.add(wb3.drawObject());
+            BattleField.add(wb.drawObject());
+            BattleField.add(wb1.drawObject());
+            BattleField.add(wb2.drawObject());
+            BattleField.add(wb3.drawObject());
         }
         for (int i = 0; i < 2; i++) {
             Point woddenboxPoint = new Point(880 + (i * 200), 350);
@@ -722,17 +671,17 @@ public class Map2_Survival extends JFrame implements Runnable {
             damageBlock.add(wb1);
             damageBlock.add(wb2);
             damageBlock.add(wb3);
-            this.add(wb.drawObject());
-            this.add(wb1.drawObject());
-            this.add(wb2.drawObject());
-            this.add(wb3.drawObject());
+            BattleField.add(wb.drawObject());
+            BattleField.add(wb1.drawObject());
+            BattleField.add(wb2.drawObject());
+            BattleField.add(wb3.drawObject());
         }
 
         jlabel1.setIcon(new ImageIcon(
                 getClass().getResource("/Image/background.png")));
         jlabel1.setBounds(0, 70, 1320, 750);
         jlabel1.setVisible(true);
-        getContentPane().add(jlabel1);
+        BattleField.add(jlabel1);
 
     }
 
@@ -787,15 +736,18 @@ public class Map2_Survival extends JFrame implements Runnable {
         HeartDisplay.setText(String.valueOf(userTank1.getHealth()));
         RemainBullet.setText(String.valueOf(this.MaxBulletCount - this.currentBullet));
         Score.setText("Score: " + score);
+        EnemyTank1Killed.setText(String.valueOf(numOfEnemy1Kill));
+        HeartIncreseCount.setText(String.valueOf(NumberOfHeartInc));
+
         if (currentBullet == 12) {
             j.setFont(new java.awt.Font("Times New Roman", 1, 80));
             j.setVisible(true);
             j.setBounds(300, 200, 800, 80);
             j.setForeground(new java.awt.Color(255, 255, 255));
-            this.add(j, 0);
+            BattleField.add(j, 0);
         } else {
-            this.remove(j);
-            this.remove(f);
+            BattleField.remove(j);
+            BattleField.remove(f);
         }
 
         if (direction != Direction.NO_DIRECTION) {
@@ -811,7 +763,7 @@ public class Map2_Survival extends JFrame implements Runnable {
             shot.move();
             shot.setObstacle(damageBlock, EnemyTank, Boss, bossT);
             if (shot.getisDamage()) {
-                this.remove(shot.getImage());
+                BattleField.remove(shot.getImage());
                 iterator.remove();
             }
             shot.draw();
@@ -822,7 +774,7 @@ public class Map2_Survival extends JFrame implements Runnable {
             shot.move();
             shot.setObstacle(damageBlock, ControlTank, null, null);
             if (shot.getisDamage()) {
-                this.remove(shot.getImage());
+                BattleField.remove(shot.getImage());
                 iterator1.remove();
             }
             shot.draw();
@@ -840,7 +792,7 @@ public class Map2_Survival extends JFrame implements Runnable {
                         Point pos = new Point(unm.getPos());
                         Unmove item = gachaItem(pos);
                         newItems.add(item);
-                        this.add(item.drawObject(), 2);
+                        BattleField.add(item.drawObject(), 2);
                         gachaPercentage = 10;
                     } else {
                         gachaPercentage += 10;
@@ -848,7 +800,7 @@ public class Map2_Survival extends JFrame implements Runnable {
                 }
                 if ((unm instanceof Clock || unm instanceof BulletIncrease || unm instanceof HeartUp
                         || unm instanceof BrickRegenerate)
-                        && unm.getPos().equals(new Point(600, 550))) {
+                        && unm.getPos().equals(new Point(600, 390))) {
                     if (unm instanceof BrickRegenerate) {
                         Regenration();
                     }
@@ -856,14 +808,17 @@ public class Map2_Survival extends JFrame implements Runnable {
                         score += 100;
                         stopEnemyMove();
                     }
-                    if (unm instanceof BulletIncrease || unm instanceof HeartUp) {
+                    if (unm instanceof BulletIncrease) {
                         score += 200;
+                    } else {
+                        score += 200;
+                        NumberOfHeartInc += 1;
                     }
                     timeDropSup = false;
                 }
                 if ((unm instanceof Clock || unm instanceof BulletIncrease || unm instanceof HeartUp
                         || unm instanceof BrickRegenerate)
-                        && !unm.getPos().equals(new Point(600, 550))) {
+                        && !unm.getPos().equals(new Point(600, 390))) {
                     if (unm instanceof BrickRegenerate) {
                         Regenration();
                     }
@@ -871,8 +826,11 @@ public class Map2_Survival extends JFrame implements Runnable {
                         score += 100;
                         stopEnemyMove();
                     }
-                    if (unm instanceof BulletIncrease || unm instanceof HeartUp) {
+                    if (unm instanceof BulletIncrease) {
                         score += 200;
+                    } else {
+                        score += 200;
+                        NumberOfHeartInc += 1;
                     }
                 }
                 if (unm instanceof BrickBlock) {
@@ -893,6 +851,9 @@ public class Map2_Survival extends JFrame implements Runnable {
                 } else if (move instanceof EnemyTank2) {
                     numOfEnemy2Kill += 1;
                     score += 500;
+                } else {
+                    numOfEnemy1Kill += 1;
+                    score += 300;
                 }
                 this.remove(move.getImage());
                 iterator3.remove();
@@ -902,7 +863,7 @@ public class Map2_Survival extends JFrame implements Runnable {
 
         // one for user tank later
         if (currentEnemy < 3) {
-            this.add(Enemyspawn(), 1);
+            BattleField.add(Enemyspawn(), 1);
         }
         if (!timeDropSup) {
             timeDropSup = true;
@@ -1213,7 +1174,7 @@ public class Map2_Survival extends JFrame implements Runnable {
                 user3PlayTimeSur = user2PlayTimeSur;
                 user2PlayTimeSur = user1PlayTimeSur;
                 user1PlayTimeSur = formattedTime;
-                String filePath = "E:\\"; // Change this to your desired directory
+                String filePath = savePath; // Change this to your desired directory
                 String fileName = "TankShotter_LeaderBoard_Map2.txt";
 
                 String content = "Name  Score  Play Time\n" + gameModeDef +
@@ -1254,7 +1215,7 @@ public class Map2_Survival extends JFrame implements Runnable {
                     user3PlayTimeSur = user2PlayTimeSur;
                     user2PlayTimeSur = formattedTime;
 
-                    String filePath = "E:\\"; // Change this to your desired directory
+                    String filePath = savePath; // Change this to your desired directory
                     String fileName = "TankShotter_LeaderBoard_Map2.txt";
 
                     String content = "Name  Score  Play Time\n" + gameModeDef +
@@ -1285,7 +1246,7 @@ public class Map2_Survival extends JFrame implements Runnable {
                     user3PlayTimeSur = user2PlayTimeSur;
                     user2PlayTimeSur = user1PlayTimeSur;
                     user1PlayTimeSur = formattedTime;
-                    String filePath = "E:\\"; // Change this to your desired directory
+                    String filePath = savePath; // Change this to your desired directory
                     String fileName = "TankShotter_LeaderBoard_Map2.txt";
 
                     String content = "Name  Score  Play Time\n" + gameModeDef +
@@ -1319,7 +1280,7 @@ public class Map2_Survival extends JFrame implements Runnable {
                 user3PlayTimeSur = user2PlayTimeSur;
                 user2PlayTimeSur = formattedTime;
 
-                String filePath = "E:\\"; // Change this to your desired directory
+                String filePath = savePath; // Change this to your desired directory
                 String fileName = "TankShotter_LeaderBoard_Map2.txt";
 
                 String content = "Name  Score  Play Time\n" + gameModeDef +
@@ -1357,7 +1318,7 @@ public class Map2_Survival extends JFrame implements Runnable {
 
                     user3PlayTimeSur = formattedTime;
 
-                    String filePath = "E:\\"; // Change this to your desired directory
+                    String filePath = savePath; // Change this to your desired directory
                     String fileName = "TankShotter_LeaderBoard_Map2.txt";
 
                     String content = "Name  Score  Play Time\n" + gameModeDef +
@@ -1386,7 +1347,7 @@ public class Map2_Survival extends JFrame implements Runnable {
                     user3PlayTimeSur = user2PlayTimeDef;
                     user2PlayTimeSur = formattedTime;
 
-                    String filePath = "E:\\"; // Change this to your desired directory
+                    String filePath = savePath; // Change this to your desired directory
                     String fileName = "TankShotter_LeaderBoard_Map2.txt";
 
                     String content = "Name  Score  Play Time\n" + gameModeDef +
@@ -1416,7 +1377,7 @@ public class Map2_Survival extends JFrame implements Runnable {
 
                 user3PlayTimeSur = formattedTime;
 
-                String filePath = "E:\\"; // Change this to your desired directory
+                String filePath = savePath; // Change this to your desired directory
                 String fileName = "TankShotter_LeaderBoard_Map2.txt";
 
                 String content = "Name  Score  Play Time\n" + gameModeDef +
@@ -1454,7 +1415,7 @@ public class Map2_Survival extends JFrame implements Runnable {
 
                     user3PlayTimeSur = formattedTime;
 
-                    String filePath = "E:\\"; // Change this to your desired directory
+                    String filePath = savePath; // Change this to your desired directory
                     String fileName = "TankShotter_LeaderBoard_Map2.txt";
 
                     String content = "Name  Score  Play Time\n" + gameModeDef +
@@ -1484,7 +1445,7 @@ public class Map2_Survival extends JFrame implements Runnable {
     }
 
     private void readTextFromFile_Map2() {
-        String filePath = "E:\\TankShotter_LeaderBoard_Map2.txt";
+        String filePath = savePath + "\\TankShotter_LeaderBoard_Map2.txt";
         try {
             // Read all lines from the file
             List<String> lines = Files.readAllLines(Paths.get(filePath));

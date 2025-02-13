@@ -112,7 +112,7 @@ public class Map1_Defence extends JFrame implements Runnable {
         // this.pack();
         // this.setVisible(true);
         // this.setBounds(0, 0, 1340, 785);
-        // this.setFocusable(true);
+        this.setFocusable(true);
         this.setTitle("Map 1 Defence");
         this.setSize(1340, 800);
         this.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
@@ -152,96 +152,28 @@ public class Map1_Defence extends JFrame implements Runnable {
                         if (!isPause) {
                             if (!isLoading) {
                                 if (canFire()) {
-                                    if (userTank1.getCurrentNumOfBullet() == 1) {
-                                        Point tankPos = new Point(userTank1.getPos());
-                                        // System.out.println(tankPos);
-                                        Shot shot = new Shot(tankPos, currentDirection);
-                                        // System.out.println();
-                                        shots.add(shot);
-                                        // Draw and add the new shot JLabel to the panel
-                                        JLabel shotLabel = shot.draw(); // Assuming draw() returns a JLabel
-                                        BattleField.add(shotLabel);
-
-                                        // Ensure the bullet appears on top
-                                        BattleField.setComponentZOrder(shotLabel, 0);
-                                        BattleField.revalidate();
-                                        BattleField.repaint();
-
-                                        currentBullet++;
-                                    } else if (userTank1.getCurrentNumOfBullet() == 2) {// No increse in number of
-                                                                                        // bullet
-                                        Point tankPos = new Point(userTank1.getPos());
-                                        Shot shot = new Shot(tankPos, currentDirection);
-                                        shots.add(shot);
-                                        JLabel shotLabel = shot.draw(); // Assuming draw() returns a JLabel
-                                        BattleField.add(shotLabel);
-
-                                        // Ensure the bullet appears on top
-                                        BattleField.setComponentZOrder(shotLabel, 0);
-                                        BattleField.revalidate();
-                                        BattleField.repaint();
-
-                                        currentBullet++;
-
-                                        Timer timer = new Timer(100, x -> {
-                                            Point tankPos1 = new Point(userTank1.getPos());
-                                            Shot shot1 = new Shot(tankPos1, currentDirection);
-                                            shots.add(shot1);
-                                            JLabel shotLabel1 = shot1.draw(); // Assuming draw() returns a JLabel
-                                            BattleField.add(shotLabel1);
+                                    for (int i = 0; i < userTank1.getCurrentNumOfBullet(); i++) {
+                                        int delay = 100 * i;
+                                        Timer timer = new Timer(delay, x -> {
+                                            Point tankPos = new Point(userTank1.getPos());
+                                            // System.out.println(tankPos);
+                                            Shot shot = new Shot(tankPos, currentDirection);
+                                            // System.out.println();
+                                            shots.add(shot);
+                                            // Draw and add the new shot JLabel to the panel
+                                            JLabel shotLabel = shot.draw(); // Assuming draw() returns a JLabel
+                                            BattleField.add(shotLabel);
 
                                             // Ensure the bullet appears on top
-                                            BattleField.setComponentZOrder(shotLabel1, 0);
+                                            BattleField.setComponentZOrder(shotLabel, 0);
                                             BattleField.revalidate();
                                             BattleField.repaint();
                                         });
                                         timer.setRepeats(false);
                                         timer.start();
-                                    } else if (userTank1.getCurrentNumOfBullet() == 3) {
-                                        Point tankPos = new Point(userTank1.getPos());
-                                        Shot shot = new Shot(tankPos, currentDirection);
-                                        shots.add(shot);
-                                        JLabel shotLabel = shot.draw(); // Assuming draw() returns a JLabel
-                                        BattleField.add(shotLabel);
 
-                                        // Ensure the bullet appears on top
-                                        BattleField.setComponentZOrder(shotLabel, 0);
-                                        BattleField.revalidate();
-                                        BattleField.repaint();
-
-                                        currentBullet++;
-
-                                        Timer timer = new Timer(100, x -> {
-                                            Point tankPos1 = new Point(userTank1.getPos());
-                                            Shot shot1 = new Shot(tankPos1, currentDirection);
-                                            shots.add(shot1);
-                                            JLabel shotLabel1 = shot1.draw(); // Assuming draw() returns a JLabel
-                                            BattleField.add(shotLabel1);
-
-                                            // Ensure the bullet appears on top
-                                            BattleField.setComponentZOrder(shotLabel1, 0);
-                                            BattleField.revalidate();
-                                            BattleField.repaint();
-                                        });
-                                        timer.setRepeats(false);
-                                        timer.start();
-                                        Timer timer1 = new Timer(200, x -> {
-                                            Point tankPos2 = new Point(userTank1.getPos());
-                                            Shot shot2 = new Shot(tankPos2, currentDirection);
-                                            shots.add(shot2);
-                                            JLabel shotLabel2 = shot2.draw(); // Assuming draw() returns a JLabel
-                                            BattleField.add(shotLabel2);
-
-                                            // Ensure the bullet appears on top
-                                            BattleField.setComponentZOrder(shotLabel2, 0);
-                                            BattleField.revalidate();
-                                            BattleField.repaint();
-
-                                        });
-                                        timer1.setRepeats(false);
-                                        timer1.start();
                                     }
-
+                                    currentBullet++;
                                 } else {
                                     f.setFont(new java.awt.Font("Times New Roman", 1, 20));
                                     f.setVisible(true);
@@ -303,99 +235,72 @@ public class Map1_Defence extends JFrame implements Runnable {
                 if (!isPause) {
                     for (Move move : EnemyTank) {
                         if (move instanceof EnemyTank1) {
-                            Point tankPos = new Point(move.getPos());
-                            Random random = new Random();
-                            int randomDirect = random.nextInt(4) + 1;
-                            Shot shot = new Shot(tankPos, randomDirect);
-                            EnemyShot.add(shot);
-                            JLabel EnemyshotLabel = shot.draw(); // Assuming draw() returns a JLabel
-                            BattleField.add(EnemyshotLabel);
-                            // Ensure the bullet appears on top
-                            BattleField.setComponentZOrder(EnemyshotLabel, 0);
-                            BattleField.revalidate();
-                            BattleField.repaint();
+                            for (int i = 0; i < 1; i++) {
+                                int delay = 100 * i;
+                                Timer timer = new Timer(delay, x -> {
+                                    Point tankPos = new Point(move.getPos());
+                                    Random random = new Random();
+                                    int randomDirect = random.nextInt(4) + 1;
+                                    // System.out.println(tankPos);
+                                    Shot shot = new Shot(tankPos, randomDirect);
+                                    // System.out.println();
+                                    EnemyShot.add(shot);
+                                    // Draw and add the new shot JLabel to the panel
+                                    JLabel EnemyshotLabel = shot.draw(); // Assuming draw() returns a JLabel
+                                    BattleField.add(EnemyshotLabel);
+                                    // Ensure the bullet appears on top
+                                    BattleField.setComponentZOrder(EnemyshotLabel, 0);
+                                    BattleField.revalidate();
+                                    BattleField.repaint();
+                                });
+                                timer.setRepeats(false);
+                                timer.start();
+                            }
+
                         } else if (move instanceof EnemyTank2) {
-                            Point tankPos = new Point(move.getPos());
-                            Random random = new Random();
-                            int randomDirect = random.nextInt(4) + 1;
-                            Shot shot = new Shot(tankPos, randomDirect);
-                            EnemyShot.add(shot);
-                            JLabel EnemyshotLabel = shot.draw(); // Assuming draw() returns a JLabel
-                            BattleField.add(EnemyshotLabel);
-                            // Ensure the bullet appears on top
-                            BattleField.setComponentZOrder(EnemyshotLabel, 0);
-                            BattleField.revalidate();
-                            BattleField.repaint();
-
-                            // Create a Timer to delay the addition of shot1 by 1 second
-                            Timer timer = new Timer(100, x -> {
-                                Point tankPos1 = new Point(move.getPos());
-                                Shot shot1 = new Shot(tankPos1, randomDirect);
-                                EnemyShot.add(shot1);
-                                JLabel EnemyshotLabel1 = shot1.draw(); // Assuming draw() returns a JLabel
-                                BattleField.add(EnemyshotLabel1);
-                                // Ensure the bullet appears on top
-                                BattleField.setComponentZOrder(EnemyshotLabel1, 0);
-                                BattleField.revalidate();
-                                BattleField.repaint();
-                            });
-
-                            // Ensure the timer only runs once
-                            timer.setRepeats(false);
-                            timer.start();
+                            for (int i = 0; i < 2; i++) {
+                                int delay = 100 * i;
+                                Timer timer = new Timer(delay, x -> {
+                                    Point tankPos = new Point(move.getPos());
+                                    Random random = new Random();
+                                    int randomDirect = random.nextInt(4) + 1;
+                                    // System.out.println(tankPos);
+                                    Shot shot = new Shot(tankPos, randomDirect);
+                                    // System.out.println();
+                                    EnemyShot.add(shot);
+                                    // Draw and add the new shot JLabel to the panel
+                                    JLabel EnemyshotLabel = shot.draw(); // Assuming draw() returns a JLabel
+                                    BattleField.add(EnemyshotLabel);
+                                    // Ensure the bullet appears on top
+                                    BattleField.setComponentZOrder(EnemyshotLabel, 0);
+                                    BattleField.revalidate();
+                                    BattleField.repaint();
+                                });
+                                timer.setRepeats(false);
+                                timer.start();
+                            }
                         } else if (move instanceof EnemyTank3) {
-                            Point tankPos = new Point(move.getPos());
-                            Random random = new Random();
-                            int randomDirect = random.nextInt(4) + 1;
-                            Shot shot = new Shot(tankPos, randomDirect);
-                            EnemyShot.add(shot);
-                            JLabel EnemyshotLabel = shot.draw(); // Assuming draw() returns a JLabel
-                            BattleField.add(EnemyshotLabel);
-                            // Ensure the bullet appears on top
-                            BattleField.setComponentZOrder(EnemyshotLabel, 0);
-                            BattleField.revalidate();
-                            BattleField.repaint();
-
-                            // Create a Timer to delay the addition of shot1 by 1 second
-                            Timer timer = new Timer(100, x -> {
-                                Point tankPos1 = new Point(move.getPos());
-                                Shot shot1 = new Shot(tankPos1, randomDirect);
-                                EnemyShot.add(shot1);
-                                JLabel EnemyshotLabel1 = shot1.draw(); // Assuming draw() returns a JLabel
-                                BattleField.add(EnemyshotLabel1);
-                                // Ensure the bullet appears on top
-                                BattleField.setComponentZOrder(EnemyshotLabel1, 0);
-                                BattleField.revalidate();
-                                BattleField.repaint();
-                            });
-                            timer.setRepeats(false);
-                            timer.start();
-                            Timer timer1 = new Timer(200, x -> {
-                                Point tankPos2 = new Point(move.getPos());
-                                Shot shot2 = new Shot(tankPos2, randomDirect);
-                                EnemyShot.add(shot2);
-                                JLabel EnemyshotLabel2 = shot2.draw(); // Assuming draw() returns a JLabel
-                                BattleField.add(EnemyshotLabel2);
-                                // Ensure the bullet appears on top
-                                BattleField.setComponentZOrder(EnemyshotLabel2, 0);
-                                BattleField.revalidate();
-                                BattleField.repaint();
-                            });
-                            timer1.setRepeats(false);
-                            timer1.start();
-                            Timer timer2 = new Timer(300, x -> {
-                                Point tankPos3 = new Point(move.getPos());
-                                Shot shot3 = new Shot(tankPos3, randomDirect);
-                                EnemyShot.add(shot3);
-                                JLabel EnemyshotLabel3 = shot3.draw(); // Assuming draw() returns a JLabel
-                                BattleField.add(EnemyshotLabel3);
-                                // Ensure the bullet appears on top
-                                BattleField.setComponentZOrder(EnemyshotLabel3, 0);
-                                BattleField.revalidate();
-                                BattleField.repaint();
-                            });
-                            timer2.setRepeats(false);
-                            timer2.start();
+                            for (int i = 0; i < 3; i++) {
+                                int delay = 100 * i;
+                                Timer timer = new Timer(delay, x -> {
+                                    Point tankPos = new Point(move.getPos());
+                                    Random random = new Random();
+                                    int randomDirect = random.nextInt(4) + 1;
+                                    // System.out.println(tankPos);
+                                    Shot shot = new Shot(tankPos, randomDirect);
+                                    // System.out.println();
+                                    EnemyShot.add(shot);
+                                    // Draw and add the new shot JLabel to the panel
+                                    JLabel EnemyshotLabel = shot.draw(); // Assuming draw() returns a JLabel
+                                    BattleField.add(EnemyshotLabel);
+                                    // Ensure the bullet appears on top
+                                    BattleField.setComponentZOrder(EnemyshotLabel, 0);
+                                    BattleField.revalidate();
+                                    BattleField.repaint();
+                                });
+                                timer.setRepeats(false);
+                                timer.start();
+                            }
                         }
                     }
                 }
@@ -899,7 +804,7 @@ public class Map1_Defence extends JFrame implements Runnable {
                         NumberOfHeartInc += 1;
                     }
                 }
-                this.remove(unm.getJLabel());
+                BattleField.remove(unm.getJLabel());
                 iterator2.remove();
             }
         }

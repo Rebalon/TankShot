@@ -44,7 +44,8 @@ public class EnemyTank1 extends Move {
     @Override
     public void move() {
         Random random = new Random();
-        int randomNumber = random.nextInt(4);
+        int randomNumber = random.nextInt(4) + 1;
+
         switch (randomNumber) {
             case Direction.EAST:
                 position.translate(40, 0);
